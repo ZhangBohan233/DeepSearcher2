@@ -13,4 +13,7 @@
         <Label text="%general"/>
         <Separator prefWidth="100"/>
     </HBox>
+
+    <Label text="%language"/>
+    <ComboBox fx:id="languageBox"/>
 </fx:root>

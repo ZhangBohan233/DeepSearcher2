@@ -7,7 +7,7 @@ import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
-public class SettingsMainPage extends SettingsPage {
+public class SettingsMainPage extends Page {
 
     private SettingsPanelController parent;
 

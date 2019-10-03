@@ -97,13 +97,18 @@
                     </toggleGroup>
                 </RadioButton>
 
-                <Separator GridPane.rowIndex="2"/>
+                <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" alignment="CENTER" spacing="10">
+                    <Separator HBox.hgrow="ALWAYS"/>
+                    <Label text="%searchingOptions"/>
+                    <Separator HBox.hgrow="ALWAYS"/>
+                </HBox>
 
                 <!--First column boxes group-->
                 <CheckBox fx:id="searchFileNameBox" text="%searchFileName" GridPane.rowIndex="3"/>
                 <CheckBox fx:id="searchDirNameBox" text="%searchDirName" GridPane.rowIndex="4"/>
                 <CheckBox fx:id="searchContentBox" text="%searchContent" GridPane.rowIndex="5"/>
-                <CheckBox fx:id="includeDirNameBox" text="%includeDirName" GridPane.rowIndex="6"/>
+                <CheckBox fx:id="includeDirNameBox" text="%includeDirName" GridPane.rowIndex="6"
+                          GridPane.columnSpan="2"/>
 
                 <Button fx:id="searchButton" GridPane.columnIndex="1" GridPane.rowSpan="2" onAction="#searchAction"
                         text="%search" prefWidth="100" prefHeight="30"/>
@@ -126,10 +131,10 @@
 
         <TableView fx:id="resultTable" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
             <columns>
-                <TableColumn text="%fileName" minWidth="320"/>
-                <TableColumn text="%size" minWidth="120"/>
-                <TableColumn text="%fileType" minWidth="120"/>
-                <TableColumn text="%matchMode" minWidth="120"/>
+                <TableColumn text="%fileName" minWidth="360"/>
+                <TableColumn text="%size" minWidth="100"/>
+                <TableColumn text="%fileType" minWidth="180"/>
+                <TableColumn text="%matchMode" minWidth="100"/>
             </columns>
         </TableView>
 
@@ -140,11 +145,14 @@
             <CheckBox fx:id="selectAllBox" text="%selectAll" onAction="#selectAllAction" disable="true"/>
         </HBox>
 
-        <HBox GridPane.rowIndex="1" GridPane.columnIndex="1">
+        <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8">
             <ProgressIndicator fx:id="progressIndicator" visible="false" managed="false" maxWidth="25" maxHeight="25"/>
             <Label fx:id="searchingStatusText"/>
             <Label fx:id="resultNumberText"/>
             <Label fx:id="statusSuffixText"/>
+            <Label fx:id="timeUsedLabelText"/>
+            <Label fx:id="timeUsedText"/>
+            <Label fx:id="timeUnitText"/>
         </HBox>
     </GridPane>
 </VBox>

@@ -7,6 +7,7 @@ import trashsoftware.deepSearcher2.items.ResultItem;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.File;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Searcher {
@@ -70,10 +71,9 @@ public class Searcher {
     private void matchNameAll(File file) {
         String name = getSearchingFileName(file);
 
+        StringMatcher matcher = createMatcher(name);
         for (String target : prefSet.getTargets()) {
-            if (!name.contains(target)) {
-                return;
-            }
+            if (!matcher.contains(target)) return;
         }
 
         addResult(file, ResultItem.MATCH_NAME);
@@ -83,8 +83,9 @@ public class Searcher {
     private void matchNameAny(File file) {
         String name = getSearchingFileName(file);
 
+        StringMatcher matcher = createMatcher(name);
         for (String target : prefSet.getTargets()) {
-            if (name.contains(target)) {
+            if (matcher.contains(target)) {
                 addResult(file, ResultItem.MATCH_NAME);
                 updateResultCount();
                 return;
@@ -99,6 +100,16 @@ public class Searcher {
         } else {
             if (prefSet.isMatchCase()) return file.getName();
             else return file.getName().toLowerCase();
+        }
+    }
+
+    private StringMatcher createMatcher(String string) {
+        if (prefSet.getMatchingAlgorithm() == PrefSet.NATIVE_ALGORITHM) {
+            return new NativeMatcher(string);
+        } else if (prefSet.getMatchingAlgorithm() == PrefSet.NAIVE_ALGORITHM) {
+            return new NaiveMatcher(string);
+        } else {
+            throw new RuntimeException("Not a valid matching algorithm");
         }
     }
 

@@ -54,7 +54,7 @@ public class ResultItem {
         if (fileTypeBundle.containsKey(ext)) {
             return fileTypeBundle.getString(ext);
         } else {
-            return ext.toUpperCase() + bundle.getString("file");
+            return ext.toUpperCase() + " " + bundle.getString("file");
         }
     }
 }

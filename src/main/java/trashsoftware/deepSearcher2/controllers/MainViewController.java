@@ -70,7 +70,7 @@ public class MainViewController implements Initializable {
     Button deleteDirButton, deleteTargetButton;
 
     @FXML
-    Label searchingStatusText, resultNumberText, statusSuffixText;
+    Label searchingStatusText, resultNumberText, statusSuffixText, timeUsedLabelText, timeUsedText, timeUnitText;
 
     @FXML
     ProgressIndicator progressIndicator;
@@ -79,7 +79,7 @@ public class MainViewController implements Initializable {
 
     private ResourceBundle fileTypeBundle =
             ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
-                    Configs.getLocale());
+                    Configs.getCurrentLocale());
 
     private boolean isSearching;
 
@@ -157,11 +157,16 @@ public class MainViewController implements Initializable {
 
     @FXML
     void openSettingsAction() throws IOException {
-        Parent root = FXMLLoader.load(
+        FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/settingsPanel.fxml"), bundle);
+        Parent root = loader.load();
         Stage stage = new Stage();
         stage.setTitle(bundle.getString("settings"));
         stage.setScene(new Scene(root));
+
+        SettingsPanelController controller = loader.getController();
+        controller.setStage(stage);
+
         stage.show();
     }
 
@@ -219,6 +224,16 @@ public class MainViewController implements Initializable {
                 selectAllBox.setDisable(true);
             }
         });
+        matchWordBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                matchRegexBox.setSelected(false);
+            }
+        }));
+        matchRegexBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                matchWordBox.setSelected(false);
+            }
+        }));
     }
 
     // Helper functions
@@ -246,6 +261,7 @@ public class MainViewController implements Initializable {
 
     private void startSearching() {
         try {
+            long beginTime = System.currentTimeMillis();
             PrefSet prefSet = new PrefSet.PrefSetBuilder()
                     .matchCase(false)
                     .setMatchAll(matchAllRadioBtn.isSelected())
@@ -253,6 +269,9 @@ public class MainViewController implements Initializable {
                     .searchDirName(searchDirNameBox.isSelected())
                     .includeDirName(includeDirNameBox.isSelected())
                     .matchCase(matchCaseBox.isSelected())
+                    .matchWord(matchWordBox.isSelected())
+                    .matchRegex(matchRegexBox.isSelected())
+                    .setMatchingAlgorithm(PrefSet.NAIVE_ALGORITHM)
                     .setTargets(getTargets())
                     .setSearchDirs(dirList.getItems())
                     .setExtensions(getExtensions())
@@ -267,6 +286,7 @@ public class MainViewController implements Initializable {
             service.setOnSucceeded(e -> {
                 unbindListeners();
                 finishSearching(searcher.isNormalFinish());
+                setTimerTexts(System.currentTimeMillis() - beginTime);
             });
 
             service.setOnFailed(e -> {
@@ -282,6 +302,12 @@ public class MainViewController implements Initializable {
         } catch (SearchDirNotSetException e) {
             showHoverMessage("dirNotSet", searchButton);
         }
+    }
+
+    private void setTimerTexts(long timeUsedMs) {
+        timeUsedLabelText.setText(bundle.getString("timeUsed"));
+        timeUsedText.setText(String.format("%.1f", (double) timeUsedMs / 1000));
+        timeUnitText.setText(bundle.getString("secondUnit"));
     }
 
     private void finishSearching(boolean normalFinish) {
@@ -300,6 +326,9 @@ public class MainViewController implements Initializable {
         resultNumberText.setText("0");
         searchingStatusText.setText(bundle.getString("searching"));
         statusSuffixText.setText(bundle.getString("searchDoneSuffix"));
+        timeUsedLabelText.setText("");
+        timeUsedText.setText("");
+        timeUnitText.setText("");
     }
 
     private void setNotInSearchingUi(boolean normalFinish) {

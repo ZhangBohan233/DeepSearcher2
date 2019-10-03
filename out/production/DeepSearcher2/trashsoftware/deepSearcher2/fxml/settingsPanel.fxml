@@ -31,9 +31,9 @@
     <ScrollPane fx:id="contentPane" GridPane.columnIndex="1"/>
 
     <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="10" alignment="CENTER_RIGHT">
-        <Button text="%ok"/>
-        <Button text="%cancel"/>
-        <Button text="%apply"/>
+        <Button fx:id="okButton" text="%ok"/>
+        <Button fx:id="cancelButton" text="%cancel"/>
+        <Button fx:id="applyButton" text="%apply" disable="true"/>
     </HBox>
 
 </GridPane>

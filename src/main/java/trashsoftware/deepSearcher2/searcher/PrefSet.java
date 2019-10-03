@@ -5,6 +5,9 @@ import java.util.List;
 
 public class PrefSet {
 
+    public static final int NATIVE_ALGORITHM = 0;
+    public static final int NAIVE_ALGORITHM = 1;
+
     private boolean matchAll;
     private List<File> searchDirs;
     private List<String> targets;
@@ -12,6 +15,9 @@ public class PrefSet {
     private boolean dirName;
     private boolean matchCase;
     private boolean includeDirName;
+    private boolean matchRegex;
+    private boolean matchWord;
+    private int matchingAlgorithm;
     private List<String> extensions;  // null if not searching content
 
     public static class PrefSetBuilder {
@@ -40,6 +46,21 @@ public class PrefSet {
 
         public PrefSetBuilder searchDirName(boolean searchDirName) {
             prefSet.dirName = searchDirName;
+            return this;
+        }
+
+        public PrefSetBuilder matchWord(boolean matchWord) {
+            prefSet.matchWord = matchWord;
+            return this;
+        }
+
+        public PrefSetBuilder matchRegex(boolean matchRegex) {
+            prefSet.matchRegex = matchRegex;
+            return this;
+        }
+
+        public PrefSetBuilder setMatchingAlgorithm(int matchingAlgorithm) {
+            prefSet.matchingAlgorithm = matchingAlgorithm;
             return this;
         }
 
@@ -111,5 +132,17 @@ public class PrefSet {
 
     boolean isIncludeDirName() {
         return includeDirName;
+    }
+
+    boolean isMatchRegex() {
+        return matchRegex;
+    }
+
+    boolean isMatchWord() {
+        return matchWord;
+    }
+
+    int getMatchingAlgorithm() {
+        return matchingAlgorithm;
     }
 }

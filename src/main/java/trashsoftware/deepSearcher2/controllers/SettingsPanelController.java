@@ -4,10 +4,13 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.GeneralPage;
+import trashsoftware.deepSearcher2.controllers.settingsPages.Page;
 import trashsoftware.deepSearcher2.controllers.settingsPages.SettingsMainPage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.SettingsPage;
 import trashsoftware.deepSearcher2.items.SettingsItem;
@@ -24,9 +27,13 @@ public class SettingsPanelController implements Initializable {
     @FXML
     ScrollPane contentPane;
 
+    @FXML
+    Button okButton, cancelButton, applyButton;
+
+    private Stage thisStage;
     private ResourceBundle bundle;
 
-    private SettingsPage generalPage;
+    private GeneralPage generalPage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -36,6 +43,19 @@ public class SettingsPanelController implements Initializable {
         setUpItems();
 
         contentPane.setFitToWidth(true);
+    }
+
+    void setStage(Stage stage) {
+        this.thisStage = stage;
+    }
+
+    @FXML
+    void cancelAction() {
+        closeWindow();
+    }
+
+    private void closeWindow() {
+        thisStage.close();
     }
 
     private void setUpItems() {
@@ -61,7 +81,21 @@ public class SettingsPanelController implements Initializable {
                 });
     }
 
-    private void showPage(SettingsPage page) {
+    private void showPage(Page page) {
+        if (page instanceof SettingsPage) {
+            SettingsPage settingsPage = (SettingsPage) page;
+            ((SettingsPage) page).setApplyButtonStatusChanger(applyButton);
+            applyButton.setOnAction(e -> {
+                settingsPage.saveChanges();
+                applyButton.setDisable(true);
+            });
+            okButton.setOnAction(e -> {
+                settingsPage.saveChanges();
+                closeWindow();
+            });
+        } else {
+            applyButton.setDisable(true);
+        }
         contentPane.setContent(page);
     }
 
