@@ -9,4 +9,5 @@
 <fx:root type="VBox" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
     <Hyperlink text="%general" onAction="#toGeneralPage"/>
+    <Hyperlink text="%advancedSearching" onAction="#toAdvancedSearchingPage"/>
 </fx:root>

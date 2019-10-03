@@ -17,6 +17,11 @@ public class Configs {
         }
     }
 
+    public static String getCurrentSearchingAlgorithm() {
+        String savedAlg = Configs.getConfig("alg");
+        return Objects.requireNonNullElse(savedAlg, "algNative");
+    }
+
     public static List<NamedLocale> getAllLocales() {
         List<NamedLocale> locales = new ArrayList<>();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.Languages");

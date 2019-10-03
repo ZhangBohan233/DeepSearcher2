@@ -271,7 +271,7 @@ public class MainViewController implements Initializable {
                     .matchCase(matchCaseBox.isSelected())
                     .matchWord(matchWordBox.isSelected())
                     .matchRegex(matchRegexBox.isSelected())
-                    .setMatchingAlgorithm(PrefSet.NAIVE_ALGORITHM)
+                    .setMatchingAlgorithm(Configs.getCurrentSearchingAlgorithm())
                     .setTargets(getTargets())
                     .setSearchDirs(dirList.getItems())
                     .setExtensions(getExtensions())

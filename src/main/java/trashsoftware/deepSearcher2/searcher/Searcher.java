@@ -104,9 +104,9 @@ public class Searcher {
     }
 
     private StringMatcher createMatcher(String string) {
-        if (prefSet.getMatchingAlgorithm() == PrefSet.NATIVE_ALGORITHM) {
+        if (prefSet.getMatchingAlgorithm().equals("algNative")) {
             return new NativeMatcher(string);
-        } else if (prefSet.getMatchingAlgorithm() == PrefSet.NAIVE_ALGORITHM) {
+        } else if (prefSet.getMatchingAlgorithm().equals("algNaive")) {
             return new NaiveMatcher(string);
         } else {
             throw new RuntimeException("Not a valid matching algorithm");

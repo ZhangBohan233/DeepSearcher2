@@ -26,4 +26,9 @@ public class SettingsMainPage extends Page {
     public void toGeneralPage() {
         parent.toGeneralPage();
     }
+
+    @FXML
+    public void toAdvancedSearchingPage() {
+        parent.toAdvanceSearchingPage();
+    }
 }

@@ -9,10 +9,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
-import trashsoftware.deepSearcher2.controllers.settingsPages.GeneralPage;
-import trashsoftware.deepSearcher2.controllers.settingsPages.Page;
-import trashsoftware.deepSearcher2.controllers.settingsPages.SettingsMainPage;
-import trashsoftware.deepSearcher2.controllers.settingsPages.SettingsPage;
+import trashsoftware.deepSearcher2.controllers.settingsPages.*;
 import trashsoftware.deepSearcher2.items.SettingsItem;
 
 import java.io.IOException;
@@ -34,6 +31,7 @@ public class SettingsPanelController implements Initializable {
     private ResourceBundle bundle;
 
     private GeneralPage generalPage;
+    private AdvancedSearchingPage advancedSearchingPage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,8 +64,12 @@ public class SettingsPanelController implements Initializable {
             root.setValue(new SettingsItem(bundle.getString("settings"), smp));
 
             generalPage = new GeneralPage(bundle);
-            root.getChildren().add(new TreeItem<>(new SettingsItem(bundle.getString("general"), generalPage)));
+            root.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("general"), generalPage)));
 
+            advancedSearchingPage = new AdvancedSearchingPage(bundle);
+            root.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("advancedSearching"), advancedSearchingPage)));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -101,5 +103,9 @@ public class SettingsPanelController implements Initializable {
 
     public void toGeneralPage() {
         showPage(generalPage);
+    }
+
+    public void toAdvanceSearchingPage() {
+        showPage(advancedSearchingPage);
     }
 }
