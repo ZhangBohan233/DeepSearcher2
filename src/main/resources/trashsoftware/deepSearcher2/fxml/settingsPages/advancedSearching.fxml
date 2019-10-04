@@ -18,4 +18,10 @@
     <Label text="%matchingAlgorithm"/>
     <ComboBox fx:id="algorithmBox"/>
 
+    <Label text="%wordMatchingAlgorithm"/>
+    <ComboBox fx:id="wordAlgorithmBox"/>
+
+    <Label text="%regexMatchingAlgorithm"/>
+    <ComboBox fx:id="regexAlgorithmBox"/>
+
 </fx:root>

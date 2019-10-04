@@ -131,7 +131,7 @@
 
         <TableView fx:id="resultTable" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
             <columns>
-                <TableColumn text="%fileName" minWidth="360"/>
+                <TableColumn fx:id="fileNameCol" text="%fileName" minWidth="360"/>
                 <TableColumn text="%size" minWidth="100"/>
                 <TableColumn text="%fileType" minWidth="180"/>
                 <TableColumn text="%matchMode" minWidth="100"/>

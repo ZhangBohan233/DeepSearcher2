@@ -20,12 +20,16 @@ public class FormatItem {
     }
 
     @FXML
-    public String getExtension() {
-        return extension;
+    public String getDottedExtension() {
+        return "." + extension;
     }
 
     @FXML
     public CheckBox getCheckBox() {
         return checkBox;
+    }
+
+    public String getExtension() {
+        return extension;
     }
 }

@@ -22,6 +22,16 @@ public class Configs {
         return Objects.requireNonNullElse(savedAlg, "algNative");
     }
 
+    public static String getCurrentWordSearchingAlgorithm() {
+        String savedAlg = Configs.getConfig("wordAlg");
+        return Objects.requireNonNullElse(savedAlg, "algNative");
+    }
+
+    public static String getCurrentRegexSearchingAlgorithm() {
+        String savedAlg = Configs.getConfig("regexAlg");
+        return Objects.requireNonNullElse(savedAlg, "algNative");
+    }
+
     public static List<NamedLocale> getAllLocales() {
         List<NamedLocale> locales = new ArrayList<>();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.Languages");

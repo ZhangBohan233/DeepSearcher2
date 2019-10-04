@@ -11,6 +11,7 @@ import trashsoftware.deepSearcher2.util.NamedLocale;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class GeneralPage extends SettingsPage {
@@ -27,23 +28,19 @@ public class GeneralPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
+        addControls(languageBox);
 
         this.bundle = bundle;
-
         initLanguageBox();
     }
 
     @Override
     public void saveChanges() {
-        NamedLocale selectedLocale = languageBox.getSelectionModel().getSelectedItem();
-        Configs.writeConfig("locale", selectedLocale.getConfigValue());
-    }
-
-    @Override
-    public void setApplyButtonStatusChanger(Button applyButton) {
-        languageBox.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> {
-            if (number.intValue() != t1.intValue()) applyButton.setDisable(false);
-        });
+        if (statusSaver.hasChanged(languageBox)) {
+            NamedLocale selectedLocale = languageBox.getSelectionModel().getSelectedItem();
+            Configs.writeConfig("locale", selectedLocale.getConfigValue());
+            statusSaver.store(languageBox);
+        }
     }
 
     private void initLanguageBox() {
@@ -54,5 +51,6 @@ public class GeneralPage extends SettingsPage {
                 languageBox.getSelectionModel().selectLast();
             }
         }
+        statusSaver.store(languageBox);
     }
 }

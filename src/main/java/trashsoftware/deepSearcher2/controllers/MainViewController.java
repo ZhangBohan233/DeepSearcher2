@@ -2,6 +2,7 @@ package trashsoftware.deepSearcher2.controllers;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.event.EventHandler;
@@ -16,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
 import trashsoftware.deepSearcher2.items.FormatItem;
 import trashsoftware.deepSearcher2.items.ResultItem;
@@ -29,15 +31,15 @@ import trashsoftware.deepSearcher2.util.Util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainViewController implements Initializable {
 
     @FXML
     TableView<ResultItem> resultTable;
+
+    @FXML
+    TableColumn<ResultItem, String> fileNameCol;
 
     @FXML
     TableView<FormatItem> formatTable;
@@ -94,6 +96,7 @@ public class MainViewController implements Initializable {
         bundle = resourceBundle;
 
         setResultTableFactory();
+        addFileNameColumnHoverListener();
         setFormatTableFactory();
         addDirListListener();
         addTargetListListener();
@@ -173,7 +176,6 @@ public class MainViewController implements Initializable {
     // Factories and listeners
 
     private void setResultTableFactory() {
-        TableColumn<ResultItem, ?> fileNameCol = resultTable.getColumns().get(0);
         TableColumn<ResultItem, ?> fileSizeCol = resultTable.getColumns().get(1);
         TableColumn<ResultItem, ?> fileTypeCol = resultTable.getColumns().get(2);
         TableColumn<ResultItem, ?> matchModeCol = resultTable.getColumns().get(3);
@@ -191,7 +193,42 @@ public class MainViewController implements Initializable {
 
         checkCol.setCellValueFactory(new PropertyValueFactory<>("CheckBox"));
         descriptionCol.setCellValueFactory(new PropertyValueFactory<>("Description"));
-        extCol.setCellValueFactory(new PropertyValueFactory<>("Extension"));
+        extCol.setCellValueFactory(new PropertyValueFactory<>("DottedExtension"));
+    }
+
+    private void addFileNameColumnHoverListener() {
+        fileNameCol.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<ResultItem, String> call(TableColumn<ResultItem, String> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setText(null);
+                        } else {
+                            setText(item);
+
+                            hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
+                                                         Boolean isNowHovered) -> {
+                                if (isNowHovered && !isEmpty()) {
+                                    Tooltip tp = new Tooltip();
+                                    tp.setText(getText());
+
+                                    resultTable.setTooltip(tp);
+                                } else {
+                                    resultTable.setTooltip(null);
+                                }
+                            });
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    private void addResultTableClickListeners() {
+
     }
 
     private void addDirListListener() {
@@ -242,7 +279,7 @@ public class MainViewController implements Initializable {
         Enumeration<String> keys = fileTypeBundle.getKeys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
-            FormatItem formatItem = new FormatItem("." + key, fileTypeBundle.getString(key));
+            FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
             formatTable.getItems().add(formatItem);
         }
     }
@@ -271,7 +308,6 @@ public class MainViewController implements Initializable {
                     .matchCase(matchCaseBox.isSelected())
                     .matchWord(matchWordBox.isSelected())
                     .matchRegex(matchRegexBox.isSelected())
-                    .setMatchingAlgorithm(Configs.getCurrentSearchingAlgorithm())
                     .setTargets(getTargets())
                     .setSearchDirs(dirList.getItems())
                     .setExtensions(getExtensions())
@@ -355,6 +391,14 @@ public class MainViewController implements Initializable {
         });
     }
 
+    private void openFile() {
+
+    }
+
+    private void openFolder() {
+
+    }
+
     private List<String> getTargets() {
         List<String> list = new ArrayList<>();
         for (Node node : searchItemsList.getTextFields()) {
@@ -364,17 +408,17 @@ public class MainViewController implements Initializable {
     }
 
     /**
-     * @return the list of all selected file extensions if "search content" is selected, {@code null} otherwise.
+     * @return the set of all selected file extensions if "search content" is selected, {@code null} otherwise.
      */
-    private List<String> getExtensions() {
+    private Set<String> getExtensions() {
         if (searchContentBox.isSelected()) {
-            List<String> list = new ArrayList<>();
+            Set<String> set = new HashSet<>();
             for (FormatItem formatItem : formatTable.getItems()) {
                 if (formatItem.getCheckBox().isSelected()) {
-                    list.add(formatItem.getExtension());
+                    set.add(formatItem.getExtension());
                 }
             }
-            return list;
+            return set;
         } else
             return null;
     }

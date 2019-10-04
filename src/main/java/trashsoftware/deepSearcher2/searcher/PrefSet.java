@@ -1,9 +1,16 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import trashsoftware.deepSearcher2.util.Configs;
+
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 public class PrefSet {
+
+    static final int NORMAL = 0;
+    static final int WORD = 1;
+    static final int REGEX = 2;
 
     private boolean matchAll;
     private List<File> searchDirs;
@@ -14,8 +21,7 @@ public class PrefSet {
     private boolean includeDirName;
     private boolean matchRegex;
     private boolean matchWord;
-    private String matchingAlgorithm;
-    private List<String> extensions;  // null if not searching content
+    private Set<String> extensions;  // null if not searching content
 
     public static class PrefSetBuilder {
 
@@ -56,11 +62,6 @@ public class PrefSet {
             return this;
         }
 
-        public PrefSetBuilder setMatchingAlgorithm(String matchingAlgorithm) {
-            prefSet.matchingAlgorithm = matchingAlgorithm;
-            return this;
-        }
-
         public PrefSetBuilder setSearchDirs(List<File> searchDirs) {
             prefSet.searchDirs = searchDirs;
             return this;
@@ -71,7 +72,7 @@ public class PrefSet {
             return this;
         }
 
-        public PrefSetBuilder setExtensions(List<String> extensions) {
+        public PrefSetBuilder setExtensions(Set<String> extensions) {
             prefSet.extensions = extensions;
             return this;
         }
@@ -103,7 +104,7 @@ public class PrefSet {
         return searchDirs;
     }
 
-    List<String> getExtensions() {
+    Set<String> getExtensions() {
         return extensions;
     }
 
@@ -131,15 +132,21 @@ public class PrefSet {
         return includeDirName;
     }
 
-    boolean isMatchRegex() {
-        return matchRegex;
-    }
-
-    boolean isMatchWord() {
-        return matchWord;
+    int getMatchMode() {
+        if (matchWord) return WORD;
+        else if (matchRegex) return REGEX;
+        else return NORMAL;
     }
 
     String getMatchingAlgorithm() {
-        return matchingAlgorithm;
+        return Configs.getCurrentSearchingAlgorithm();
+    }
+
+    String getWordMatchingAlgorithm() {
+        return Configs.getCurrentWordSearchingAlgorithm();
+    }
+
+    String getRegexAlgorithm() {
+        return Configs.getCurrentRegexSearchingAlgorithm();
     }
 }

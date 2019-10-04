@@ -32,7 +32,7 @@
 
     <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="10" alignment="CENTER_RIGHT">
         <Button fx:id="okButton" text="%ok"/>
-        <Button fx:id="cancelButton" text="%cancel"/>
+        <Button fx:id="cancelButton" text="%cancel" onAction="#cancelAction"/>
         <Button fx:id="applyButton" text="%apply" disable="true"/>
     </HBox>
 

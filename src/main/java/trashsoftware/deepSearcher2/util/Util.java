@@ -10,8 +10,8 @@ public class Util {
      * @param size the size to be converted
      * @return the readable {@code String}
      */
-    public static String sizeToReadable(long size) {
-        if (size < Math.pow(2, 10)) return numToReadable((int) size) + " Bytes";
+    public static String sizeToReadable(long size, String bytesString) {
+        if (size < Math.pow(2, 10)) return numToReadable((int) size) + " " + bytesString;
         else if (size < Math.pow(2, 20)) return numToReadable((double) size / 1024 + 1) + " KB";
         else if (size < Math.pow(2, 30)) return numToReadable((double) size / 1048576 + 1) + " MB";
         else return numToReadable((double) size / 1073741824 + 1) + "GB";
@@ -21,19 +21,18 @@ public class Util {
         return String.format("%,d", number);
     }
 
+    /**
+     * Returns the extension (suffix name) of a file's name.
+     *
+     * @param fileName the file's name
+     * @return the extension (suffix name) of a file's name, in lower case.
+     */
+    public static String getFileExtension(String fileName) {
+        int extIndex = fileName.lastIndexOf(".");
+        return extIndex == -1 ? "" : fileName.substring(extIndex + 1).toLowerCase();
+    }
+
     private static String numToReadable(double num) {
-        if (num >= 1048576) throw new IndexOutOfBoundsException("Number Too large");
-        int decimalNum = (int) num;
-        String decimal = String.valueOf(decimalNum);
-        double fractionalNum = (double) Math.round((num - decimalNum) * 1000) / 1000;
-        String fractional = String.valueOf(fractionalNum);
-        String decimalWithComma;
-        if (decimal.length() <= 3) decimalWithComma = decimal;
-        else {
-            int split = decimal.length() - 3;
-            decimalWithComma = decimal.substring(0, split) + "," + decimal.substring(split);
-        }
-        if (fractionalNum == 0) return decimalWithComma;
-        else return decimalWithComma + "." + fractional.substring(2);
+        return num == (int) num ? String.format("%,d", (int) num) : String.format("%,.2f", num);
     }
 }

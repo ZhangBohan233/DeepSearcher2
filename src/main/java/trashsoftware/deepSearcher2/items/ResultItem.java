@@ -8,24 +8,29 @@ import java.util.ResourceBundle;
 
 public class ResultItem {
 
-    public static final int MATCH_NAME = 1;
-    public static final int MATCH_CONTENT = 2;
+//    public static final int MATCH_NAME = 1;
+//    public static final int MATCH_CONTENT = 2;
 
     private File file;
-    private int[] matchModes = new int[2];
+    private boolean[] matchModes;
 
     private ResourceBundle bundle;
     private ResourceBundle fileTypeBundle;
 
-    public ResultItem(File file, int firstMatchMode, ResourceBundle bundle, ResourceBundle fileTypeBundle) {
+    public ResultItem(File file, boolean matchName, boolean matchContent,
+                      ResourceBundle bundle, ResourceBundle fileTypeBundle) {
         this.file = file;
-        this.matchModes[0] = firstMatchMode;
+        this.matchModes = new boolean[]{matchName, matchContent};
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
     }
 
-    public void addMatchMode(int secondMatchMode) {
-        this.matchModes[1] = secondMatchMode;
+    public void addMatchContent() {
+        this.matchModes[1] = true;
+    }
+
+    public boolean isSameFileAs(File file) {
+        return file.equals(this.file);
     }
 
     @FXML
@@ -35,23 +40,31 @@ public class ResultItem {
 
     @FXML
     public String getMode() {
-        return "12";
+        if (matchModes[0]) {
+            if (matchModes[1]) {
+                return bundle.getString("matchedName") + ", " + bundle.getString("matchedContent");
+            } else {
+                return bundle.getString("matchedName");
+            }
+        } else if (matchModes[1]) {
+            return bundle.getString("matchedContent");
+        } else {
+            throw new RuntimeException("Result that does not match any could not be here, must be a bug");
+        }
     }
 
     @FXML
     public String getSize() {
-        return Util.sizeToReadable(file.length());
+        return Util.sizeToReadable(file.length(), bundle.getString("bytes"));
     }
 
     @FXML
     public String getType() {
         String name = file.getName();
-        int extIndex = name.lastIndexOf(".");
-        if (extIndex == -1) {
+        String ext = Util.getFileExtension(name);
+        if (ext.equals("")) {
             return bundle.getString("file");
-        }
-        String ext = name.substring(extIndex + 1).toLowerCase();
-        if (fileTypeBundle.containsKey(ext)) {
+        } else if (fileTypeBundle.containsKey(ext)) {
             return fileTypeBundle.getString(ext);
         } else {
             return ext.toUpperCase() + " " + bundle.getString("file");
