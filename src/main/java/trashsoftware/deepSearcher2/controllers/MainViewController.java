@@ -13,7 +13,12 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -28,10 +33,12 @@ import trashsoftware.deepSearcher2.searcher.Searcher;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.Util;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 
 public class MainViewController implements Initializable {
 
@@ -90,6 +97,7 @@ public class MainViewController implements Initializable {
     private ChangeListener<Number> fileCountListener;
 
     private boolean showingSelectAll = true;
+    private ContextMenu activeContextMenu;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -97,6 +105,7 @@ public class MainViewController implements Initializable {
 
         setResultTableFactory();
         addFileNameColumnHoverListener();
+        addResultTableClickListeners();
         setFormatTableFactory();
         addDirListListener();
         addTargetListListener();
@@ -228,7 +237,40 @@ public class MainViewController implements Initializable {
     }
 
     private void addResultTableClickListeners() {
+        resultTable.setRowFactory(new Callback<>() {
+            @Override
+            public TableRow<ResultItem> call(TableView<ResultItem> resultItemTableView) {
+                return new TableRow<>() {
+                    @Override
+                    protected void updateItem(ResultItem resultItem, boolean b) {
+                        super.updateItem(resultItem, b);
 
+                        setOnMouseClicked(mouseEvent -> {
+                            File file = resultItem.getFile();
+                            if (activeContextMenu != null) {
+                                activeContextMenu.hide();
+                            }
+                            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                                // left button double clicked
+                                openFile(file);
+                                return;
+                            }
+                            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                                activeContextMenu = new ContextMenu();
+                                String openFileText = file.isDirectory() ?
+                                        bundle.getString("openFolder") : bundle.getString("openFile");
+                                MenuItem openFile = new MenuItem(openFileText);
+                                openFile.setOnAction(e -> MainViewController.this.openFile(file));
+                                MenuItem openLocation = new MenuItem(bundle.getString("openLocation"));
+                                openLocation.setOnAction(e -> MainViewController.this.openLocation(file));
+                                activeContextMenu.getItems().addAll(openFile, openLocation);
+                                activeContextMenu.show(resultTable, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+                            }
+                        });
+                    }
+                };
+            }
+        });
     }
 
     private void addDirListListener() {
@@ -391,12 +433,20 @@ public class MainViewController implements Initializable {
         });
     }
 
-    private void openFile() {
-
+    private void openFile(File file) {
+        try {
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void openFolder() {
-
+    private void openLocation(File childFile) {
+        try {
+            Desktop.getDesktop().open(childFile.getParentFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<String> getTargets() {

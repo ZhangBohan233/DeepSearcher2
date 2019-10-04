@@ -70,4 +70,8 @@ public class ResultItem {
             return ext.toUpperCase() + " " + bundle.getString("file");
         }
     }
+
+    public File getFile() {
+        return file;
+    }
 }

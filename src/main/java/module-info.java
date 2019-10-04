@@ -1,6 +1,7 @@
 module DeepSearcher {
     requires javafx.fxml;
     requires javafx.controls;
+    requires java.desktop;
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.items;
