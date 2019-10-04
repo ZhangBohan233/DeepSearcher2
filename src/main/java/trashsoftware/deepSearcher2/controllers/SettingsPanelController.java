@@ -4,10 +4,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.*;
 import trashsoftware.deepSearcher2.items.SettingsItem;
@@ -29,9 +27,6 @@ public class SettingsPanelController implements Initializable {
 
     private Stage thisStage;
     private ResourceBundle bundle;
-
-    private GeneralPage generalPage;
-    private AdvancedSearchingPage advancedSearchingPage;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -60,15 +55,25 @@ public class SettingsPanelController implements Initializable {
         TreeItem<SettingsItem> root = new TreeItem<>();
 
         try {
-            SettingsMainPage smp = new SettingsMainPage(bundle, this);
-            root.setValue(new SettingsItem(bundle.getString("settings"), smp));
+            NavigatorPage mainPage = new NavigatorPage();
+            root.setValue(new SettingsItem(bundle.getString("settings"), mainPage));
 
-            generalPage = new GeneralPage(bundle);
+            GeneralPage generalPage = new GeneralPage();
             root.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("general"), generalPage)));
 
-            advancedSearchingPage = new AdvancedSearchingPage(bundle);
-            root.getChildren().add(new TreeItem<>(
+            TreeItem<SettingsItem> searchingRoot = new TreeItem<>();
+            NavigatorPage searchingMainPage = new NavigatorPage();
+            searchingRoot.setValue(new SettingsItem(bundle.getString("searchSettings"), searchingMainPage));
+            root.getChildren().add(searchingRoot);
+
+            ExclusionPage exclusionPage = new ExclusionPage();
+            searchingRoot.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("exclusions"), exclusionPage)
+            ));
+
+            AdvancedSearchingPage advancedSearchingPage = new AdvancedSearchingPage();
+            searchingRoot.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("advancedSearching"), advancedSearchingPage)));
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -79,33 +84,36 @@ public class SettingsPanelController implements Initializable {
     private void setTreeViewListener() {
         treeView.getSelectionModel().selectedItemProperty()
                 .addListener((observableValue, settingsItemTreeItem, t1) -> {
-                    showPage(t1.getValue().getPage());
+                    Page page = t1.getValue().getPage();
+                    if (page instanceof SettingsPage) {
+                        showPage((SettingsPage) page);
+                    } else if (page instanceof NavigatorPage) {
+                        showNavigatorPage(t1);
+                    }
                 });
     }
 
-    private void showPage(Page page) {
-        if (page instanceof SettingsPage) {
-            SettingsPage settingsPage = (SettingsPage) page;
-            ((SettingsPage) page).setApplyButtonStatusChanger(applyButton);
-            applyButton.setOnAction(e -> {
-                settingsPage.saveChanges();
-                applyButton.setDisable(true);
-            });
-            okButton.setOnAction(e -> {
-                settingsPage.saveChanges();
-                closeWindow();
-            });
-        } else {
-            applyButton.setDisable(true);
+    private void showNavigatorPage(TreeItem<SettingsItem> t1) {
+        VBox root = new VBox();
+        for (TreeItem<SettingsItem> treeItem : t1.getChildren()) {
+            Hyperlink link = new Hyperlink(treeItem.getValue().toString());
+            link.setOnAction(e -> treeView.getSelectionModel().select(treeItem));
+            root.getChildren().add(link);
         }
-        contentPane.setContent(page);
+        contentPane.setContent(root);
     }
 
-    public void toGeneralPage() {
-        showPage(generalPage);
-    }
+    private void showPage(SettingsPage settingsPage) {
+        settingsPage.setApplyButtonStatusChanger(applyButton);
+        applyButton.setOnAction(e -> {
+            settingsPage.saveChanges();
+            applyButton.setDisable(true);
+        });
+        okButton.setOnAction(e -> {
+            settingsPage.saveChanges();
+            closeWindow();
+        });
 
-    public void toAdvanceSearchingPage() {
-        showPage(advancedSearchingPage);
+        contentPane.setContent(settingsPage);
     }
 }

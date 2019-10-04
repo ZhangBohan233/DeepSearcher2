@@ -3,6 +3,7 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
+import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
@@ -13,18 +14,15 @@ public class AdvancedSearchingPage extends SettingsPage {
     @FXML
     ComboBox<AlgorithmBundle> algorithmBox, wordAlgorithmBox, regexAlgorithmBox;
 
-    private ResourceBundle bundle;
-
-    public AdvancedSearchingPage(ResourceBundle bundle) throws IOException {
+    public AdvancedSearchingPage() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml"), bundle);
+                .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml"),
+                Main.getBundle());
         loader.setRoot(this);
         loader.setController(this);
 
         loader.load();
         addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox);
-
-        this.bundle = bundle;
 
         initAlgorithmBoxes();
     }
@@ -46,30 +44,51 @@ public class AdvancedSearchingPage extends SettingsPage {
     }
 
     private void initAlgorithmBoxes() {
-        algorithmBox.getItems().addAll(
-                new AlgorithmBundle("algNative", bundle.getString("algNative")),
-                new AlgorithmBundle("algNaive", bundle.getString("algNaive"))
+//        algorithmBox.getItems().addAll(
+//                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
+//                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
+//        );
+//        String currentAlg = Configs.getCurrentSearchingAlgorithm();
+//        algorithmBox.getSelectionModel().select(new AlgorithmBundle(currentAlg, Main.getBundle().getString(currentAlg)));
+//        statusSaver.store(algorithmBox);
+//
+//        wordAlgorithmBox.getItems().addAll(
+//                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
+//                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
+//        );
+//        String currentWordAlg = Configs.getCurrentWordSearchingAlgorithm();
+//        wordAlgorithmBox.getSelectionModel().select(
+//                new AlgorithmBundle(currentWordAlg, Main.getBundle().getString(currentWordAlg)));
+//        statusSaver.store(wordAlgorithmBox);
+//
+//        regexAlgorithmBox.getItems().addAll(
+//                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative"))
+//        );
+//        String currentRegexAlg = Configs.getCurrentRegexSearchingAlgorithm();
+//        regexAlgorithmBox.getSelectionModel().select(
+//                new AlgorithmBundle(currentRegexAlg, Main.getBundle().getString(currentRegexAlg)));
+//        statusSaver.store(regexAlgorithmBox);
+        setAlgorithmBox(algorithmBox, Configs.getCurrentSearchingAlgorithm(),
+                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
+                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
         );
-        String currentAlg = Configs.getCurrentSearchingAlgorithm();
-        algorithmBox.getSelectionModel().select(new AlgorithmBundle(currentAlg, bundle.getString(currentAlg)));
+
+        setAlgorithmBox(wordAlgorithmBox, Configs.getCurrentWordSearchingAlgorithm(),
+                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
+                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
+        );
+
+        setAlgorithmBox(regexAlgorithmBox, Configs.getCurrentRegexSearchingAlgorithm(),
+                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative"))
+        );
+    }
+
+    private void setAlgorithmBox(ComboBox<AlgorithmBundle> algorithmBox, String currentAlg,
+                                 AlgorithmBundle... algorithmBundles) {
+        algorithmBox.getItems().addAll(algorithmBundles);
+        algorithmBox.getSelectionModel().select(
+                new AlgorithmBundle(currentAlg, Main.getBundle().getString(currentAlg)));
         statusSaver.store(algorithmBox);
-
-        wordAlgorithmBox.getItems().addAll(
-                new AlgorithmBundle("algNative", bundle.getString("algNative")),
-                new AlgorithmBundle("algNaive", bundle.getString("algNaive"))
-        );
-        String currentWordAlg = Configs.getCurrentWordSearchingAlgorithm();
-        wordAlgorithmBox.getSelectionModel().select(
-                new AlgorithmBundle(currentWordAlg, bundle.getString(currentWordAlg)));
-        statusSaver.store(wordAlgorithmBox);
-
-        regexAlgorithmBox.getItems().addAll(
-                new AlgorithmBundle("algNative", bundle.getString("algNative"))
-        );
-        String currentRegexAlg = Configs.getCurrentRegexSearchingAlgorithm();
-        regexAlgorithmBox.getSelectionModel().select(
-                new AlgorithmBundle(currentRegexAlg, bundle.getString(currentRegexAlg)));
-        statusSaver.store(regexAlgorithmBox);
     }
 
     private static class AlgorithmBundle {

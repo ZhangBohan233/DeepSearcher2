@@ -11,9 +11,11 @@ import java.util.ResourceBundle;
 
 public class Main extends Application {
 
+    private static ResourceBundle bundle;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ResourceBundle bundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.LangBundle",
+        bundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.LangBundle",
                 Configs.getCurrentLocale());
         Parent root = FXMLLoader.load(
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/mainView.fxml"), bundle);
@@ -22,6 +24,9 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    public static ResourceBundle getBundle() {
+        return bundle;
+    }
 
     public static void main(String[] args) {
         launch(args);

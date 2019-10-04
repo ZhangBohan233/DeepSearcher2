@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/ExclusionPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/NavigatorPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/settingsPages/exclusion.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/module-info.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/module-info.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/bundles/LangBundle_en_US.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/bundles/LangBundle_en_US.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/bundles/LangBundle_zh_CN.properties" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/bundles/LangBundle_zh_CN.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController$1$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController$1$1.class" afterDir="false" />
@@ -12,12 +14,29 @@
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController$SearchService$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController$SearchService$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController$SearchService.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController$SearchService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/MainViewController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/SettingsPanelController.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/SettingsPanelController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/AdvancedSearchingPage$AlgorithmBundle.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/AdvancedSearchingPage$AlgorithmBundle.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/AdvancedSearchingPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/AdvancedSearchingPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/GeneralPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/GeneralPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/SettingsMainPage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/SettingsPage.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/controllers/settingsPages/SettingsPage.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/fxml/settingsPages/settings.fxml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/items/ResultItem.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/DeepSearcher2/trashsoftware/deepSearcher2/items/ResultItem.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/MainViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/MainViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/SettingsPanelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/SettingsPanelController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/AdvancedSearchingPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/AdvancedSearchingPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/GeneralPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/GeneralPage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/SettingsMainPage.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/SettingsPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/settingsPages/SettingsPage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/items/ResultItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/items/ResultItem.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_en_US.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_en_US.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_zh_CN.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_zh_CN.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/settingsPages/settings.fxml" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -75,9 +94,9 @@
         <option value="module-info" />
         <option value="XML Properties File" />
         <option value="Interface" />
+        <option value="XSLT Stylesheet" />
         <option value="FxmlFile" />
         <option value="Class" />
-        <option value="XSLT Stylesheet" />
       </list>
     </option>
   </component>
@@ -116,7 +135,7 @@
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
-    <property name="settings.editor.selected.configurable" value="preferences.editor" />
+    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -266,6 +285,7 @@
       <workItem from="1570135285316" duration="15510000" />
       <workItem from="1570164865519" duration="4129000" />
       <workItem from="1570169196619" duration="1743000" />
+      <workItem from="1570211016910" duration="6326000" />
     </task>
     <servers />
   </component>

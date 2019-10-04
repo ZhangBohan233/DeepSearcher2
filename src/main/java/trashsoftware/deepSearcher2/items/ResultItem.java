@@ -60,15 +60,12 @@ public class ResultItem {
 
     @FXML
     public String getType() {
+        if (file.isDirectory()) return bundle.getString("folder");
         String name = file.getName();
         String ext = Util.getFileExtension(name);
-        if (ext.equals("")) {
-            return bundle.getString("file");
-        } else if (fileTypeBundle.containsKey(ext)) {
-            return fileTypeBundle.getString(ext);
-        } else {
-            return ext.toUpperCase() + " " + bundle.getString("file");
-        }
+        if (ext.equals("")) return bundle.getString("file");
+        else if (fileTypeBundle.containsKey(ext)) return fileTypeBundle.getString(ext);
+        else return ext.toUpperCase() + " " + bundle.getString("file");
     }
 
     public File getFile() {

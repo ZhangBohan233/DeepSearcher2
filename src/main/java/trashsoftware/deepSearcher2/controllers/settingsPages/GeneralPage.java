@@ -4,33 +4,29 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.NamedLocale;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 public class GeneralPage extends SettingsPage {
 
     @FXML
     ComboBox<NamedLocale> languageBox;
 
-    private ResourceBundle bundle;
-
-    public GeneralPage(ResourceBundle bundle) throws IOException {
+    public GeneralPage() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml"), bundle);
+                .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml"),
+                Main.getBundle());
         loader.setRoot(this);
         loader.setController(this);
 
         loader.load();
         addControls(languageBox);
 
-        this.bundle = bundle;
         initLanguageBox();
     }
 
@@ -47,7 +43,7 @@ public class GeneralPage extends SettingsPage {
         List<NamedLocale> localeList = Configs.getAllLocales();
         for (NamedLocale locale : localeList) {
             languageBox.getItems().add(locale);
-            if (bundle.getLocale().equals(locale.getLocale())) {
+            if (Main.getBundle().getLocale().equals(locale.getLocale())) {
                 languageBox.getSelectionModel().selectLast();
             }
         }

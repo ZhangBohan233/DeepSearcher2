@@ -1,10 +1,12 @@
 package trashsoftware.deepSearcher2.controllers;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -97,7 +99,7 @@ public class MainViewController implements Initializable {
     private ChangeListener<Number> fileCountListener;
 
     private boolean showingSelectAll = true;
-    private ContextMenu activeContextMenu;
+//    private ContextMenu activeContextMenu;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -237,39 +239,60 @@ public class MainViewController implements Initializable {
     }
 
     private void addResultTableClickListeners() {
-        resultTable.setRowFactory(new Callback<>() {
-            @Override
-            public TableRow<ResultItem> call(TableView<ResultItem> resultItemTableView) {
-                return new TableRow<>() {
-                    @Override
-                    protected void updateItem(ResultItem resultItem, boolean b) {
-                        super.updateItem(resultItem, b);
+//        resultTable.setRowFactory(new Callback<>() {
+//            @Override
+//            public TableRow<ResultItem> call(TableView<ResultItem> resultItemTableView) {
+//                return new TableRow<>() {
+//                    @Override
+//                    protected void updateItem(ResultItem resultItem, boolean b) {
+//                        super.updateItem(resultItem, b);
+//
+//                        setOnMouseClicked(mouseEvent -> {
+//                            File file = resultItem.getFile();
+//                            if (activeContextMenu != null) {
+//                                activeContextMenu.hide();
+//                            }
+//                            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+//                                // left button double clicked
+//                                openFile(file);
+//                                return;
+//                            }
+//                            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+//                                activeContextMenu = new ContextMenu();
+//                                String openFileText = bundle.getString("openFile");
+//                                MenuItem openFile = new MenuItem(openFileText);
+//                                openFile.setOnAction(e -> MainViewController.this.openFile(file));
+//                                MenuItem openLocation = new MenuItem(bundle.getString("openFileLocation"));
+//                                openLocation.setOnAction(e -> MainViewController.this.openFile(file.getParentFile()));
+//                                activeContextMenu.getItems().addAll(openFile, openLocation);
+//                                activeContextMenu.show(resultTable, mouseEvent.getScreenX(), mouseEvent.getScreenY());
+//                            }
+//                        });
+//                    }
+//                };
+//            }
+//        });
 
-                        setOnMouseClicked(mouseEvent -> {
-                            File file = resultItem.getFile();
-                            if (activeContextMenu != null) {
-                                activeContextMenu.hide();
-                            }
-                            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-                                // left button double clicked
-                                openFile(file);
-                                return;
-                            }
-                            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-                                activeContextMenu = new ContextMenu();
-                                String openFileText = file.isDirectory() ?
-                                        bundle.getString("openFolder") : bundle.getString("openFile");
-                                MenuItem openFile = new MenuItem(openFileText);
-                                openFile.setOnAction(e -> MainViewController.this.openFile(file));
-                                MenuItem openLocation = new MenuItem(bundle.getString("openLocation"));
-                                openLocation.setOnAction(e -> MainViewController.this.openLocation(file));
-                                activeContextMenu.getItems().addAll(openFile, openLocation);
-                                activeContextMenu.show(resultTable, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-                            }
-                        });
-                    }
-                };
-            }
+        resultTable.setRowFactory(tableView -> {
+            final TableRow<ResultItem> row = new TableRow<>();
+            final ContextMenu contextMenu = new ContextMenu();
+            final MenuItem openFileMenu = new MenuItem(bundle.getString("openFile"));
+            final MenuItem openLocationMenu = new MenuItem(bundle.getString("openFileLocation"));
+            openFileMenu.setOnAction(event -> openFile(row.getItem().getFile()));
+            openLocationMenu.setOnAction(event -> openFile(row.getItem().getFile().getParentFile()));
+            contextMenu.getItems().addAll(openFileMenu, openLocationMenu);
+            // Set context menu on row, but use a binding to make it only show for non-empty rows:
+            row.setOnMouseClicked(mouseEvent -> {
+                if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                    openFile(row.getItem().getFile());
+                }
+            });
+            row.contextMenuProperty().bind(
+                    Bindings.when(row.emptyProperty())
+                            .then((ContextMenu) null)
+                            .otherwise(contextMenu)
+            );
+            return row;
         });
     }
 
@@ -436,14 +459,6 @@ public class MainViewController implements Initializable {
     private void openFile(File file) {
         try {
             Desktop.getDesktop().open(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openLocation(File childFile) {
-        try {
-            Desktop.getDesktop().open(childFile.getParentFile());
         } catch (IOException e) {
             e.printStackTrace();
         }

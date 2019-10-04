@@ -15,7 +15,17 @@ public abstract class SettingsPage extends Page {
 
     StatusSaver statusSaver = new StatusSaver();
 
+    /**
+     * Saves all stated changes to configuration file.
+     */
     public abstract void saveChanges();
+
+//    /**
+//     * Returns the title to be displayed on the main page of settings.
+//     *
+//     * @return the title to be displayed on the main page of settings
+//     */
+//    public abstract String getTitle();
 
     public void setApplyButtonStatusChanger(Button applyButton) {
         for (ComboBox comboBox : comboBoxes) {
@@ -32,7 +42,7 @@ public abstract class SettingsPage extends Page {
         }
     }
 
-    boolean isAnyStatusChanged() {
+    private boolean isAnyStatusChanged() {
         for (ComboBox comboBox : comboBoxes) {
             if (statusSaver.hasChanged(comboBox)) return true;
         }
