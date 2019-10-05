@@ -3,14 +3,11 @@ package trashsoftware.deepSearcher2.controllers.widgets;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 
@@ -29,7 +26,7 @@ public class TextFieldList extends ScrollPane {
 
     public TextFieldList() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/trashsoftware/deepSearcher2/fxml/textFieldList.fxml"));
+                .getResource("/trashsoftware/deepSearcher2/fxml/widgets/textFieldList.fxml"));
         loader.setRoot(this);
         loader.setController(this);
 

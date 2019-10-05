@@ -6,7 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -99,7 +98,6 @@ public class MainViewController implements Initializable {
     private ChangeListener<Number> fileCountListener;
 
     private boolean showingSelectAll = true;
-//    private ContextMenu activeContextMenu;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -111,11 +109,17 @@ public class MainViewController implements Initializable {
         setFormatTableFactory();
         addDirListListener();
         addTargetListListener();
+
+        addRadioButtonsListeners();
+        loadRadioButtonsInitialStatus();
+
         addCheckBoxesListeners();
+        loadSavedCheckBoxesStatus();
 
         addSearchItem();  // Add a default search field
 
         fillFormatTable();
+        restoreSavedFormats();
     }
 
     // Controls
@@ -123,8 +127,12 @@ public class MainViewController implements Initializable {
     @FXML
     void addSearchDir() {
         DirectoryChooser dc = new DirectoryChooser();
+        File lastOpenDir = getLastOpenedDir();
+        if (lastOpenDir != null)
+            dc.setInitialDirectory(getLastOpenedDir().getParentFile());
         File dir = dc.showDialog(null);
         if (dir != null) {
+            storeOpenedDir(dir);
             dirList.getItems().add(dir);
         }
     }
@@ -325,20 +333,74 @@ public class MainViewController implements Initializable {
                 formatTable.setDisable(true);
                 selectAllBox.setDisable(true);
             }
+            Configs.writePairedCache("searchContent", String.valueOf(t1));
         });
         matchWordBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (t1) {
                 matchRegexBox.setSelected(false);
             }
+            Configs.writePairedCache("matchWord", String.valueOf(t1));
         }));
         matchRegexBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (t1) {
                 matchWordBox.setSelected(false);
             }
+            Configs.writePairedCache("matchRegex", String.valueOf(t1));
         }));
+
+        addCheckBoxBasicListener(searchFileNameBox, "searchFileName");
+        addCheckBoxBasicListener(searchDirNameBox, "searchDirName");
+        addCheckBoxBasicListener(includeDirNameBox, "includePathName");
+        addCheckBoxBasicListener(matchCaseBox, "matchCase");
+    }
+
+    private void addRadioButtonsListeners() {
+        matchAllRadioBtn.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
+                Configs.writePairedCache("matchAll", String.valueOf(t1))));
     }
 
     // Helper functions
+
+    private void storeOpenedDir(File file) {
+        Configs.writePairedCache("lastOpenDir", file.getAbsolutePath());
+    }
+
+    private File getLastOpenedDir() {
+        String path = Configs.getPairedCache("lastOpenDir");
+        return path == null ? null : new File(path);
+    }
+
+    private void loadRadioButtonsInitialStatus() {
+        String value = Configs.getPairedCache("matchAll");
+        if (value != null) {
+            boolean isAll = Boolean.parseBoolean(value);
+            matchAllRadioBtn.setSelected(isAll);
+            matchAnyRadioBtn.setSelected(!isAll);
+        }
+    }
+
+    private void loadSavedCheckBoxesStatus() {
+        setBoxInitialStatus(searchFileNameBox, "searchFileName");
+        setBoxInitialStatus(searchDirNameBox, "searchDirName");
+        setBoxInitialStatus(searchContentBox, "searchContent");
+        setBoxInitialStatus(includeDirNameBox, "includePathName");
+        setBoxInitialStatus(matchCaseBox, "matchCase");
+        setBoxInitialStatus(matchWordBox, "matchWord");
+        setBoxInitialStatus(matchRegexBox, "matchRegex");
+    }
+
+    private void setBoxInitialStatus(CheckBox checkBox, String key) {
+        String value = Configs.getPairedCache(key);
+        if (value != null) {
+            boolean checked = Boolean.parseBoolean(value);
+            checkBox.setSelected(checked);
+        }
+    }
+
+    private void addCheckBoxBasicListener(CheckBox checkBox, String key) {
+        checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
+                Configs.writePairedCache(key, String.valueOf(t1))));
+    }
 
     private void fillFormatTable() {
         Enumeration<String> keys = fileTypeBundle.getKeys();
@@ -347,6 +409,13 @@ public class MainViewController implements Initializable {
             FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
             formatTable.getItems().add(formatItem);
         }
+    }
+
+    private void restoreSavedFormats() {
+        Set<String> savedFormats = Configs.getAllFormats();
+        for (FormatItem formatItem : formatTable.getItems())
+            if (savedFormats.contains(formatItem.getExtension()))
+                formatItem.getCheckBox().setSelected(true);
     }
 
     private void selectAllFormats() {

@@ -2,6 +2,7 @@ package trashsoftware.deepSearcher2.items;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
+import trashsoftware.deepSearcher2.util.Configs;
 
 public class FormatItem {
 
@@ -12,6 +13,15 @@ public class FormatItem {
     public FormatItem(String extension, String description) {
         this.extension = extension;
         this.description = description;
+
+        addCheckBoxListener();
+    }
+
+    private void addCheckBoxListener() {
+        checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            if (t1) Configs.addFormat(extension);
+            else Configs.removeFormat(extension);
+        }));
     }
 
     @FXML
