@@ -7,7 +7,6 @@ import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
 
 public class AdvancedSearchingPage extends SettingsPage {
 
@@ -44,42 +43,20 @@ public class AdvancedSearchingPage extends SettingsPage {
     }
 
     private void initAlgorithmBoxes() {
-//        algorithmBox.getItems().addAll(
-//                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
-//                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
-//        );
-//        String currentAlg = Configs.getCurrentSearchingAlgorithm();
-//        algorithmBox.getSelectionModel().select(new AlgorithmBundle(currentAlg, Main.getBundle().getString(currentAlg)));
-//        statusSaver.store(algorithmBox);
-//
-//        wordAlgorithmBox.getItems().addAll(
-//                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
-//                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
-//        );
-//        String currentWordAlg = Configs.getCurrentWordSearchingAlgorithm();
-//        wordAlgorithmBox.getSelectionModel().select(
-//                new AlgorithmBundle(currentWordAlg, Main.getBundle().getString(currentWordAlg)));
-//        statusSaver.store(wordAlgorithmBox);
-//
-//        regexAlgorithmBox.getItems().addAll(
-//                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative"))
-//        );
-//        String currentRegexAlg = Configs.getCurrentRegexSearchingAlgorithm();
-//        regexAlgorithmBox.getSelectionModel().select(
-//                new AlgorithmBundle(currentRegexAlg, Main.getBundle().getString(currentRegexAlg)));
-//        statusSaver.store(regexAlgorithmBox);
         setAlgorithmBox(algorithmBox, Configs.getCurrentSearchingAlgorithm(),
-                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
-                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
+                new AlgorithmBundle("algNative"),
+                new AlgorithmBundle("algNaive"),
+                new AlgorithmBundle("algKmp"),
+                new AlgorithmBundle("algSunday")
         );
 
         setAlgorithmBox(wordAlgorithmBox, Configs.getCurrentWordSearchingAlgorithm(),
-                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative")),
-                new AlgorithmBundle("algNaive", Main.getBundle().getString("algNaive"))
+                new AlgorithmBundle("algNaive"),
+                new AlgorithmBundle("algHash")
         );
 
         setAlgorithmBox(regexAlgorithmBox, Configs.getCurrentRegexSearchingAlgorithm(),
-                new AlgorithmBundle("algNative", Main.getBundle().getString("algNative"))
+                new AlgorithmBundle("algNative")
         );
     }
 
@@ -87,7 +64,7 @@ public class AdvancedSearchingPage extends SettingsPage {
                                  AlgorithmBundle... algorithmBundles) {
         algorithmBox.getItems().addAll(algorithmBundles);
         algorithmBox.getSelectionModel().select(
-                new AlgorithmBundle(currentAlg, Main.getBundle().getString(currentAlg)));
+                new AlgorithmBundle(currentAlg));
         statusSaver.store(algorithmBox);
     }
 
@@ -95,9 +72,9 @@ public class AdvancedSearchingPage extends SettingsPage {
         private String algCode;
         private String showingName;
 
-        AlgorithmBundle(String algCode, String showingName) {
+        AlgorithmBundle(String algCode) {
             this.algCode = algCode;
-            this.showingName = showingName;
+            this.showingName = Main.getBundle().getString(algCode);
         }
 
         @Override

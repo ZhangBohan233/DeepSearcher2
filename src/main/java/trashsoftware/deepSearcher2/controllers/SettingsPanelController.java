@@ -78,6 +78,7 @@ public class SettingsPanelController implements Initializable {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+        root.setExpanded(true);
         treeView.setRoot(root);
     }
 

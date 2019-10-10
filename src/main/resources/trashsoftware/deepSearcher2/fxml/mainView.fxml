@@ -30,6 +30,7 @@
     <MenuBar GridPane.columnSpan="2">
         <Menu text="%file">
             <MenuItem text="%settings" onAction="#openSettingsAction"/>
+            <MenuItem text="%history" onAction="#openHistoryAction"/>
         </Menu>
     </MenuBar>
 

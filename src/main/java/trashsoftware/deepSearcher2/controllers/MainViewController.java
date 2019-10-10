@@ -192,6 +192,21 @@ public class MainViewController implements Initializable {
         stage.show();
     }
 
+    @FXML
+    void openHistoryAction() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/trashsoftware/deepSearcher2/fxml/historyListView.fxml"), bundle);
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.setTitle(bundle.getString("history"));
+        stage.setScene(new Scene(root));
+
+        HistoryListController controller = loader.getController();
+        controller.setStage(stage);
+
+        stage.show();
+    }
+
     // Factories and listeners
 
     private void setResultTableFactory() {
@@ -438,7 +453,7 @@ public class MainViewController implements Initializable {
                     .setMatchAll(matchAllRadioBtn.isSelected())
                     .searchFileName(searchFileNameBox.isSelected())
                     .searchDirName(searchDirNameBox.isSelected())
-                    .includeDirName(includeDirNameBox.isSelected())
+                    .includePathName(includeDirNameBox.isSelected())
                     .matchCase(matchCaseBox.isSelected())
                     .matchWord(matchWordBox.isSelected())
                     .matchRegex(matchRegexBox.isSelected())
@@ -465,6 +480,7 @@ public class MainViewController implements Initializable {
                 e.getSource().getException().printStackTrace();
             });
 
+            Configs.addHistory(prefSet);
             service.start();
 
         } catch (SearchTargetNotSetException e) {

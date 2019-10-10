@@ -105,7 +105,7 @@ public class ExclusionPage extends SettingsPage {
     @FXML
     void deleteExcludedFormat() {
         int index = excludedFormatList.getSelectionModel().getSelectedIndex();
-        String removed = excludedFormatList.getItems().remove(index);
+        String removed = excludedFormatList.getItems().remove(index).substring(1);  // also remove the dot
         Configs.removeExcludedFormat(removed);
         refreshFormatsList();
     }

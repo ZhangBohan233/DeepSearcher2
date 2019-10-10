@@ -10,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -49,9 +48,12 @@ public class Searcher {
     }
 
     private void searchFile(File file) {
-        if (!searching) return;
+        if (!searching) return;  // Check if searching is cancelled
 
         if (file.isDirectory()) {
+            // Check if this directory is excluded
+            if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) return;
+
             // Check dir is selected
             if (prefSet.isDirName()) {
                 matchName(file);
@@ -63,6 +65,9 @@ public class Searcher {
                 searchFile(f);
             }
         } else {
+            // Check if this format is excluded
+            if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) return;
+
             // check file name is selected
             if (prefSet.isFileName()) {
                 matchName(file);
@@ -156,7 +161,7 @@ public class Searcher {
     }
 
     private String getSearchingFileName(File file) {
-        if (prefSet.isIncludeDirName()) {
+        if (prefSet.isIncludePathName()) {
             if (prefSet.isMatchCase()) return file.getAbsolutePath();
             else return file.getAbsolutePath().toLowerCase();
         } else {
@@ -167,20 +172,26 @@ public class Searcher {
 
     private StringMatcher createMatcher(String string) {
         if (prefSet.getMatchMode() == PrefSet.NORMAL) {
-            if (prefSet.getMatchingAlgorithm().equals("algNative")) {
-                return new NativeMatcher(string);
-            } else if (prefSet.getMatchingAlgorithm().equals("algNaive")) {
-                return new NaiveMatcher(string);
-            } else {
-                throw new RuntimeException("Not a valid matching algorithm");
+            switch (prefSet.getMatchingAlgorithm()) {
+                case "algNative":
+                    return new NativeMatcher(string);
+                case "algNaive":
+                    return new NaiveMatcher(string);
+                case "algKmp":
+                    return new KMPMatcher(string);
+                case "algSunday":
+                    return new SundayMatcher(string);
+                default:
+                    throw new RuntimeException("Not a valid matching algorithm");
             }
         } else if (prefSet.getMatchMode() == PrefSet.WORD) {
-            if (prefSet.getWordMatchingAlgorithm().equals("algNative")) {
-                return new NativeWordMatcher(string);
-            } else if (prefSet.getWordMatchingAlgorithm().equals("algNaive")) {
-                return new NaiveWordMatcher(string);
-            } else {
-                throw new RuntimeException("Not a valid matching algorithm for words");
+            switch (prefSet.getWordMatchingAlgorithm()) {
+                case "algNaive":
+                    return new NaiveWordMatcher(string);
+                case "algHash":
+                    return new HashMapWordSplitter(string);
+                default:
+                    throw new RuntimeException("Not a valid matching algorithm for words");
             }
         } else if (prefSet.getMatchMode() == PrefSet.REGEX) {
             if (prefSet.getRegexAlgorithm().equals("algNative")) {

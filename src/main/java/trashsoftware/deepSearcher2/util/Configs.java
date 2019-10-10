@@ -1,8 +1,15 @@
 package trashsoftware.deepSearcher2.util;
 
+import trashsoftware.deepSearcher2.items.HistoryItem;
+import trashsoftware.deepSearcher2.searcher.PrefSet;
+
 import java.io.*;
-import java.net.FileNameMap;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import org.json.*;
+import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
+import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
 
 public class Configs {
 
@@ -10,9 +17,12 @@ public class Configs {
     private static final String CONFIG_FILE_NAME = "userData/config.cfg";
     private static final String EXCLUDED_DIRS_NAME = "userData/excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = "userData/excludedFormats.cfg";
+    private static final String HISTORY_DIR = "userData/history";
     private static final String CACHE_DIR = "cache";
     private static final String PAIRED_CACHE_NAME = "cache/pairs.cfg";
     private static final String FORMAT_FILE_NAME = "cache/formats.cfg";
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
 
     public static Locale getCurrentLocale() {
         String localeName = getConfig("locale");
@@ -122,6 +132,97 @@ public class Configs {
         return readListFile(EXCLUDED_FORMATS_NAME);
     }
 
+    public static List<HistoryItem> getAllHistory() {
+        List<HistoryItem> list = new ArrayList<>();
+        try {
+            createDirsIfNotExist();
+            File historyDir = new File(HISTORY_DIR);
+            for (File his : Objects.requireNonNull(historyDir.listFiles())) {
+                BufferedReader reader = new BufferedReader(new FileReader(his));
+                StringBuilder builder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+                Date date = DATE_FORMAT.parse(his.getName());
+                JSONObject jsonObject = new JSONObject(builder.toString());
+                PrefSet prefSet = toPrefSet(jsonObject);
+                HistoryItem historyItem = new HistoryItem(prefSet, date);
+                list.add(historyItem);
+                reader.close();
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static void clearAllHistory() {
+        File dir = new File(HISTORY_DIR);
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
+            if (!file.delete()) {
+                System.err.println("Failed to delete " + file.getAbsolutePath());
+            }
+        }
+    }
+
+    public static void addHistory(PrefSet historyItem) {
+        JSONObject object = toJsonObject(historyItem);
+
+        String fileName = HISTORY_DIR + File.separator + DATE_FORMAT.format(new Date()) + ".json";
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName));
+            bufferedWriter.write(object.toString());
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static JSONObject toJsonObject(PrefSet historyItem) {
+        JSONObject root = new JSONObject();
+        root.put("searchFileName", historyItem.isFileName());
+        root.put("includePathName", historyItem.isIncludePathName());
+        root.put("matchCase", historyItem.isMatchCase());
+        root.put("matchMode", historyItem.getMatchMode());
+        root.put("searchContent", historyItem.getExtensions() != null);
+        root.put("searchDirName", historyItem.isDirName());
+        root.put("matchAll", historyItem.isMatchAll());
+        JSONArray dirs = new JSONArray(historyItem.getSearchDirs());
+        JSONArray patterns =  new JSONArray(historyItem.getTargets());
+        JSONArray extensions = new JSONArray(historyItem.getExtensions());
+        root.put("dirs", dirs);
+        root.put("patterns", patterns);
+        root.put("extensions", extensions);
+        return root;
+    }
+
+    private static PrefSet toPrefSet(JSONObject root) {
+        List<File> dirs = new ArrayList<>();
+        for (Object s : root.getJSONArray("dirs")) dirs.add(new File((String) s));
+        List<String> patterns = new ArrayList<>();
+        for (Object p : root.getJSONArray("patterns")) patterns.add((String) p);
+        Set<String> extensions = new HashSet<>();
+        for (Object e : root.getJSONArray("extensions")) extensions.add((String) e);
+        try {
+            return new PrefSet.PrefSetBuilder()
+                    .searchFileName(root.getBoolean("searchFileName"))
+                    .includePathName(root.getBoolean("includePathName"))
+                    .matchCase(root.getBoolean("matchCase"))
+                    .directSetMatchMode(root.getInt("matchMode"))
+                    .searchDirName(root.getBoolean("searchDirName"))
+                    .setMatchAll(root.getBoolean("matchAll"))
+                    .setSearchDirs(dirs)
+                    .setTargets(patterns)
+                    .setExtensions(root.getBoolean("searchContent") ? extensions : null)
+                    .build();
+        } catch (SearchTargetNotSetException | SearchDirNotSetException e) {
+            // This would never happen
+            throw new RuntimeException("History item cannot be converted");
+        }
+    }
+
     private static Map<String, String> readConfigFile() {
         return readMapFile(CONFIG_FILE_NAME);
     }
@@ -218,6 +319,12 @@ public class Configs {
         if (!userData.exists()) {
             if (!userData.mkdirs()) {
                 throw new IOException("Cannot create directory 'userData'");
+            }
+        }
+        File history = new File(HISTORY_DIR);
+        if (!history.exists()) {
+            if (!history.mkdirs()) {
+                throw new IOException("Cannot create directory 'userData/history'");
             }
         }
     }

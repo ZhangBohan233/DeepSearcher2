@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="trashsoftware.deepSearcher2.controllers.HistoryListController"
+          vgap="5" hgap="5">
+    <padding>
+        <Insets left="5" right="5" top="5" bottom="5"/>
+    </padding>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS"/>
+        <RowConstraints valignment="CENTER" prefHeight="30"/>
+    </rowConstraints>
+
+    <columnConstraints>
+        <ColumnConstraints minWidth="320" halignment="LEFT"/>
+        <ColumnConstraints fx:id="rightColumn"/>
+    </columnConstraints>
+
+    <TableView fx:id="historyTable">
+        <placeholder>
+            <Label text="%emptyHistory"/>
+        </placeholder>
+        <columns>
+            <TableColumn text="%pattern" prefWidth="140"/>
+            <TableColumn text="%dirSearched" prefWidth="180"/>
+        </columns>
+    </TableView>
+
+    <GridPane fx:id="rightPane" GridPane.columnIndex="2" vgap="5" hgap="5" prefWidth="320"
+              managed="false" visible="false">
+        <rowConstraints>
+            <RowConstraints valignment="TOP"/>
+            <RowConstraints valignment="TOP"/>
+        </rowConstraints>
+
+        <Separator orientation="VERTICAL" GridPane.rowSpan="4"/>
+        <Label text="%pattern" GridPane.columnIndex="1"/>
+        <Label fx:id="pattern" GridPane.columnIndex="2"/>
+        <Label text="%dirSearched" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label fx:id="dirSearched" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+        <Label text="%time" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label fx:id="searchedTime" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+    </GridPane>
+
+    <Button text="%clear" onAction="#clearHistoryAction" GridPane.rowIndex="1"/>
+
+</GridPane>

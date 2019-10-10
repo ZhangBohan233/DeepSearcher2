@@ -18,10 +18,15 @@ public class PrefSet {
     private boolean fileName;
     private boolean dirName;
     private boolean matchCase;
-    private boolean includeDirName;
+    private boolean includePathName;
     private boolean matchRegex;
     private boolean matchWord;
     private Set<String> extensions;  // null if not searching content
+    private String matchingAlg;
+    private String wordMatchingAlg;
+    private String regexMatchingAlg;
+    private Set<String> excludedDirs;
+    private Set<String> excludedFormats;
 
     public static class PrefSetBuilder {
 
@@ -37,8 +42,8 @@ public class PrefSet {
             return this;
         }
 
-        public PrefSetBuilder includeDirName(boolean includeDirName) {
-            prefSet.includeDirName = includeDirName;
+        public PrefSetBuilder includePathName(boolean includePathName) {
+            prefSet.includePathName = includePathName;
             return this;
         }
 
@@ -59,6 +64,22 @@ public class PrefSet {
 
         public PrefSetBuilder matchRegex(boolean matchRegex) {
             prefSet.matchRegex = matchRegex;
+            return this;
+        }
+
+        public PrefSetBuilder directSetMatchMode(int matchMode) {
+            if (matchMode == NORMAL) {
+                prefSet.matchWord = false;
+                prefSet.matchRegex = false;
+            } else if (matchMode == WORD) {
+                prefSet.matchWord = true;
+                prefSet.matchRegex = false;
+            } else if (matchMode == REGEX) {
+                prefSet.matchWord = false;
+                prefSet.matchRegex = true;
+            } else {
+                throw new RuntimeException("No such match mode");
+            }
             return this;
         }
 
@@ -100,53 +121,72 @@ public class PrefSet {
         }
     }
 
-    List<File> getSearchDirs() {
+    public List<File> getSearchDirs() {
         return searchDirs;
     }
 
-    Set<String> getExtensions() {
+    public Set<String> getExtensions() {
         return extensions;
     }
 
-    List<String> getTargets() {
+    public List<String> getTargets() {
         return targets;
     }
 
-    boolean isMatchAll() {
+    public boolean isMatchAll() {
         return matchAll;
     }
 
-    boolean isMatchCase() {
+    public boolean isMatchCase() {
         return matchCase;
     }
 
-    boolean isDirName() {
+    public boolean isDirName() {
         return dirName;
     }
 
-    boolean isFileName() {
+    public boolean isFileName() {
         return fileName;
     }
 
-    boolean isIncludeDirName() {
-        return includeDirName;
+    public boolean isIncludePathName() {
+        return includePathName;
     }
 
-    int getMatchMode() {
+    public int getMatchMode() {
         if (matchWord) return WORD;
         else if (matchRegex) return REGEX;
         else return NORMAL;
     }
 
     String getMatchingAlgorithm() {
-        return Configs.getCurrentSearchingAlgorithm();
+        if (matchingAlg == null) {
+            matchingAlg = Configs.getCurrentSearchingAlgorithm();
+        }
+        return matchingAlg;
     }
 
     String getWordMatchingAlgorithm() {
-        return Configs.getCurrentWordSearchingAlgorithm();
+        if (wordMatchingAlg == null) {
+            wordMatchingAlg = Configs.getCurrentWordSearchingAlgorithm();
+        }
+        return wordMatchingAlg;
     }
 
     String getRegexAlgorithm() {
-        return Configs.getCurrentRegexSearchingAlgorithm();
+        if (regexMatchingAlg == null) {
+            regexMatchingAlg = Configs.getCurrentRegexSearchingAlgorithm();
+        }
+        return regexMatchingAlg;
+    }
+
+    Set<String> getExcludedDirs() {
+        if (excludedDirs == null) excludedDirs = Configs.getAllExcludedDirs();
+        return excludedDirs;
+    }
+
+    Set<String> getExcludedFormats() {
+        if (excludedFormats == null) excludedFormats = Configs.getAllExcludedFormats();
+        return excludedFormats;
     }
 }

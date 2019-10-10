@@ -14,7 +14,7 @@ class NativeRegexMatcher implements StringMatcher {
     }
 
 //    public static void main(String[] args) {
-//        Pattern pattern = Pattern.compile("about five0");
-//        System.out.println();
+//        System.out.println("a1234.txt".matches("[a-zA-Z][0-9]*.[a-z]"));
+//        System.out.println("a1234.txt".matches("[a-zA-Z][0-9]*\\.[a-z]*"));
 //    }
 }
