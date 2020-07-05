@@ -40,6 +40,10 @@ public class SettingsPanelController implements Initializable {
         this.thisStage = stage;
     }
 
+    public Stage getStage() {
+        return thisStage;
+    }
+
     @FXML
     void cancelAction() {
         closeWindow();
@@ -53,26 +57,30 @@ public class SettingsPanelController implements Initializable {
         TreeItem<SettingsItem> root = new TreeItem<>();
 
         try {
-            NavigatorPage mainPage = new NavigatorPage();
+            NavigatorPage mainPage = new NavigatorPage(this);
             root.setValue(new SettingsItem(bundle.getString("settings"), mainPage));
 
-            GeneralPage generalPage = new GeneralPage();
+            GeneralPage generalPage = new GeneralPage(this);
             root.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("general"), generalPage)));
 
             TreeItem<SettingsItem> searchingRoot = new TreeItem<>();
-            NavigatorPage searchingMainPage = new NavigatorPage();
+            NavigatorPage searchingMainPage = new NavigatorPage(this);
             searchingRoot.setValue(new SettingsItem(bundle.getString("searchSettings"), searchingMainPage));
             root.getChildren().add(searchingRoot);
 
-            ExclusionPage exclusionPage = new ExclusionPage();
+            ExclusionPage exclusionPage = new ExclusionPage(this);
             searchingRoot.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("exclusions"), exclusionPage)
             ));
 
-            AdvancedSearchingPage advancedSearchingPage = new AdvancedSearchingPage();
+            AdvancedSearchingPage advancedSearchingPage = new AdvancedSearchingPage(this);
             searchingRoot.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("advancedSearching"), advancedSearchingPage)));
+
+            OthersPage othersPage = new OthersPage(this);
+            root.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("others"), othersPage)));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }

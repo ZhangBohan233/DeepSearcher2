@@ -489,7 +489,7 @@ public class MainViewController implements Initializable {
 
             service.setOnFailed(e -> {
                 unbindListeners();
-
+                searchingFailed();
                 e.getSource().getException().printStackTrace();
             });
 
@@ -510,7 +510,12 @@ public class MainViewController implements Initializable {
     }
 
     private void finishSearching(boolean normalFinish) {
-        setNotInSearchingUi(normalFinish);
+        setNotInSearchingUi(normalFinish ?
+                bundle.getString("searchDone") : bundle.getString("searchAbort"));
+    }
+
+    private void searchingFailed() {
+        setNotInSearchingUi(bundle.getString("searchFailed"));
     }
 
     private void cancelSearching() {
@@ -530,13 +535,12 @@ public class MainViewController implements Initializable {
         timeUnitText.setText("");
     }
 
-    private void setNotInSearchingUi(boolean normalFinish) {
+    private void setNotInSearchingUi(String statusMsg) {
         isSearching = false;
         searchButton.setText(bundle.getString("search"));
         progressIndicator.setVisible(false);
         progressIndicator.setManaged(false);
-        if (normalFinish) searchingStatusText.setText(bundle.getString("searchDone"));
-        else searchingStatusText.setText(bundle.getString("searchAbort"));
+        searchingStatusText.setText(statusMsg);
         statusSuffixText.setText(bundle.getString("searchDoneSuffix"));
     }
 

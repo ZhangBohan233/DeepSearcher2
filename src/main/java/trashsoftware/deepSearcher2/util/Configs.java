@@ -25,8 +25,6 @@ public class Configs {
 
     private static final String CACHE_DIR = "cache";
     private static final String COMMON_CACHE_NAME = CACHE_DIR + File.separator + "cache.json";
-//    private static final String PAIRED_CACHE_NAME = "cache/pairs.cfg";
-//    private static final String FORMAT_FILE_NAME = "cache/formats.cfg";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
 
@@ -102,12 +100,6 @@ public class Configs {
             cache.put(key, array);
             return array;
         }
-    }
-
-    public static void addToArrayCache(String key, String value) {
-        JSONArray array = getArrayCache(key);
-        array.put(value);
-        saveCache();
     }
 
     /**
@@ -211,6 +203,29 @@ public class Configs {
             if (!file.delete()) {
                 System.err.println("Failed to delete " + file.getAbsolutePath());
             }
+        }
+    }
+
+    public static void clearCache() {
+        deleteFileByName(COMMON_CACHE_NAME);
+    }
+
+    public static void clearSettings() {
+        deleteFileByName(CONFIG_FILE_NAME);
+    }
+
+    public static void clearAllData() {
+        clearCache();
+        clearSettings();
+        clearAllHistory();
+        deleteFileByName(EXCLUDED_DIRS_NAME);
+        deleteFileByName(EXCLUDED_FORMATS_NAME);
+    }
+
+    private static void deleteFileByName(String path) {
+        File file = new File(path);
+        if (!file.delete()) {
+            System.err.println("Failed to delete '" + path + "'!");
         }
     }
 

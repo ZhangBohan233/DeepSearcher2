@@ -41,10 +41,6 @@ class DocReader implements ContentReader {
     public String read(File file) {
         try {
             FileInputStream fis = new FileInputStream(file);
-//            HWPFDocument doc = new HWPFDocument(fis);
-//            String text = doc.getDocumentText();
-//            fis.close();
-//            return text;
             WordExtractor we = new WordExtractor(fis);
 
             String[] paragraphs = we.getParagraphText();
@@ -56,7 +52,7 @@ class DocReader implements ContentReader {
             fis.close();
             we.close();
             return builder.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
@@ -77,7 +73,7 @@ class DocxReader implements ContentReader {
             }
             fis.close();
             return builder.toString();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";

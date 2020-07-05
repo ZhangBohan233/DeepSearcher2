@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,6 +24,9 @@ public class ConfirmBox implements Initializable {
 
     @FXML
     Label messageBox;
+
+    @FXML
+    Button confirmButton;
 
     private Stage stage;
 
@@ -69,6 +73,10 @@ public class ConfirmBox implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public void setConfirmButtonText(String text) {
+        confirmButton.setText(text);
     }
 
     public void show() {

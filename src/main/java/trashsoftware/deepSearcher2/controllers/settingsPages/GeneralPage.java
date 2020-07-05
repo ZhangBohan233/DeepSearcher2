@@ -1,11 +1,10 @@
 package trashsoftware.deepSearcher2.controllers.settingsPages;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import trashsoftware.deepSearcher2.Main;
+import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.NamedLocale;
 
@@ -17,7 +16,9 @@ public class GeneralPage extends SettingsPage {
     @FXML
     ComboBox<NamedLocale> languageBox;
 
-    public GeneralPage() throws IOException {
+    public GeneralPage(SettingsPanelController controller) throws IOException {
+        super(controller);
+
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml"),
                 Main.getBundle());

@@ -27,7 +27,9 @@ public class ExclusionPage extends SettingsPage {
     @FXML
     Button deleteDirButton, deleteFormatButton;
 
-    public ExclusionPage() throws IOException {
+    public ExclusionPage(SettingsPanelController controller) throws IOException {
+        super(controller);
+
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/exclusion.fxml"),
                 Main.getBundle());

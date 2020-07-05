@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.OthersPage"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+         alignment="CENTER" spacing="10">
+    <padding>
+        <Insets top="5"/>
+    </padding>
+
+    <HBox alignment="CENTER" spacing="10">
+        <Separator prefWidth="80"/>
+        <Label text="%others"/>
+        <Separator prefWidth="80"/>
+    </HBox>
+
+    <Label text="%data"/>
+    <Button text="%clearCache" onAction="#clearCache"/>
+    <Button text="%clearHistory" onAction="#clearHistory"/>
+    <Button text="%restoreSettings" onAction="#restoreSettings"/>
+    <Button text="%clearAllData" onAction="#clearAllData"/>
+
+</fx:root>

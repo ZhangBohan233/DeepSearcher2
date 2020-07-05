@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import trashsoftware.deepSearcher2.Main;
+import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
@@ -13,7 +14,9 @@ public class AdvancedSearchingPage extends SettingsPage {
     @FXML
     ComboBox<AlgorithmBundle> algorithmBox, wordAlgorithmBox, regexAlgorithmBox;
 
-    public AdvancedSearchingPage() throws IOException {
+    public AdvancedSearchingPage(SettingsPanelController controller) throws IOException {
+        super(controller);
+
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml"),
                 Main.getBundle());

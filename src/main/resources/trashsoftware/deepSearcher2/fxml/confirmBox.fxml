@@ -16,7 +16,7 @@
     </padding>
     <Label fx:id="messageBox"/>
     <HBox alignment="CENTER_RIGHT" spacing="10">
-        <Button text="%confirm" onAction="#onConfirmed"/>
+        <Button fx:id="confirmButton" text="%confirm" onAction="#onConfirmed"/>
         <Button text="%cancel" onAction="#onCancelled"/>
     </HBox>
 
