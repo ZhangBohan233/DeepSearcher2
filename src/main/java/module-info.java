@@ -3,6 +3,12 @@ module DeepSearcher {
     requires javafx.controls;
     requires java.desktop;
     requires org.json;
+    requires org.apache.commons.codec;
+    requires org.apache.commons.collections4;
+    requires org.apache.commons.compress;
+    requires org.apache.pdfbox;
+    requires poi.ooxml;
+    requires poi.scratchpad;
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.items;

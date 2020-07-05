@@ -4,11 +4,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import trashsoftware.deepSearcher2.util.Configs;
 
-public class FormatItem {
+public class FormatItem implements Comparable<FormatItem> {
 
-    private String extension;
-    private String description;
-    private CheckBox checkBox = new CheckBox();
+    private final String extension;
+    private final String description;
+    private final CheckBox checkBox = new CheckBox();
 
     public FormatItem(String extension, String description) {
         this.extension = extension;
@@ -19,8 +19,8 @@ public class FormatItem {
 
     private void addCheckBoxListener() {
         checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
-            if (t1) Configs.addFormat(extension);
-            else Configs.removeFormat(extension);
+            if (t1) Configs.addToArrayCacheNoDup(Configs.FORMATS_KEY, extension);
+            else Configs.removeFromArrayCache(Configs.FORMATS_KEY, extension);
         }));
     }
 
@@ -41,5 +41,10 @@ public class FormatItem {
 
     public String getExtension() {
         return extension;
+    }
+
+    @Override
+    public int compareTo(FormatItem o) {
+        return extension.compareTo(o.extension);
     }
 }

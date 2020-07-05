@@ -24,6 +24,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.json.JSONArray;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
 import trashsoftware.deepSearcher2.items.FormatItem;
 import trashsoftware.deepSearcher2.items.ResultItem;
@@ -87,7 +88,7 @@ public class MainViewController implements Initializable {
 
     private ResourceBundle bundle;
 
-    private ResourceBundle fileTypeBundle =
+    private final ResourceBundle fileTypeBundle =
             ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
                     Configs.getCurrentLocale());
 
@@ -119,7 +120,10 @@ public class MainViewController implements Initializable {
         addSearchItem();  // Add a default search field
 
         fillFormatTable();
+
+        // restore saved status
         restoreSavedFormats();
+        restoreLastOpenedDirs();
     }
 
     // Controls
@@ -129,10 +133,10 @@ public class MainViewController implements Initializable {
         DirectoryChooser dc = new DirectoryChooser();
         File lastOpenDir = getLastOpenedDir();
         if (lastOpenDir != null)
-            dc.setInitialDirectory(getLastOpenedDir().getParentFile());
+            dc.setInitialDirectory(lastOpenDir.getParentFile());
         File dir = dc.showDialog(null);
         if (dir != null) {
-            storeOpenedDir(dir);
+            addOpenedDir(dir);
             dirList.getItems().add(dir);
         }
     }
@@ -147,7 +151,8 @@ public class MainViewController implements Initializable {
     @FXML
     void deleteSearchDir() {
         int index = dirList.getSelectionModel().getSelectedIndex();
-        dirList.getItems().remove(index);
+        File removed = dirList.getItems().remove(index);
+        deleteOpenedDir(removed);
     }
 
     @FXML
@@ -321,21 +326,13 @@ public class MainViewController implements Initializable {
 
     private void addDirListListener() {
         dirList.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.intValue() == -1) {
-                deleteDirButton.setDisable(true);
-            } else {
-                deleteDirButton.setDisable(false);
-            }
+            deleteDirButton.setDisable(newValue.intValue() == -1);
         });
     }
 
     private void addTargetListListener() {
         searchItemsList.selectedIndexProperty().addListener(((observableValue, number, t1) -> {
-            if (t1.intValue() == -1) {
-                deleteTargetButton.setDisable(true);
-            } else {
-                deleteTargetButton.setDisable(false);
-            }
+            deleteTargetButton.setDisable(t1.intValue() == -1);
         }));
     }
 
@@ -348,19 +345,19 @@ public class MainViewController implements Initializable {
                 formatTable.setDisable(true);
                 selectAllBox.setDisable(true);
             }
-            Configs.writePairedCache("searchContent", String.valueOf(t1));
+            Configs.writeStringCache("searchContent", String.valueOf(t1));
         });
         matchWordBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (t1) {
                 matchRegexBox.setSelected(false);
             }
-            Configs.writePairedCache("matchWord", String.valueOf(t1));
+            Configs.writeStringCache("matchWord", String.valueOf(t1));
         }));
         matchRegexBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
             if (t1) {
                 matchWordBox.setSelected(false);
             }
-            Configs.writePairedCache("matchRegex", String.valueOf(t1));
+            Configs.writeStringCache("matchRegex", String.valueOf(t1));
         }));
 
         addCheckBoxBasicListener(searchFileNameBox, "searchFileName");
@@ -371,22 +368,30 @@ public class MainViewController implements Initializable {
 
     private void addRadioButtonsListeners() {
         matchAllRadioBtn.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
-                Configs.writePairedCache("matchAll", String.valueOf(t1))));
+                Configs.writeStringCache("matchAll", String.valueOf(t1))));
     }
 
     // Helper functions
 
-    private void storeOpenedDir(File file) {
-        Configs.writePairedCache("lastOpenDir", file.getAbsolutePath());
+    private void addOpenedDir(File file) {
+        Configs.addToArrayCacheNoDup(Configs.OPENED_DIRS_KEY, file.getAbsolutePath());
+    }
+
+    private void deleteOpenedDir(File file) {
+        Configs.removeFromArrayCache(Configs.OPENED_DIRS_KEY, file.getAbsolutePath());
     }
 
     private File getLastOpenedDir() {
-        String path = Configs.getPairedCache("lastOpenDir");
-        return path == null ? null : new File(path);
+        JSONArray lastOpens = lastOpenedDirs();
+        return lastOpens.isEmpty() ? null : new File(lastOpens.getString(lastOpens.length() - 1));
+    }
+
+    private JSONArray lastOpenedDirs() {
+        return Configs.getArrayCache(Configs.OPENED_DIRS_KEY);
     }
 
     private void loadRadioButtonsInitialStatus() {
-        String value = Configs.getPairedCache("matchAll");
+        String value = Configs.getStringCache("matchAll");
         if (value != null) {
             boolean isAll = Boolean.parseBoolean(value);
             matchAllRadioBtn.setSelected(isAll);
@@ -405,7 +410,7 @@ public class MainViewController implements Initializable {
     }
 
     private void setBoxInitialStatus(CheckBox checkBox, String key) {
-        String value = Configs.getPairedCache(key);
+        String value = Configs.getStringCache(key);
         if (value != null) {
             boolean checked = Boolean.parseBoolean(value);
             checkBox.setSelected(checked);
@@ -414,7 +419,7 @@ public class MainViewController implements Initializable {
 
     private void addCheckBoxBasicListener(CheckBox checkBox, String key) {
         checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
-                Configs.writePairedCache(key, String.valueOf(t1))));
+                Configs.writeStringCache(key, String.valueOf(t1))));
     }
 
     private void fillFormatTable() {
@@ -424,6 +429,7 @@ public class MainViewController implements Initializable {
             FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
             formatTable.getItems().add(formatItem);
         }
+        Collections.sort(formatTable.getItems());
     }
 
     private void restoreSavedFormats() {
@@ -431,6 +437,13 @@ public class MainViewController implements Initializable {
         for (FormatItem formatItem : formatTable.getItems())
             if (savedFormats.contains(formatItem.getExtension()))
                 formatItem.getCheckBox().setSelected(true);
+    }
+
+    private void restoreLastOpenedDirs() {
+        JSONArray lastOpens = lastOpenedDirs();
+        for (Object dirObj : lastOpens) {
+            dirList.getItems().add(new File((String) dirObj));
+        }
     }
 
     private void selectAllFormats() {
@@ -574,7 +587,7 @@ public class MainViewController implements Initializable {
     }
 
     private class SearchService extends Service<Void> {
-        private Searcher searcher;
+        private final Searcher searcher;
 
         SearchService(Searcher searcher) {
             this.searcher = searcher;

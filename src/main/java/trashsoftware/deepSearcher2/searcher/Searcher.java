@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
@@ -19,13 +20,19 @@ public class Searcher {
             "bat", "c", "cmd", "cpp", "h", "java", "js", "log", "py", "txt"
     );
 
-    private PrefSet prefSet;
+    private static final Map<String, ContentReader> FORMAT_MAP = Map.of(
+            "pdf", new PdfReader(),
+            "doc", new DocReader(),
+            "docx", new DocxReader()
+    );
 
-    private ReadOnlyIntegerWrapper resultCountWrapper = new ReadOnlyIntegerWrapper();
+    private final PrefSet prefSet;
 
-    private ObservableList<ResultItem> tableList;
-    private ResourceBundle bundle;
-    private ResourceBundle fileTypeBundle;
+    private final ReadOnlyIntegerWrapper resultCountWrapper = new ReadOnlyIntegerWrapper();
+
+    private final ObservableList<ResultItem> tableList;
+    private final ResourceBundle bundle;
+    private final ResourceBundle fileTypeBundle;
 
     private boolean searching = true;
 
@@ -115,6 +122,8 @@ public class Searcher {
             String content;
             if (PLAIN_TEXT_FORMAT.contains(ext)) {
                 content = readPlainTextFromFile(file);
+            } else if (FORMAT_MAP.containsKey(ext)) {
+                content = FORMAT_MAP.get(ext).read(file);
             } else {
                 throw new RuntimeException("Unknown format");
             }

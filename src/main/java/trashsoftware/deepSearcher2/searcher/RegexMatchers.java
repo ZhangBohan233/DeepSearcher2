@@ -2,7 +2,7 @@ package trashsoftware.deepSearcher2.searcher;
 
 class NativeRegexMatcher implements StringMatcher {
 
-    private String string;
+    private final String string;
 
     NativeRegexMatcher(String string) {
         this.string = string;

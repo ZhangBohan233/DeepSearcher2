@@ -1,6 +1,12 @@
+# IDE files
+
 .idea/
 *.iml
 out/
+
+# User data and cache
+cache/
+userData/
 
 target/
 pom.xml.tag

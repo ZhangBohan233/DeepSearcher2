@@ -7,22 +7,30 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 import org.json.*;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
 import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
 
 public class Configs {
 
+    public static final String FORMATS_KEY = "formats";
+    public static final String OPENED_DIRS_KEY = "openedDirs";
+
     private static final String USER_DATA_DIR = "userData";
     private static final String CONFIG_FILE_NAME = "userData/config.cfg";
     private static final String EXCLUDED_DIRS_NAME = "userData/excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = "userData/excludedFormats.cfg";
     private static final String HISTORY_DIR = "userData/history";
+
     private static final String CACHE_DIR = "cache";
-    private static final String PAIRED_CACHE_NAME = "cache/pairs.cfg";
-    private static final String FORMAT_FILE_NAME = "cache/formats.cfg";
+    private static final String COMMON_CACHE_NAME = CACHE_DIR + File.separator + "cache.json";
+//    private static final String PAIRED_CACHE_NAME = "cache/pairs.cfg";
+//    private static final String FORMAT_FILE_NAME = "cache/formats.cfg";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
+
+    private static JSONObject cache;
 
     public static Locale getCurrentLocale() {
         String localeName = getConfig("locale");
@@ -73,31 +81,71 @@ public class Configs {
         writeConfigFile(configs);
     }
 
-    public static String getPairedCache(String key) {
-        Map<String, String> cache = readMapFile(PAIRED_CACHE_NAME);
-        return cache.get(key);
+    public static String getStringCache(String key) {
+        if (cache == null) loadCache();
+        if (cache.has(key))
+            return cache.getString(key);
+        else return null;
     }
 
-    public static void writePairedCache(String key, String value) {
-        Map<String, String> cache = readMapFile(PAIRED_CACHE_NAME);
+    public static void writeStringCache(String key, String value) {
         cache.put(key, value);
-        writePairedCache(cache);
+        saveCache();
     }
 
-    public static void addFormat(String format) {
-        Set<String> set = readFormatFile();
-        set.add(format);
-        writeFormatFile(set);
+    public static JSONArray getArrayCache(String key) {
+        if (cache == null) loadCache();
+        if (cache.has(key))
+            return cache.getJSONArray(key);
+        else {
+            JSONArray array = new JSONArray();
+            cache.put(key, array);
+            return array;
+        }
     }
 
-    public static void removeFormat(String format) {
-        Set<String> set = readFormatFile();
-        set.remove(format);
-        writeFormatFile(set);
+    public static void addToArrayCache(String key, String value) {
+        JSONArray array = getArrayCache(key);
+        array.put(value);
+        saveCache();
+    }
+
+    /**
+     * Adds a new element to {@code JSONArray} at toplevel, if the element is not currently in this array.
+     *
+     * @param key   the name of this {@code JSONArray} in the toplevel {@code JSONObject}
+     * @param value the element to be added to this {@code JSONArray}
+     */
+    public static void addToArrayCacheNoDup(String key, String value) {
+        JSONArray array = getArrayCache(key);
+        for (Object obj : array) {
+            if (value.equals(obj)) return;
+        }
+        array.put(value);
+        saveCache();
+    }
+
+//    public static void addFormat(String format) {
+//        addToArrayCache("formats", format);
+//    }
+
+    public static void removeFromArrayCache(String key, String item) {
+        JSONArray set = getArrayCache(key);
+        for (int i = 0; i < set.length(); ++i) {
+            if (item.equals(set.get(i))) {
+                set.remove(i);
+                break;
+            }
+        }
+        saveCache();
     }
 
     public static Set<String> getAllFormats() {
-        return readFormatFile();
+        Set<String> list = new HashSet<>();
+        for (Object fmt : getFormats()) {
+            list.add((String) fmt);
+        }
+        return list;
     }
 
     public static void addExcludedDir(String path) {
@@ -190,7 +238,7 @@ public class Configs {
         root.put("searchDirName", historyItem.isDirName());
         root.put("matchAll", historyItem.isMatchAll());
         JSONArray dirs = new JSONArray(historyItem.getSearchDirs());
-        JSONArray patterns =  new JSONArray(historyItem.getTargets());
+        JSONArray patterns = new JSONArray(historyItem.getTargets());
         JSONArray extensions = new JSONArray(historyItem.getExtensions());
         root.put("dirs", dirs);
         root.put("patterns", patterns);
@@ -227,12 +275,43 @@ public class Configs {
         return readMapFile(CONFIG_FILE_NAME);
     }
 
-    private static void writePairedCache(Map<String, String> map) {
-        writeMapFile(PAIRED_CACHE_NAME, map);
-    }
+//    private static void writePairedCache(Map<String, String> map) {
+//        writeMapFile(PAIRED_CACHE_NAME, map);
+//    }
 
     private static void writeConfigFile(Map<String, String> map) {
         writeMapFile(CONFIG_FILE_NAME, map);
+    }
+
+    private static void loadCache() {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(COMMON_CACHE_NAME));
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line);
+            }
+            br.close();
+            cache = new JSONObject(builder.toString());
+        } catch (FileNotFoundException e) {
+            cache = new JSONObject();
+            saveCache();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveCache() {
+        try {
+            createDirsIfNotExist();
+            String s = cache.toString(2);
+            FileWriter fw = new FileWriter(COMMON_CACHE_NAME);
+            fw.write(s);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static Map<String, String> readMapFile(String fileName) {
@@ -300,12 +379,8 @@ public class Configs {
         }
     }
 
-    private static Set<String> readFormatFile() {
-        return readListFile(FORMAT_FILE_NAME);
-    }
-
-    private static void writeFormatFile(Set<String> formats) {
-        writeListFile(FORMAT_FILE_NAME, formats);
+    private static JSONArray getFormats() {
+        return getArrayCache(FORMATS_KEY);
     }
 
     private static void createDirsIfNotExist() throws IOException {

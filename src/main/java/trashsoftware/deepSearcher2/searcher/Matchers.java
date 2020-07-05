@@ -146,9 +146,6 @@ class SundayMatcher implements StringMatcher {
             for (i = 0; i < pLen; i++) {
                 if (string.charAt(s + i) != pat.charAt(i)) break;
             }
-//            System.out.println(string);
-//            for (int j = 0 ; j < s; j++) System.out.print(" ");
-//            System.out.println(pat);
             if (i == pLen) return s;
             if (s == end) break;
 
