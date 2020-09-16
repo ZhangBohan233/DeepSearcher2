@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -135,16 +136,17 @@ class PlainTextSearcher extends TwoKeysSearcher {
 //    }
 }
 
-class PdfReader extends ContentSearcher {
+class PdfReader extends TwoKeysSearcher {
 
     PdfReader(File file, Class<? extends StringMatcher> matcherClass, boolean caseSensitive) {
-        super(file, matcherClass, caseSensitive);
+        super(file, matcherClass, caseSensitive, ContentSearchingResult.PAGES_KEY, ContentSearchingResult.CHARS_KEY);
     }
 
     public String read(File file) {
         try {
             PDDocument document = PDDocument.load(file);
             if (!document.isEncrypted()) {
+
                 PDFTextStripper stripper = new PDFTextStripper();
 
                 String text = stripper.getText(document);
@@ -158,13 +160,40 @@ class PdfReader extends ContentSearcher {
     }
 
     @Override
-    public ContentSearchingResult searchAll(List<String> targets) {
-        return null;
-    }
+    protected void searchFile(List<String> targets, Set<String> foundTargets,
+                              List<Integer> foundPages, List<Integer> foundChars)
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        try {
+            PDDocument document = PDDocument.load(file);
+            if (!document.isEncrypted()) {
 
-    @Override
-    public ContentSearchingResult searchAny(List<String> targets) {
-        return null;
+                PDFTextStripper stripper = new PDFTextStripper();
+
+                int endPage = document.getNumberOfPages();
+
+                int i = 1;
+                for (; i < endPage; i++) {
+                    stripper.setStartPage(i);
+                    stripper.setEndPage(i + 1);
+                    String page = stripper.getText(document);
+
+                    if (!caseSensitive) page = page.toLowerCase();
+                    StringMatcher matcher = matcherClass.getDeclaredConstructor(String.class).newInstance(page);
+                    for (String tar : targets) {
+                        int pos = matcher.search(tar);
+                        if (pos >= 0) {
+                            foundTargets.add(tar);
+                            foundPages.add(i);
+                            foundChars.add(pos);
+                        }
+                    }
+                }
+
+                document.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
