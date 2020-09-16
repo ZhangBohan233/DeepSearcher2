@@ -5,28 +5,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class NaiveWordMatcher implements StringMatcher {
-    private String[] words;
+class NaiveWordMatcher extends StringMatcher {
+    private final String[] words;
 
     NaiveWordMatcher(String string) {
+        super(string);
         this.words = WordSplitter.split(string);
     }
 
     @Override
-    public boolean contains(String pattern) {
+    public int search(String pattern) {
+        int i = 0;
         for (String s : words) {
             if (s.equals(pattern)) {
-                return true;
+                return i;
             }
+            i += s.length() + 1;
         }
-        return false;
+        return -1;
     }
 }
 
-class HashMapWordSplitter implements StringMatcher {
-    private Map<Integer, List<String>> lengthMap = new HashMap<>();
+class HashMapWordSplitter extends StringMatcher {
+    private final Map<Integer, List<String>> lengthMap = new HashMap<>();
 
     HashMapWordSplitter(String string) {
+        super(string);
         splitToMap(string);
     }
 
@@ -53,14 +57,14 @@ class HashMapWordSplitter implements StringMatcher {
     }
 
     @Override
-    public boolean contains(String pattern) {
+    public int search(String pattern) {
         List<String> listOfThisLen = lengthMap.get(pattern.length());
-        if (listOfThisLen == null) return false;
+        if (listOfThisLen == null) return -1;
         for (String s : listOfThisLen) {
             if (s.equals(pattern))
-                return true;
+                return 1;
         }
-        return false;
+        return -1;
     }
 }
 

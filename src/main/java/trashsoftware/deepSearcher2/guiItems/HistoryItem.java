@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.items;
+package trashsoftware.deepSearcher2.guiItems;
 
 import javafx.fxml.FXML;
 import trashsoftware.deepSearcher2.Main;
@@ -6,9 +6,7 @@ import trashsoftware.deepSearcher2.searcher.PrefSet;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class HistoryItem {

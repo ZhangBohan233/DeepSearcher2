@@ -3,13 +3,11 @@ package trashsoftware.deepSearcher2.searcher;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.ObservableList;
-import trashsoftware.deepSearcher2.items.ResultItem;
+import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.util.Util;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -20,10 +18,10 @@ public class Searcher {
             "bat", "c", "cmd", "cpp", "h", "java", "js", "log", "py", "txt"
     );
 
-    private static final Map<String, ContentReader> FORMAT_MAP = Map.of(
-            "pdf", new PdfReader(),
-            "doc", new DocReader(),
-            "docx", new DocxReader()
+    private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
+            "pdf", PdfReader.class,
+            "doc", DocReader.class,
+            "docx", DocxReader.class
     );
 
     private final PrefSet prefSet;
@@ -81,7 +79,14 @@ public class Searcher {
             }
             // check file content is selected
             if (prefSet.getExtensions() != null) {
-                matchFileContent(file);
+                try {
+                    matchFileContent(file);
+                } catch (InstantiationException |
+                        IllegalAccessException |
+                        InvocationTargetException |
+                        NoSuchMethodException e) {
+                    throw new RuntimeException("Unexpected error when creating content searcher", e);
+                }
             }
         }
     }
@@ -96,10 +101,10 @@ public class Searcher {
 
         StringMatcher matcher = createMatcher(name);
         for (String target : prefSet.getTargets()) {
-            if (!matcher.contains(target)) return;
+            if (matcher.search(target) < 0) return;
         }
 
-        addResult(file, true, false);
+        addNameResult(file);
         updateResultCount();
     }
 
@@ -108,74 +113,118 @@ public class Searcher {
 
         StringMatcher matcher = createMatcher(name);
         for (String target : prefSet.getTargets()) {
-            if (matcher.contains(target)) {
-                addResult(file, true, false);
+            if (matcher.search(target) >= 0) {
+                addNameResult(file);
                 updateResultCount();
                 return;
             }
         }
     }
 
-    private void matchFileContent(File file) {
+    private void matchFileContent(File file)
+            throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         String ext = Util.getFileExtension(file.getName());
+        Class<? extends StringMatcher> matcherClass = getMatcherClass();
         if (prefSet.getExtensions().contains(ext)) {
-            String content;
+            ContentSearcher searcher;
             if (PLAIN_TEXT_FORMAT.contains(ext)) {
-                content = readPlainTextFromFile(file);
+                searcher = new PlainTextSearcher(file, matcherClass, prefSet.isCaseSensitive());
             } else if (FORMAT_MAP.containsKey(ext)) {
-                content = FORMAT_MAP.get(ext).read(file);
+                searcher = FORMAT_MAP.get(ext).getDeclaredConstructor(File.class, Class.class, boolean.class)
+                        .newInstance(file, matcherClass, prefSet.isCaseSensitive());
             } else {
                 throw new RuntimeException("Unknown format");
             }
-            if (prefSet.isMatchAll()) matchContentAll(content, file);
-            else matchContentAny(content, file);
-        }
-    }
-
-    private void matchContentAll(String string, File file) {
-        StringMatcher matcher = createMatcher(string);
-        for (String target : prefSet.getTargets()) {
-            if (!matcher.contains(target)) return;
-        }
-
-        addResult(file, false, true);
-        updateResultCount();
-    }
-
-    private void matchContentAny(String string, File file) {
-        StringMatcher matcher = createMatcher(string);
-        for (String target : prefSet.getTargets()) {
-            if (matcher.contains(target)) {
-                addResult(file, false, true);
-                updateResultCount();
-                return;
+            ContentSearchingResult result;
+            if (prefSet.isMatchAll()) {
+                result = searcher.searchAll(prefSet.getTargets());
+            } else {
+                result = searcher.searchAny(prefSet.getTargets());
             }
+            if (result != null) addContentResult(file, result);
+//            if (prefSet.isMatchAll()) matchContentAll(content, file);
+//            else matchContentAny(content, file);
         }
     }
 
-    private String readPlainTextFromFile(File file) {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                builder.append(line).append('\n');
-            }
-            bufferedReader.close();
-            return builder.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
+//    private void matchContentAll(String string, File file) {
+//        StringMatcher matcher = createMatcher(string);
+//        for (String target : prefSet.getTargets()) {
+//            if (!matcher.contains(target)) return;
+//        }
+//
+//        addResult(file, false, true);
+//        updateResultCount();
+//    }
+//
+//    private void matchContentAny(String string, File file) {
+//        StringMatcher matcher = createMatcher(string);
+//        for (String target : prefSet.getTargets()) {
+//            if (matcher.contains(target)) {
+//                addResult(file, false, true);
+//                updateResultCount();
+//                return;
+//            }
+//        }
+//    }
+
+//    private String readPlainTextFromFile(File file) {
+//        try {
+//            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+//            StringBuilder builder = new StringBuilder();
+//            String line;
+//            while ((line = bufferedReader.readLine()) != null) {
+//                builder.append(line).append('\n');
+//            }
+//            bufferedReader.close();
+//            return builder.toString();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return "";
+//    }
 
     private String getSearchingFileName(File file) {
         if (prefSet.isIncludePathName()) {
-            if (prefSet.isMatchCase()) return file.getAbsolutePath();
+            if (prefSet.isCaseSensitive()) return file.getAbsolutePath();
             else return file.getAbsolutePath().toLowerCase();
         } else {
-            if (prefSet.isMatchCase()) return file.getName();
+            if (prefSet.isCaseSensitive()) return file.getName();
             else return file.getName().toLowerCase();
+        }
+    }
+
+    private Class<? extends StringMatcher> getMatcherClass() {
+        if (prefSet.getMatchMode() == PrefSet.NORMAL) {
+            switch (prefSet.getMatchingAlgorithm()) {
+                case "algNative":
+                    return NativeMatcher.class;
+                case "algNaive":
+                    return NaiveMatcher.class;
+                case "algKmp":
+                    return KMPMatcher.class;
+                case "algSunday":
+                    return SundayMatcher.class;
+                default:
+                    throw new RuntimeException("Not a valid matching algorithm");
+            }
+        } else if (prefSet.getMatchMode() == PrefSet.WORD) {
+            switch (prefSet.getWordMatchingAlgorithm()) {
+                case "algNaive":
+                    return NaiveWordMatcher.class;
+                case "algHash":
+                    return HashMapWordSplitter.class;
+                default:
+                    throw new RuntimeException("Not a valid matching algorithm for words");
+            }
+        } else if (prefSet.getMatchMode() == PrefSet.REGEX) {
+            if (prefSet.getRegexAlgorithm().equals("algNative")) {
+                return NativeRegexMatcher.class;
+            } else {
+                throw new RuntimeException("Not a valid matching algorithm for regex");
+            }
+        } else {
+            throw new RuntimeException("Invalid match mode");
         }
     }
 
@@ -217,7 +266,23 @@ public class Searcher {
         resultCountWrapper.setValue(tableList.size());
     }
 
-    private void addResult(File file, boolean matchName, boolean matchContent) {
+    private void addContentResult(File file, ContentSearchingResult csr) {
+        if (!tableList.isEmpty()) {
+            ResultItem lastItem = tableList.get(tableList.size() - 1);
+            if (lastItem.isSameFileAs(file)) {
+                lastItem.setContentRes(csr);
+                lastItem.addMatchContent();
+                return;
+            }
+        }
+
+        ResultItem resultItem = new ResultItem(file, false, true, bundle, fileTypeBundle);
+        resultItem.setContentRes(csr);
+        tableList.add(resultItem);
+        updateResultCount();
+    }
+
+    private void addNameResult(File file) {
         // check if previous one is this one
         if (!tableList.isEmpty()) {
             ResultItem lastItem = tableList.get(tableList.size() - 1);
@@ -227,7 +292,7 @@ public class Searcher {
             }
         }
 
-        ResultItem resultItem = new ResultItem(file, matchName, matchContent, bundle, fileTypeBundle);
+        ResultItem resultItem = new ResultItem(file, true, false, bundle, fileTypeBundle);
         tableList.add(resultItem);
     }
 

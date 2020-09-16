@@ -4,52 +4,49 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-class NaiveMatcher implements StringMatcher {
 
-    private String string;
+class NaiveMatcher extends StringMatcher {
 
     NaiveMatcher(String s) {
-        this.string = s;
+        super(s);
     }
 
     @Override
-    public boolean contains(String target) {
+    public int search(String target) {
         return naiveMatch(string, target);
     }
 
-    private static boolean naiveMatch(String string, String pattern) {
-        if (pattern.length() > string.length()) return false;
+    private static int naiveMatch(String string, String pattern) {
+        if (pattern.length() > string.length()) return -1;
         for (int i = 0; i < string.length() - pattern.length() + 1; i++) {
             int j;
             for (j = 0; j < pattern.length(); j++) {
                 if (string.charAt(i + j) != pattern.charAt(j)) break;
             }
-            if (j == pattern.length()) return true;
+            if (j == pattern.length()) return i;
         }
-        return false;
+        return -1;
     }
 }
 
-class NativeMatcher implements StringMatcher {
-    private String string;
+class NativeMatcher extends StringMatcher {
 
     NativeMatcher(String s) {
-        this.string = s;
+        super(s);
     }
 
     @Override
-    public boolean contains(String target) {
-        return string.contains(target);
+    public int search(String target) {
+        return string.indexOf(target);
     }
 }
 
-class KMPMatcher implements StringMatcher {
+class KMPMatcher extends StringMatcher {
 
-    private String string;
     private int[] next;
 
     KMPMatcher(String s) {
-        this.string = s;
+        super(s);
     }
 
     private void calculateNext(String target) {
@@ -59,11 +56,6 @@ class KMPMatcher implements StringMatcher {
         int k = -1;
         int j = 0;
         while (j < tLen - 1) {
-//            if (k == -1 || target.charAt(j) == target.charAt(k)) {
-//                next[++j] = ++k;
-//            } else {
-//                k = next[k];
-//            }
             if (k == -1 || target.charAt(j) == target.charAt(k)) {
                 j++;
                 k++;
@@ -78,7 +70,8 @@ class KMPMatcher implements StringMatcher {
         }
     }
 
-    private int search(String target) {
+    @Override
+    public int search(String target) {
         int sLen = string.length();
         int tLen = target.length();
         calculateNext(target);
@@ -95,11 +88,6 @@ class KMPMatcher implements StringMatcher {
         else return -1;
     }
 
-    @Override
-    public boolean contains(String target) {
-        return search(target) != -1;
-    }
-
     public static void main(String[] args) {
         String txt = "BBC ABCDAB CDABABCDABCDABDE";
         String pat = "ABCDABD";
@@ -109,22 +97,25 @@ class KMPMatcher implements StringMatcher {
 }
 
 
-class BoyerMooreMatcher implements StringMatcher {
+class BoyerMooreMatcher extends StringMatcher {
+
+    BoyerMooreMatcher(String string) {
+        super(string);
+    }
 
     @Override
-    public boolean contains(String pattern) {
-        return false;
+    public int search(String pattern) {
+        return -1;
     }
 }
 
 
-class SundayMatcher implements StringMatcher {
+class SundayMatcher extends StringMatcher {
 
-    private String string;
     private Map<Character, Integer> indices;
 
     SundayMatcher(String string) {
-        this.string = string;
+        super(string);
     }
 
     private void calculateIndices(String pat) {
@@ -135,7 +126,8 @@ class SundayMatcher implements StringMatcher {
         }
     }
 
-    private int search(String pat) {
+    @Override
+    public int search(String pat) {
         calculateIndices(pat);
         int sLen = string.length();
         int pLen = pat.length();
@@ -154,11 +146,6 @@ class SundayMatcher implements StringMatcher {
             s += pLen - lastPos;
         }
         return -1;
-    }
-
-    @Override
-    public boolean contains(String pattern) {
-        return search(pattern) != -1;
     }
 
     public static void main(String[] args) {

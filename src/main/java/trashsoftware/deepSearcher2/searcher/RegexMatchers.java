@@ -1,16 +1,17 @@
 package trashsoftware.deepSearcher2.searcher;
 
-class NativeRegexMatcher implements StringMatcher {
+class NativeRegexMatcher extends StringMatcher {
 
     private final String string;
 
     NativeRegexMatcher(String string) {
+        super(string);
         this.string = string;
     }
 
     @Override
-    public boolean contains(String target) {
-        return string.matches(target);
+    public int search(String target) {
+        return string.matches(target) ? 1 : -1;
     }
 
 //    public static void main(String[] args) {

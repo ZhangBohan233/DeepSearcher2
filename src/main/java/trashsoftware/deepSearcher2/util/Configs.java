@@ -1,6 +1,6 @@
 package trashsoftware.deepSearcher2.util;
 
-import trashsoftware.deepSearcher2.items.HistoryItem;
+import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
 
 import java.io.*;
@@ -247,7 +247,7 @@ public class Configs {
         JSONObject root = new JSONObject();
         root.put("searchFileName", historyItem.isFileName());
         root.put("includePathName", historyItem.isIncludePathName());
-        root.put("matchCase", historyItem.isMatchCase());
+        root.put("matchCase", historyItem.isCaseSensitive());
         root.put("matchMode", historyItem.getMatchMode());
         root.put("searchContent", historyItem.getExtensions() != null);
         root.put("searchDirName", historyItem.isDirName());
@@ -272,7 +272,7 @@ public class Configs {
             return new PrefSet.PrefSetBuilder()
                     .searchFileName(root.getBoolean("searchFileName"))
                     .includePathName(root.getBoolean("includePathName"))
-                    .matchCase(root.getBoolean("matchCase"))
+                    .caseSensitive(root.getBoolean("matchCase"))
                     .directSetMatchMode(root.getInt("matchMode"))
                     .searchDirName(root.getBoolean("searchDirName"))
                     .setMatchAll(root.getBoolean("matchAll"))

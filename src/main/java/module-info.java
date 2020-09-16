@@ -11,10 +11,12 @@ module DeepSearcher {
     requires poi.scratchpad;
 
     opens trashsoftware.deepSearcher2;
-    opens trashsoftware.deepSearcher2.items;
+    opens trashsoftware.deepSearcher2.guiItems;
     opens trashsoftware.deepSearcher2.controllers;
     opens trashsoftware.deepSearcher2.controllers.widgets;
     opens trashsoftware.deepSearcher2.controllers.settingsPages;
 
     exports trashsoftware.deepSearcher2.controllers;
+    exports trashsoftware.deepSearcher2.searcher;
+    exports trashsoftware.deepSearcher2.guiItems;
 }

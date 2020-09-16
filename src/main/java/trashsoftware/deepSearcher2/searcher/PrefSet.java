@@ -30,14 +30,14 @@ public class PrefSet {
 
     public static class PrefSetBuilder {
 
-        private PrefSet prefSet = new PrefSet();
+        private final PrefSet prefSet = new PrefSet();
 
         public PrefSetBuilder setMatchAll(boolean matchAll) {
             prefSet.matchAll = matchAll;
             return this;
         }
 
-        public PrefSetBuilder matchCase(boolean matchCase) {
+        public PrefSetBuilder caseSensitive(boolean matchCase) {
             prefSet.matchCase = matchCase;
             return this;
         }
@@ -129,6 +129,9 @@ public class PrefSet {
         return extensions;
     }
 
+    /**
+     * @return a list of all targets, if {@code isCaseSensitive()}, all targets are in lower case already.
+     */
     public List<String> getTargets() {
         return targets;
     }
@@ -137,7 +140,7 @@ public class PrefSet {
         return matchAll;
     }
 
-    public boolean isMatchCase() {
+    public boolean isCaseSensitive() {
         return matchCase;
     }
 

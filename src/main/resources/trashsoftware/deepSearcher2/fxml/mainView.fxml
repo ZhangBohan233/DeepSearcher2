@@ -109,7 +109,7 @@
                 <CheckBox fx:id="searchDirNameBox" text="%searchDirName" GridPane.rowIndex="4"/>
                 <CheckBox fx:id="searchContentBox" text="%searchContent" GridPane.rowIndex="5"/>
                 <CheckBox fx:id="includeDirNameBox" text="%includeDirName" GridPane.rowIndex="6"
-                          GridPane.columnSpan="2"/>
+                          GridPane.columnSpan="2" disable="true"/>
 
                 <Button fx:id="searchButton" GridPane.columnIndex="1" GridPane.rowSpan="2" onAction="#searchAction"
                         text="%search" prefWidth="100" prefHeight="30"/>
@@ -135,7 +135,7 @@
                 <TableColumn fx:id="fileNameCol" text="%fileName" minWidth="360"/>
                 <TableColumn text="%size" minWidth="100"/>
                 <TableColumn text="%fileType" minWidth="180"/>
-                <TableColumn text="%matchMode" minWidth="100"/>
+                <TableColumn fx:id="matchingModeCol" text="%matchMode" minWidth="100"/>
             </columns>
         </TableView>
 

@@ -1,12 +1,11 @@
-package trashsoftware.deepSearcher2.items;
+package trashsoftware.deepSearcher2.guiItems;
 
 import trashsoftware.deepSearcher2.controllers.settingsPages.Page;
-import trashsoftware.deepSearcher2.controllers.settingsPages.SettingsPage;
 
 public class SettingsItem {
 
-    private String name;
-    private Page page;
+    private final String name;
+    private final Page page;
 
     public SettingsItem(String name, Page page) {
         this.name = name;

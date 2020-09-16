@@ -1,12 +1,20 @@
 package trashsoftware.deepSearcher2.searcher;
 
-public interface StringMatcher {
+public abstract class StringMatcher {
+
+    protected final String string;
+
+    StringMatcher(String string) {
+        this.string = string;
+    }
 
     /**
-     * Returns {@code true} if the <code>target</code> is in this {@code StringMatcher}.
+     * Returns the first occurrence position of {@code pattern} in {@code this.string}, {@code -1} if not found
      *
-     * @param pattern the pattern to be matched
-     * @return {@code true} if the <code>target</code> is in this {@code StringMatcher}
+     * @param pattern the target string fragment
+     * @return the first occurrence position of {@code pattern} in {@code this.string}, {@code -1} if not found
      */
-    boolean contains(String pattern);
+    abstract int search(String pattern);
 }
+
+

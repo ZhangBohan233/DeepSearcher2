@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.items;
+package trashsoftware.deepSearcher2.guiItems;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;

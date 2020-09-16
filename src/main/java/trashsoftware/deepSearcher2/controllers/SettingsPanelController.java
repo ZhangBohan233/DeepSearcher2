@@ -6,7 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.*;
-import trashsoftware.deepSearcher2.items.SettingsItem;
+import trashsoftware.deepSearcher2.guiItems.SettingsItem;
 
 import java.io.IOException;
 import java.net.URL;

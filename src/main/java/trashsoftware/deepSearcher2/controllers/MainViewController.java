@@ -26,8 +26,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.json.JSONArray;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
-import trashsoftware.deepSearcher2.items.FormatItem;
-import trashsoftware.deepSearcher2.items.ResultItem;
+import trashsoftware.deepSearcher2.guiItems.FormatItem;
+import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
 import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
@@ -49,6 +49,9 @@ public class MainViewController implements Initializable {
 
     @FXML
     TableColumn<ResultItem, String> fileNameCol;
+
+    @FXML
+    TableColumn<ResultItem, String> matchingModeCol;
 
     @FXML
     TableView<FormatItem> formatTable;
@@ -106,6 +109,7 @@ public class MainViewController implements Initializable {
 
         setResultTableFactory();
         addFileNameColumnHoverListener();
+        addMatchingModeColumnHoverListener();
         addResultTableClickListeners();
         setFormatTableFactory();
         addDirListListener();
@@ -218,11 +222,13 @@ public class MainViewController implements Initializable {
         TableColumn<ResultItem, ?> fileSizeCol = resultTable.getColumns().get(1);
         TableColumn<ResultItem, ?> fileTypeCol = resultTable.getColumns().get(2);
         TableColumn<ResultItem, ?> matchModeCol = resultTable.getColumns().get(3);
+//        TableColumn<ResultItem, ?> infoCol = resultTable.getColumns().get(4);
 
         fileNameCol.setCellValueFactory(new PropertyValueFactory<>("Name"));
         fileSizeCol.setCellValueFactory(new PropertyValueFactory<>("Size"));
         fileTypeCol.setCellValueFactory(new PropertyValueFactory<>("Type"));
         matchModeCol.setCellValueFactory(new PropertyValueFactory<>("Mode"));
+//        infoCol.setCellValueFactory(new PropertyValueFactory<>("Info"));
     }
 
     private void setFormatTableFactory() {
@@ -255,6 +261,41 @@ public class MainViewController implements Initializable {
                                     tp.setText(getText());
 
                                     resultTable.setTooltip(tp);
+                                } else {
+                                    resultTable.setTooltip(null);
+                                }
+                            });
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    private void addMatchingModeColumnHoverListener() {
+        matchingModeCol.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<ResultItem, String> call(TableColumn<ResultItem, String> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setText(null);
+                        } else {
+                            setText(item);
+
+                            hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
+                                                         Boolean isNowHovered) -> {
+                                if (isNowHovered && !isEmpty()) {
+                                    ResultItem res = getTableRow().getItem();
+                                    if (res != null) {
+                                        String tips = res.showInfo();
+                                        Tooltip tp = new Tooltip();
+                                        tp.setText(tips);
+
+                                        resultTable.setTooltip(tp);
+                                    }
                                 } else {
                                     resultTable.setTooltip(null);
                                 }
@@ -359,6 +400,20 @@ public class MainViewController implements Initializable {
             }
             Configs.writeStringCache("matchRegex", String.valueOf(t1));
         }));
+        searchFileNameBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                includeDirNameBox.setDisable(false);
+            } else if (!searchDirNameBox.isSelected()) {
+                includeDirNameBox.setDisable(true);
+            }
+        }));
+        searchDirNameBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
+            if (t1) {
+                includeDirNameBox.setDisable(false);
+            } else if (!searchFileNameBox.isSelected()) {
+                includeDirNameBox.setDisable(true);
+            }
+        }));
 
         addCheckBoxBasicListener(searchFileNameBox, "searchFileName");
         addCheckBoxBasicListener(searchDirNameBox, "searchDirName");
@@ -462,12 +517,12 @@ public class MainViewController implements Initializable {
         try {
             long beginTime = System.currentTimeMillis();
             PrefSet prefSet = new PrefSet.PrefSetBuilder()
-                    .matchCase(false)
+                    .caseSensitive(false)
                     .setMatchAll(matchAllRadioBtn.isSelected())
                     .searchFileName(searchFileNameBox.isSelected())
                     .searchDirName(searchDirNameBox.isSelected())
                     .includePathName(includeDirNameBox.isSelected())
-                    .matchCase(matchCaseBox.isSelected())
+                    .caseSensitive(matchCaseBox.isSelected())
                     .matchWord(matchWordBox.isSelected())
                     .matchRegex(matchRegexBox.isSelected())
                     .setTargets(getTargets())

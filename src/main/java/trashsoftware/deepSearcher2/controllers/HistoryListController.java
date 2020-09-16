@@ -3,15 +3,13 @@ package trashsoftware.deepSearcher2.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Separator;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.Main;
-import trashsoftware.deepSearcher2.items.HistoryItem;
+import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.net.URL;
