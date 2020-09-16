@@ -171,8 +171,7 @@ class PdfReader extends TwoKeysSearcher {
 
                 int endPage = document.getNumberOfPages();
 
-                int i = 1;
-                for (; i < endPage; i++) {
+                for (int i = 1; i < endPage; i++) {
                     stripper.setStartPage(i);
                     stripper.setEndPage(i + 1);
                     String page = stripper.getText(document);
