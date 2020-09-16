@@ -4,32 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/MatchInfoViewController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/ContentSearchingResult.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/matchInfoView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/HistoryListController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/HistoryListController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/MainViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/MainViewController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/SettingsPanelController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/controllers/SettingsPanelController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/items/FormatItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/guiItems/FormatItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/items/HistoryItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/guiItems/HistoryItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/items/ResultItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/guiItems/ResultItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/items/SettingsItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/guiItems/SettingsItem.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/ContentReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/ContentSearcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/Matchers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/RegularMatchers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/PrefSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/PrefSet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/RegexMatchers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/RegexMatchers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/Searcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/Searcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/StringMatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/StringMatcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/WordMatchers.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/searcher/WordMatchers.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/util/Configs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/trashsoftware/deepSearcher2/util/Configs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_en_US.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_en_US.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_zh_CN.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/bundles/LangBundle_zh_CN.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/mainView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/trashsoftware/deepSearcher2/fxml/mainView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/userData/excludedDirs.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/userData/excludedDirs.cfg" afterDir="false" />
-    </list>
+    <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -344,7 +319,7 @@
       <workItem from="1593851223202" duration="10002000" />
       <workItem from="1593928315799" duration="4914000" />
       <workItem from="1594190454414" duration="24000" />
-      <workItem from="1600239146974" duration="18313000" />
+      <workItem from="1600239146974" duration="18668000" />
     </task>
     <servers />
   </component>
@@ -372,22 +347,22 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="574" y="118" key="#com.intellij.ide.util.MemberChooser/0.0.1536.824@0.0.1536.824" timestamp="1600257161495" />
-    <state width="1493" height="208" key="GridCell.Tab.0.bottom" timestamp="1600258244135">
+    <state width="1493" height="208" key="GridCell.Tab.0.bottom" timestamp="1600258624498">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1600258244135" />
-    <state width="1493" height="208" key="GridCell.Tab.0.center" timestamp="1600258244134">
+    <state width="1493" height="208" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1600258624498" />
+    <state width="1493" height="208" key="GridCell.Tab.0.center" timestamp="1600258624497">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="208" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1600258244134" />
-    <state width="1493" height="208" key="GridCell.Tab.0.left" timestamp="1600258244134">
+    <state width="1493" height="208" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1600258624497" />
+    <state width="1493" height="208" key="GridCell.Tab.0.left" timestamp="1600258624497">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="208" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1600258244134" />
-    <state width="1493" height="208" key="GridCell.Tab.0.right" timestamp="1600258244135">
+    <state width="1493" height="208" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1600258624497" />
+    <state width="1493" height="208" key="GridCell.Tab.0.right" timestamp="1600258624497">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="208" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1600258244135" />
+    <state width="1493" height="208" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1600258624497" />
     <state x="299" y="67" key="Maven.ArtifactSearchDialog" timestamp="1593852027552">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
