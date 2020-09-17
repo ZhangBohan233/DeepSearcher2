@@ -56,11 +56,11 @@ public class ConfirmBox implements Initializable {
         try {
             FXMLLoader loader = new FXMLLoader(
                     parent.getClass().getResource("/trashsoftware/deepSearcher2/fxml/confirmBox.fxml"),
-                    Main.getBundle());
+                    Client.getBundle());
             Parent root = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle(Main.getBundle().getString("pleaseConfirm"));
+            stage.setTitle(Client.getBundle().getString("pleaseConfirm"));
             stage.initStyle(StageStyle.UTILITY);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(ownerStage);

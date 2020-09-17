@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import trashsoftware.deepSearcher2.Main;
+import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.NamedLocale;
@@ -21,7 +22,7 @@ public class GeneralPage extends SettingsPage {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/general.fxml"),
-                Main.getBundle());
+                Client.getBundle());
         loader.setRoot(this);
         loader.setController(this);
 
@@ -37,6 +38,9 @@ public class GeneralPage extends SettingsPage {
             NamedLocale selectedLocale = languageBox.getSelectionModel().getSelectedItem();
             Configs.writeConfig("locale", selectedLocale.getConfigValue());
             statusSaver.store(languageBox);
+
+            getController().getStage().close();
+            Client.restartClient();
         }
     }
 
@@ -44,7 +48,7 @@ public class GeneralPage extends SettingsPage {
         List<NamedLocale> localeList = Configs.getAllLocales();
         for (NamedLocale locale : localeList) {
             languageBox.getItems().add(locale);
-            if (Main.getBundle().getLocale().equals(locale.getLocale())) {
+            if (Client.getBundle().getLocale().equals(locale.getLocale())) {
                 languageBox.getSelectionModel().selectLast();
             }
         }

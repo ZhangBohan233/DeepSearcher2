@@ -10,6 +10,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import trashsoftware.deepSearcher2.Main;
+import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.controllers.widgets.FormatInputBox;
 import trashsoftware.deepSearcher2.util.Configs;
@@ -32,7 +33,7 @@ public class ExclusionPage extends SettingsPage {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/exclusion.fxml"),
-                Main.getBundle());
+                Client.getBundle());
         loader.setRoot(this);
         loader.setController(this);
 
@@ -91,10 +92,10 @@ public class ExclusionPage extends SettingsPage {
     void addExcludedFormat() throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/widgets/formatInputBox.fxml"),
-                Main.getBundle());
+                Client.getBundle());
         Parent root = loader.load();
         Stage stage = new Stage();
-        stage.setTitle(Main.getBundle().getString("excludedFormats"));
+        stage.setTitle(Client.getBundle().getString("excludedFormats"));
         stage.initStyle(StageStyle.UTILITY);
         stage.setScene(new Scene(root));
 

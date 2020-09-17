@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import trashsoftware.deepSearcher2.Main;
+import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 
@@ -19,7 +20,7 @@ public class AdvancedSearchingPage extends SettingsPage {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/advancedSearching.fxml"),
-                Main.getBundle());
+                Client.getBundle());
         loader.setRoot(this);
         loader.setController(this);
 
@@ -78,7 +79,7 @@ public class AdvancedSearchingPage extends SettingsPage {
 
         AlgorithmBundle(String algCode) {
             this.algCode = algCode;
-            this.showingName = Main.getBundle().getString(algCode);
+            this.showingName = Client.getBundle().getString(algCode);
         }
 
         @Override

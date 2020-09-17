@@ -3,6 +3,7 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import trashsoftware.deepSearcher2.Main;
+import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.ConfirmBox;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
@@ -16,7 +17,7 @@ public class OthersPage extends SettingsPage {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/settingsPages/others.fxml"),
-                Main.getBundle());
+                Client.getBundle());
         loader.setRoot(this);
         loader.setController(this);
 
@@ -39,24 +40,24 @@ public class OthersPage extends SettingsPage {
 
     @FXML
     void clearHistory() {
-        showConfirm(Main.getBundle().getString("confirmClearHistory"),
-                Main.getBundle().getString("clear"),
+        showConfirm(Client.getBundle().getString("confirmClearHistory"),
+                Client.getBundle().getString("clear"),
                 Configs::clearAllHistory);
     }
 
     @FXML
     void restoreSettings() {
-        showConfirm(Main.getBundle().getString("confirmRestoreSettings") +
-                        "\n" + Main.getBundle().getString("needRestart"),
-                Main.getBundle().getString("clear"),
+        showConfirm(Client.getBundle().getString("confirmRestoreSettings") +
+                        "\n" + Client.getBundle().getString("needRestart"),
+                Client.getBundle().getString("clear"),
                 Configs::clearAllHistory);
     }
 
     @FXML
     void clearAllData() {
-        showConfirm(Main.getBundle().getString("confirmClearData") +
-                        "\n" + Main.getBundle().getString("needRestart"),
-                Main.getBundle().getString("clear"),
+        showConfirm(Client.getBundle().getString("confirmClearData") +
+                        "\n" + Client.getBundle().getString("needRestart"),
+                Client.getBundle().getString("clear"),
                 Configs::clearAllHistory);
     }
 

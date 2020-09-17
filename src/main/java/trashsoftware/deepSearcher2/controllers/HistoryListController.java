@@ -58,7 +58,7 @@ public class HistoryListController implements Initializable {
     @FXML
     void clearHistoryAction() {
         ConfirmBox confirmBox = ConfirmBox.createConfirmBox(this, stage);
-        confirmBox.setMessage(Main.getBundle().getString("confirmClearHistory"));
+        confirmBox.setMessage(Client.getBundle().getString("confirmClearHistory"));
         confirmBox.setOnConfirmed(() -> {
             Configs.clearAllHistory();
             hideRightPane();
