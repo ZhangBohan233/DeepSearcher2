@@ -2,7 +2,8 @@ package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import org.apache.poi.xslf.usermodel.*;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
-import trashsoftware.deepSearcher2.searcher.StringMatcher;
+import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
+import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,8 +11,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class PptxSearcher extends TwoIntOneStrSearcher {
-    public PptxSearcher(File file, Class<? extends StringMatcher> matcherClass, boolean caseSensitive) {
-        super(file, matcherClass, caseSensitive, ContentSearchingResult.PAGES_KEY, ContentSearchingResult.CHARS_KEY);
+    public PptxSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
+        super(file, matcherFactory, caseSensitive, ContentSearchingResult.PAGES_KEY, ContentSearchingResult.CHARS_KEY);
     }
 
     @Override

@@ -8,9 +8,9 @@ import java.util.Set;
 
 public class PrefSet {
 
-    static final int NORMAL = 0;
-    static final int WORD = 1;
-    static final int REGEX = 2;
+    public static final int NORMAL = 0;
+    public static final int WORD = 1;
+    public static final int REGEX = 2;
 
     private boolean matchAll;
     private List<File> searchDirs;
@@ -162,21 +162,21 @@ public class PrefSet {
         else return NORMAL;
     }
 
-    String getMatchingAlgorithm() {
+    public String getMatchingAlgorithm() {
         if (matchingAlg == null) {
             matchingAlg = Configs.getCurrentSearchingAlgorithm();
         }
         return matchingAlg;
     }
 
-    String getWordMatchingAlgorithm() {
+    public String getWordMatchingAlgorithm() {
         if (wordMatchingAlg == null) {
             wordMatchingAlg = Configs.getCurrentWordSearchingAlgorithm();
         }
         return wordMatchingAlg;
     }
 
-    String getRegexAlgorithm() {
+    public String getRegexAlgorithm() {
         if (regexMatchingAlg == null) {
             regexMatchingAlg = Configs.getCurrentRegexSearchingAlgorithm();
         }

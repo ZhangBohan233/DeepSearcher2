@@ -18,5 +18,6 @@ module DeepSearcher {
 
     exports trashsoftware.deepSearcher2.controllers;
     exports trashsoftware.deepSearcher2.searcher;
+    exports trashsoftware.deepSearcher2.searcher.matchers;
     exports trashsoftware.deepSearcher2.guiItems;
 }

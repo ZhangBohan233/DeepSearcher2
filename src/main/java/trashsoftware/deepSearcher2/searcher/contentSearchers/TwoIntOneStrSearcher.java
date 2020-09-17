@@ -2,7 +2,8 @@ package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import trashsoftware.deepSearcher2.searcher.ContentSearcher;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
-import trashsoftware.deepSearcher2.searcher.StringMatcher;
+import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
+import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
     private final List<Integer> found2s = new ArrayList<>();
     private final List<Integer> strValues = new ArrayList<>();
 
-    public TwoIntOneStrSearcher(File file, Class<? extends StringMatcher> matcherClass, boolean caseSensitive,
+    public TwoIntOneStrSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive,
                                 int key1, int key2) {
-        super(file, matcherClass, caseSensitive);
+        super(file, matcherFactory, caseSensitive);
 
         this.key1 = key1;
         this.key2 = key2;
@@ -67,7 +68,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
 
     protected void searchInString(String string, List<String> targets, int value1, int value2Base, int strValue) {
         if (!caseSensitive) string = string.toLowerCase();
-        StringMatcher matcher = StringMatcher.createMatcher(matcherClass, string);
+        StringMatcher matcher = matcherFactory.createMatcher(string);
         for (String tar : targets) {
             int pos = matcher.search(tar);
             if (pos >= 0) {

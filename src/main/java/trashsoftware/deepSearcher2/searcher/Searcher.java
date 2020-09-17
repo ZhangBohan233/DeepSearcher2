@@ -5,6 +5,8 @@ import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.ObservableList;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
+import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
+import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
@@ -42,12 +44,15 @@ public class Searcher {
 
     private boolean searching = true;
 
+    private final MatcherFactory nameMatcherFactory;
+
     public Searcher(PrefSet prefSet, ObservableList<ResultItem> tableList, ResourceBundle bundle,
                     ResourceBundle fileTypeBundle) {
         this.prefSet = prefSet;
         this.tableList = tableList;
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
+        this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
     }
 
     public void search() {
@@ -100,7 +105,7 @@ public class Searcher {
     private void matchNameAll(File file) {
         String name = getSearchingFileName(file);
 
-        StringMatcher matcher = StringMatcher.createMatcher(getMatcherClass(), name);
+        StringMatcher matcher = nameMatcherFactory.createMatcher(name);
         for (String target : prefSet.getTargets()) {
             if (matcher.search(target) < 0) return;
         }
@@ -111,7 +116,7 @@ public class Searcher {
     private void matchNameAny(File file) {
         String name = getSearchingFileName(file);
 
-        StringMatcher matcher = StringMatcher.createMatcher(getMatcherClass(), name);
+        StringMatcher matcher = nameMatcherFactory.createMatcher(name);
         for (String target : prefSet.getTargets()) {
             if (matcher.search(target) >= 0) {
                 addNameResult(file);
@@ -122,15 +127,16 @@ public class Searcher {
 
     private void matchFileContent(File file) {
         String ext = Util.getFileExtension(file.getName());
-        Class<? extends StringMatcher> matcherClass = getMatcherClass();
+        MatcherFactory matcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
         if (prefSet.getExtensions().contains(ext)) {
             ContentSearcher searcher;
             if (PLAIN_TEXT_FORMAT.contains(ext)) {
-                searcher = new PlainTextSearcher(file, matcherClass, prefSet.isCaseSensitive());
+                searcher = new PlainTextSearcher(file, matcherFactory, prefSet.isCaseSensitive());
             } else if (FORMAT_MAP.containsKey(ext)) {
                 try {
-                    searcher = FORMAT_MAP.get(ext).getDeclaredConstructor(File.class, Class.class, boolean.class)
-                            .newInstance(file, matcherClass, prefSet.isCaseSensitive());
+                    searcher = FORMAT_MAP.get(ext)
+                            .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
+                            .newInstance(file, matcherFactory, prefSet.isCaseSensitive());
                 } catch (InvocationTargetException |
                         NoSuchMethodException |
                         InstantiationException |
@@ -160,39 +166,39 @@ public class Searcher {
         }
     }
 
-    private Class<? extends StringMatcher> getMatcherClass() {
-        if (prefSet.getMatchMode() == PrefSet.NORMAL) {
-            switch (prefSet.getMatchingAlgorithm()) {
-                case "algNative":
-                    return NativeMatcher.class;
-                case "algNaive":
-                    return NaiveMatcher.class;
-                case "algKmp":
-                    return KMPMatcher.class;
-                case "algSunday":
-                    return SundayMatcher.class;
-                default:
-                    throw new RuntimeException("Not a valid matching algorithm");
-            }
-        } else if (prefSet.getMatchMode() == PrefSet.WORD) {
-            switch (prefSet.getWordMatchingAlgorithm()) {
-                case "algNaive":
-                    return NaiveWordMatcher.class;
-                case "algHash":
-                    return HashMapWordSplitter.class;
-                default:
-                    throw new RuntimeException("Not a valid matching algorithm for words");
-            }
-        } else if (prefSet.getMatchMode() == PrefSet.REGEX) {
-            if (prefSet.getRegexAlgorithm().equals("algNative")) {
-                return NativeRegexMatcher.class;
-            } else {
-                throw new RuntimeException("Not a valid matching algorithm for regex");
-            }
-        } else {
-            throw new RuntimeException("Invalid match mode");
-        }
-    }
+//    private Class<? extends StringMatcher> getMatcherClass() {
+//        if (prefSet.getMatchMode() == PrefSet.NORMAL) {
+//            switch (prefSet.getMatchingAlgorithm()) {
+//                case "algNative":
+//                    return NativeMatcher.class;
+//                case "algNaive":
+//                    return NaiveMatcher.class;
+//                case "algKmp":
+//                    return KMPMatcher.class;
+//                case "algSunday":
+//                    return SundayMatcher.class;
+//                default:
+//                    throw new RuntimeException("Not a valid matching algorithm");
+//            }
+//        } else if (prefSet.getMatchMode() == PrefSet.WORD) {
+//            switch (prefSet.getWordMatchingAlgorithm()) {
+//                case "algNaive":
+//                    return NaiveWordMatcher.class;
+//                case "algHash":
+//                    return HashedWordMatcher.class;
+//                default:
+//                    throw new RuntimeException("Not a valid matching algorithm for words");
+//            }
+//        } else if (prefSet.getMatchMode() == PrefSet.REGEX) {
+//            if (prefSet.getRegexAlgorithm().equals("algNative")) {
+//                return NativeRegexMatcher.class;
+//            } else {
+//                throw new RuntimeException("Not a valid matching algorithm for regex");
+//            }
+//        } else {
+//            throw new RuntimeException("Invalid match mode");
+//        }
+//    }
 
     private void updateResultCount() {
         resultCountWrapper.setValue(tableList.size());

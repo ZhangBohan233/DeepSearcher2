@@ -1,15 +1,14 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
-import trashsoftware.deepSearcher2.searcher.StringMatcher;
-import trashsoftware.deepSearcher2.searcher.contentSearchers.TwoKeysSearcher;
+import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
+import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 public class PlainTextSearcher extends TwoKeysSearcher {
 
@@ -20,8 +19,8 @@ public class PlainTextSearcher extends TwoKeysSearcher {
      */
 //    private StringBuilder wholeFileBuilder = new StringBuilder();
 
-    public PlainTextSearcher(File file, Class<? extends StringMatcher> matcherClass, boolean caseSensitive) {
-        super(file, matcherClass, caseSensitive, ContentSearchingResult.LINES_KEY, ContentSearchingResult.CHARS_KEY);
+    public PlainTextSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
+        super(file, matcherFactory, caseSensitive, ContentSearchingResult.LINES_KEY, ContentSearchingResult.CHARS_KEY);
     }
 
     @Override

@@ -1,17 +1,19 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
+
 import java.io.*;
 import java.util.*;
 
 public abstract class ContentSearcher {
 
     protected File file;
-    protected Class<? extends StringMatcher> matcherClass;
+    protected MatcherFactory matcherFactory;
     protected boolean caseSensitive;
 
-    public ContentSearcher(File file, Class<? extends StringMatcher> matcherClass, boolean caseSensitive) {
+    public ContentSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
         this.file = file;
-        this.matcherClass = matcherClass;
+        this.matcherFactory = matcherFactory;
         this.caseSensitive = caseSensitive;
     }
 

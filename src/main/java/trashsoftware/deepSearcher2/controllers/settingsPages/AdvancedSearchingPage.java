@@ -47,6 +47,7 @@ public class AdvancedSearchingPage extends SettingsPage {
 
     private void initAlgorithmBoxes() {
         setAlgorithmBox(algorithmBox, Configs.getCurrentSearchingAlgorithm(),
+                new AlgorithmBundle("algAuto"),
                 new AlgorithmBundle("algNative"),
                 new AlgorithmBundle("algNaive"),
                 new AlgorithmBundle("algKmp"),
@@ -72,8 +73,8 @@ public class AdvancedSearchingPage extends SettingsPage {
     }
 
     private static class AlgorithmBundle {
-        private String algCode;
-        private String showingName;
+        private final String algCode;
+        private final String showingName;
 
         AlgorithmBundle(String algCode) {
             this.algCode = algCode;

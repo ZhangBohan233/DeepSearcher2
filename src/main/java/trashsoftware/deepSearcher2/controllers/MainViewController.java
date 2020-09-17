@@ -54,6 +54,9 @@ public class MainViewController implements Initializable {
     TableColumn<ResultItem, String> matchingModeCol;
 
     @FXML
+    TableColumn<FormatItem, String> formatNameCol;
+
+    @FXML
     TableView<FormatItem> formatTable;
 
     @FXML
@@ -110,6 +113,7 @@ public class MainViewController implements Initializable {
         setResultTableFactory();
         addFileNameColumnHoverListener();
         addMatchingModeColumnHoverListener();
+        addFormatNameColumnHoverListener();
         addResultTableClickListeners();
         setFormatTableFactory();
         addDirListListener();
@@ -263,6 +267,37 @@ public class MainViewController implements Initializable {
                                     resultTable.setTooltip(tp);
                                 } else {
                                     resultTable.setTooltip(null);
+                                }
+                            });
+                        }
+                    }
+                };
+            }
+        });
+    }
+
+    private void addFormatNameColumnHoverListener() {
+        formatNameCol.setCellFactory(new Callback<>() {
+            @Override
+            public TableCell<FormatItem, String> call(TableColumn<FormatItem, String> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setText(null);
+                        } else {
+                            setText(item);
+
+                            hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
+                                                         Boolean isNowHovered) -> {
+                                if (isNowHovered && !isEmpty()) {
+                                    Tooltip tp = new Tooltip();
+                                    tp.setText(getText());
+
+                                    formatTable.setTooltip(tp);
+                                } else {
+                                    formatTable.setTooltip(null);
                                 }
                             });
                         }

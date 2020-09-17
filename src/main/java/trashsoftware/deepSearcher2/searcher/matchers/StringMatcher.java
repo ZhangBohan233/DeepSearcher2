@@ -1,4 +1,6 @@
-package trashsoftware.deepSearcher2.searcher;
+package trashsoftware.deepSearcher2.searcher.matchers;
+
+import trashsoftware.deepSearcher2.searcher.InvalidClassException;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -6,7 +8,7 @@ public abstract class StringMatcher {
 
     protected final String string;
 
-    StringMatcher(String string) {
+    public StringMatcher(String string) {
         this.string = string;
     }
 

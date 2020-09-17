@@ -1,10 +1,12 @@
-package trashsoftware.deepSearcher2.searcher;
+package trashsoftware.deepSearcher2.searcher.matchers.regexMatchers;
 
-class NativeRegexMatcher extends StringMatcher {
+import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
+
+public class NativeRegexMatcher extends StringMatcher {
 
     private final String string;
 
-    NativeRegexMatcher(String string) {
+    public NativeRegexMatcher(String string) {
         super(string);
         this.string = string;
     }
