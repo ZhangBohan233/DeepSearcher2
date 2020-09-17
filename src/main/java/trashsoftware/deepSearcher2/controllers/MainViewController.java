@@ -25,7 +25,9 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.json.JSONArray;
+import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
+import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
@@ -57,7 +59,7 @@ public class MainViewController implements Initializable {
     TableColumn<FormatItem, String> formatNameCol;
 
     @FXML
-    TableView<FormatItem> formatTable;
+    FormatTable formatTable;
 
     @FXML
     TextFieldList searchItemsList;
@@ -79,6 +81,9 @@ public class MainViewController implements Initializable {
 
     @FXML
     CheckBox selectAllBox;
+
+    @FXML
+    ComboBox<FormatFilterItem> filterBox;
 
     @FXML
     Button searchButton;
@@ -111,11 +116,12 @@ public class MainViewController implements Initializable {
         bundle = resourceBundle;
 
         setResultTableFactory();
+        setFormatTableFactory();
+
         addFileNameColumnHoverListener();
         addMatchingModeColumnHoverListener();
         addFormatNameColumnHoverListener();
         addResultTableClickListeners();
-        setFormatTableFactory();
         addDirListListener();
         addTargetListListener();
 
@@ -125,9 +131,13 @@ public class MainViewController implements Initializable {
         addCheckBoxesListeners();
         loadSavedCheckBoxesStatus();
 
+        addFilterBoxListener();
+
         addSearchItem();  // Add a default search field
 
         fillFormatTable();
+        fillFilterBox();
+        filterBox.getSelectionModel().select(0);  // this step must run after 'fillFormatTable()'
 
         // restore saved status
         restoreSavedFormats();
@@ -342,41 +352,12 @@ public class MainViewController implements Initializable {
         });
     }
 
-    private void addResultTableClickListeners() {
-//        resultTable.setRowFactory(new Callback<>() {
-//            @Override
-//            public TableRow<ResultItem> call(TableView<ResultItem> resultItemTableView) {
-//                return new TableRow<>() {
-//                    @Override
-//                    protected void updateItem(ResultItem resultItem, boolean b) {
-//                        super.updateItem(resultItem, b);
-//
-//                        setOnMouseClicked(mouseEvent -> {
-//                            File file = resultItem.getFile();
-//                            if (activeContextMenu != null) {
-//                                activeContextMenu.hide();
-//                            }
-//                            if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-//                                // left button double clicked
-//                                openFile(file);
-//                                return;
-//                            }
-//                            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-//                                activeContextMenu = new ContextMenu();
-//                                String openFileText = bundle.getString("openFile");
-//                                MenuItem openFile = new MenuItem(openFileText);
-//                                openFile.setOnAction(e -> MainViewController.this.openFile(file));
-//                                MenuItem openLocation = new MenuItem(bundle.getString("openFileLocation"));
-//                                openLocation.setOnAction(e -> MainViewController.this.openFile(file.getParentFile()));
-//                                activeContextMenu.getItems().addAll(openFile, openLocation);
-//                                activeContextMenu.show(resultTable, mouseEvent.getScreenX(), mouseEvent.getScreenY());
-//                            }
-//                        });
-//                    }
-//                };
-//            }
-//        });
+    private void addFilterBoxListener() {
+        filterBox.getSelectionModel().selectedItemProperty().addListener(((observableValue, formatFilterItem, t1) ->
+                formatTable.setFilter(t1)));
+    }
 
+    private void addResultTableClickListeners() {
         resultTable.setRowFactory(tableView -> {
             final TableRow<ResultItem> row = new TableRow<>();
             final ContextMenu contextMenu = new ContextMenu();
@@ -517,14 +498,25 @@ public class MainViewController implements Initializable {
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
-            formatTable.getItems().add(formatItem);
+            formatTable.addItem(formatItem);
         }
-        Collections.sort(formatTable.getItems());
+        Collections.sort(formatTable.getAllItems());
+    }
+
+    private void fillFilterBox() {
+        filterBox.getItems().clear();
+        filterBox.getItems().addAll(
+                new FormatFilterItem(FormatFilterItem.FILTER_ALL, bundle.getString("allFiles")),
+                new FormatFilterItem(FormatFilterItem.FILTER_TEXT, bundle.getString("textFiles")),
+                new FormatFilterItem(FormatFilterItem.FILTER_CODES, bundle.getString("sourceCodeFiles")),
+                new FormatFilterItem(FormatFilterItem.FILTER_MS_OFFICE, bundle.getString("officeFiles")),
+                new FormatFilterItem(FormatFilterItem.FILTER_OTHERS, bundle.getString("otherFiles"))
+        );
     }
 
     private void restoreSavedFormats() {
         Set<String> savedFormats = Configs.getAllFormats();
-        for (FormatItem formatItem : formatTable.getItems())
+        for (FormatItem formatItem : formatTable.getAllItems())
             if (savedFormats.contains(formatItem.getExtension()))
                 formatItem.getCheckBox().setSelected(true);
     }
@@ -537,13 +529,13 @@ public class MainViewController implements Initializable {
     }
 
     private void selectAllFormats() {
-        for (FormatItem formatItem : formatTable.getItems()) {
+        for (FormatItem formatItem : formatTable.getAllItems()) {
             formatItem.getCheckBox().setSelected(true);
         }
     }
 
     private void deselectAllFormats() {
-        for (FormatItem formatItem : formatTable.getItems()) {
+        for (FormatItem formatItem : formatTable.getAllItems()) {
             formatItem.getCheckBox().setSelected(false);
         }
     }
@@ -670,7 +662,7 @@ public class MainViewController implements Initializable {
     private Set<String> getExtensions() {
         if (searchContentBox.isSelected()) {
             Set<String> set = new HashSet<>();
-            for (FormatItem formatItem : formatTable.getItems()) {
+            for (FormatItem formatItem : formatTable.getAllItems()) {
                 if (formatItem.getCheckBox().isSelected()) {
                     set.add(formatItem.getExtension());
                 }

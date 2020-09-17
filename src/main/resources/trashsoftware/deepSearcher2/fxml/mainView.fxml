@@ -24,6 +24,8 @@
 <?import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList?>
 
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.ComboBox?>
+<?import trashsoftware.deepSearcher2.controllers.widgets.FormatTable?>
 <VBox fx:controller="trashsoftware.deepSearcher2.controllers.MainViewController"
       xmlns:fx="http://javafx.com/fxml" prefWidth="1080" prefHeight="640">
 
@@ -120,13 +122,13 @@
                 <CheckBox fx:id="matchRegexBox" text="%matchRegex" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
             </GridPane>
 
-            <TableView fx:id="formatTable" GridPane.rowIndex="3" GridPane.columnSpan="2" disable="true">
+            <FormatTable fx:id="formatTable" GridPane.rowIndex="3" GridPane.columnSpan="2" disable="true">
                 <columns>
                     <TableColumn minWidth="25" maxWidth="25"/>
                     <TableColumn fx:id="formatNameCol" text="%format" prefWidth="170"/>
                     <TableColumn text="%extension" prefWidth="50"/>
                 </columns>
-            </TableView>
+            </FormatTable>
 
         </GridPane>
 
@@ -139,11 +141,13 @@
             </columns>
         </TableView>
 
-        <HBox GridPane.rowIndex="1">
+        <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2">
             <padding>
                 <Insets left="5"/>
             </padding>
             <CheckBox fx:id="selectAllBox" text="%selectAll" onAction="#selectAllAction" disable="true"/>
+            <ComboBox fx:id="filterBox" prefWidth="150.0"/>
+            <Label text="%filter"/>
         </HBox>
 
         <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8">
