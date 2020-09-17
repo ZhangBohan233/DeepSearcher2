@@ -1,5 +1,8 @@
 package trashsoftware.deepSearcher2.searcher.matchers.regularMatchers;
 
+import org.apache.commons.collections4.Factory;
+import trashsoftware.deepSearcher2.searcher.matchers.FixedMatcherFactory;
+import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.util.HashMap;
@@ -46,9 +49,35 @@ public class SundayMatcher extends StringMatcher {
     }
 
     public static void main(String[] args) {
-        String txt = "猫把狗吃了";
-        String pat = "吃了";
-        SundayMatcher matcher = new SundayMatcher(txt);
-        System.out.println(matcher.search(pat));
+        int n = 1000;
+        int len = 10000;
+        String[] strings = new String[n];
+        String pat = "this is the target. that is not a target. This string is long";
+        for (int x = 0; x < n; x++) {
+            StringBuilder sb = new StringBuilder();
+            int pos = (int) (Math.random() * len);
+            int i = 0;
+            for (; i < pos; i++) {
+                sb.append((char) (Math.random() * 128));
+            }
+            sb.append(pat);
+            for (; i < len; i++) {
+                sb.append((char) (Math.random() * 128));
+            }
+            String str = sb.toString();
+            strings[x] = str;
+        }
+
+//        MatcherFactory mf = new FixedMatcherFactory(NativeMatcher.class);
+//        MatcherFactory mf = new FixedMatcherFactory(NaiveMatcher.class);
+        MatcherFactory mf = new FixedMatcherFactory(SundayMatcher.class);
+        long t1 = System.currentTimeMillis();
+        for (int x = 0; x < n; x++) {
+            StringMatcher matcher = mf.createMatcher(strings[x]);
+            for (int y = 0; y < 10; y++)
+                if (matcher.search(pat) < 0) System.out.println("err");
+        }
+        long t2 = System.currentTimeMillis();
+        System.out.println(t2 - t1);
     }
 }

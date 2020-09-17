@@ -4,11 +4,8 @@ import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 public class NativeRegexMatcher extends StringMatcher {
 
-    private final String string;
-
     public NativeRegexMatcher(String string) {
         super(string);
-        this.string = string;
     }
 
     @Override
