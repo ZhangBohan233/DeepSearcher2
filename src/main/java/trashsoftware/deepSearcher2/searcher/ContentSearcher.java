@@ -1,6 +1,5 @@
 package trashsoftware.deepSearcher2.searcher;
 
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
@@ -8,7 +7,6 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.hwpf.extractor.WordExtractor;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public abstract class ContentSearcher {
@@ -27,15 +25,13 @@ public abstract class ContentSearcher {
      * @param targets patterns to be searched
      * @return search result if all targets are found in this file, otherwise return {@code null}.
      */
-    abstract ContentSearchingResult searchAll(List<String> targets)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    abstract ContentSearchingResult searchAll(List<String> targets);
 
     /**
      * @param targets patterns to be searched
      * @return search result if at least one target is found in this file, otherwise return {@code null}.
      */
-    abstract ContentSearchingResult searchAny(List<String> targets)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    abstract ContentSearchingResult searchAny(List<String> targets);
 }
 
 abstract class TwoKeysSearcher extends ContentSearcher {
@@ -52,8 +48,7 @@ abstract class TwoKeysSearcher extends ContentSearcher {
     }
 
     @Override
-    public ContentSearchingResult searchAll(List<String> targets)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public ContentSearchingResult searchAll(List<String> targets) {
 
         Set<String> foundTargets = new HashSet<>();
         List<Integer> foundKey1s = new ArrayList<>();
@@ -69,8 +64,7 @@ abstract class TwoKeysSearcher extends ContentSearcher {
     }
 
     @Override
-    public ContentSearchingResult searchAny(List<String> targets)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public ContentSearchingResult searchAny(List<String> targets) {
         Set<String> foundTargets = new HashSet<>();
         List<Integer> foundKey1s = new ArrayList<>();
         List<Integer> foundKey2s = new ArrayList<>();
@@ -84,9 +78,22 @@ abstract class TwoKeysSearcher extends ContentSearcher {
         return null;
     }
 
+    protected void searchInString(String string, List<String> targets, Set<String> foundTargets,
+                                  List<Integer> found1, List<Integer> found2, int thisInValue1) {
+        if (!caseSensitive) string = string.toLowerCase();
+        StringMatcher matcher = StringMatcher.createMatcher(matcherClass, string);
+        for (String tar : targets) {
+            int pos = matcher.search(tar);
+            if (pos >= 0) {
+                foundTargets.add(tar);
+                found1.add(thisInValue1);
+                found2.add(pos);
+            }
+        }
+    }
+
     protected abstract void searchFile(List<String> targets, Set<String> foundTargets, List<Integer> foundKey1s,
-                             List<Integer> foundKey2s)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+                                       List<Integer> foundKey2s);
 }
 
 class PlainTextSearcher extends TwoKeysSearcher {
@@ -104,23 +111,13 @@ class PlainTextSearcher extends TwoKeysSearcher {
 
     @Override
     protected void searchFile(List<String> targets, Set<String> foundTargets, List<Integer> foundLines,
-                            List<Integer> foundChars)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+                              List<Integer> foundChars) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             String line;
             int lineCount = 1;
             while ((line = bufferedReader.readLine()) != null) {
-                if (!caseSensitive) line = line.toLowerCase();
-                StringMatcher matcher = matcherClass.getDeclaredConstructor(String.class).newInstance(line);
-                for (String tar : targets) {
-                    int pos = matcher.search(tar);
-                    if (pos >= 0) {
-                        foundTargets.add(tar);
-                        foundLines.add(lineCount);
-                        foundChars.add(pos);
-                    }
-                }
+                searchInString(line, targets, foundTargets, foundLines, foundChars, lineCount);
                 lineCount++;
             }
             bufferedReader.close();
@@ -142,27 +139,9 @@ class PdfReader extends TwoKeysSearcher {
         super(file, matcherClass, caseSensitive, ContentSearchingResult.PAGES_KEY, ContentSearchingResult.CHARS_KEY);
     }
 
-    public String read(File file) {
-        try {
-            PDDocument document = PDDocument.load(file);
-            if (!document.isEncrypted()) {
-
-                PDFTextStripper stripper = new PDFTextStripper();
-
-                String text = stripper.getText(document);
-                document.close();
-                return text;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
     @Override
     protected void searchFile(List<String> targets, Set<String> foundTargets,
-                              List<Integer> foundPages, List<Integer> foundChars)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+                              List<Integer> foundPages, List<Integer> foundChars) {
         try {
             PDDocument document = PDDocument.load(file);
             if (!document.isEncrypted()) {
@@ -176,16 +155,7 @@ class PdfReader extends TwoKeysSearcher {
                     stripper.setEndPage(i + 1);
                     String page = stripper.getText(document);
 
-                    if (!caseSensitive) page = page.toLowerCase();
-                    StringMatcher matcher = matcherClass.getDeclaredConstructor(String.class).newInstance(page);
-                    for (String tar : targets) {
-                        int pos = matcher.search(tar);
-                        if (pos >= 0) {
-                            foundTargets.add(tar);
-                            foundPages.add(i);
-                            foundChars.add(pos);
-                        }
-                    }
+                    searchInString(page, targets, foundTargets, foundPages, foundChars, i);
                 }
 
                 document.close();
@@ -204,7 +174,7 @@ class DocReader extends TwoKeysSearcher {
 
     @Override
     protected void searchFile(List<String> targets, Set<String> foundTargets, List<Integer> foundLines,
-                            List<Integer> foundChars) {
+                              List<Integer> foundChars) {
         try {
             FileInputStream fis = new FileInputStream(file);
             WordExtractor we = new WordExtractor(fis);
@@ -213,20 +183,11 @@ class DocReader extends TwoKeysSearcher {
 
             for (int i = 0; i < paragraphs.length; i++) {
                 String paragraph = paragraphs[i];
-                if (!caseSensitive) paragraph = paragraph.toLowerCase();
-                StringMatcher matcher = matcherClass.getDeclaredConstructor(String.class).newInstance(paragraph);
-                for (String tar : targets) {
-                    int pos = matcher.search(tar);
-                    if (pos >= 0) {
-                        foundTargets.add(tar);
-                        foundLines.add(i);
-                        foundChars.add(pos);
-                    }
-                }
+                searchInString(paragraph, targets, foundTargets, foundLines, foundChars, i);
             }
             fis.close();
             we.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -240,30 +201,17 @@ class DocxReader extends TwoKeysSearcher {
 
     @Override
     protected void searchFile(List<String> targets, Set<String> foundTargets,
-                              List<Integer> foundLines, List<Integer> foundChars)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+                              List<Integer> foundLines, List<Integer> foundChars) {
         try {
             FileInputStream fis = new FileInputStream(file);
             XWPFDocument docx = new XWPFDocument(fis);
             List<XWPFParagraph> paragraphs = docx.getParagraphs();
             for (int i = 0; i < paragraphs.size(); i++) {
-
                 String par = paragraphs.get(i).getText();
-                if (!caseSensitive) par = par.toLowerCase();
-
-                StringMatcher matcher = matcherClass.getDeclaredConstructor(String.class).newInstance(par);
-                for (String tar : targets) {
-                    int pos = matcher.search(tar);
-                    if (pos >= 0) {
-                        foundTargets.add(tar);
-                        foundLines.add(i);
-                        foundChars.add(pos);
-                    }
-                }
-
+                searchInString(par, targets, foundTargets, foundLines, foundChars, i);
             }
             fis.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

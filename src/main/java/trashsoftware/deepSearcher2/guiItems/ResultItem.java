@@ -6,7 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
 import javafx.stage.Stage;
-import trashsoftware.deepSearcher2.controllers.MatchInfoViewController;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.util.Util;
@@ -22,6 +21,7 @@ public class ResultItem {
 //    public static final int MATCH_CONTENT = 2;
 
     private final File file;
+    private final FileSizeItem fileSizeItem;
     private final boolean[] matchModes;
 
     private ContentSearchingResult contentRes;
@@ -29,20 +29,28 @@ public class ResultItem {
     private final ResourceBundle bundle;
     private final ResourceBundle fileTypeBundle;
 
-    public ResultItem(File file, boolean matchName, boolean matchContent,
-                      ResourceBundle bundle, ResourceBundle fileTypeBundle) {
+    private ResultItem(File file, boolean matchName, boolean matchContent,
+                      ResourceBundle bundle, ResourceBundle fileTypeBundle,
+                      ContentSearchingResult contentRes) {
         this.file = file;
         this.matchModes = new boolean[]{matchName, matchContent};
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
+        this.fileSizeItem = new FileSizeItem(file.length(), bundle);
+        this.contentRes = contentRes;
+    }
+
+    public static ResultItem createNameMatch(File file, ResourceBundle bundle, ResourceBundle fileTypeBundle) {
+        return new ResultItem(file, true, false, bundle, fileTypeBundle, null);
+    }
+
+    public static ResultItem createContentMatch(File file, ResourceBundle bundle, ResourceBundle fileTypeBundle,
+                                                ContentSearchingResult contentRes) {
+        return new ResultItem(file, false, true, bundle, fileTypeBundle, contentRes);
     }
 
     public void setContentRes(ContentSearchingResult contentRes) {
         this.contentRes = contentRes;
-        this.matchModes[1] = true;
-    }
-
-    public void addMatchContent() {
         this.matchModes[1] = true;
     }
 
@@ -71,8 +79,8 @@ public class ResultItem {
     }
 
     @FXML
-    public String getSize() {
-        return Util.sizeToReadable(file.length(), bundle.getString("bytes"));
+    public FileSizeItem getSize() {
+        return fileSizeItem;
     }
 
     @FXML
@@ -84,37 +92,6 @@ public class ResultItem {
         else if (fileTypeBundle.containsKey(ext)) return fileTypeBundle.getString(ext);
         else return ext.toUpperCase() + " " + bundle.getString("file");
     }
-
-//    @FXML
-//    public Hyperlink getInfo() {
-//        if (contentRes == null) {
-//            return null;
-//        }
-//        Hyperlink hyperlink = new Hyperlink(bundle.getString("locationInfo"));
-//        hyperlink.setOnAction(e -> {
-//            try {
-//                openMatchInfoView();
-//            } catch (IOException ioException) {
-//                ioException.printStackTrace();
-//            }
-//        });
-//
-//        return hyperlink;
-//    }
-
-//    private void openMatchInfoView() throws IOException {
-//        FXMLLoader loader = new FXMLLoader(
-//                getClass().getResource("/trashsoftware/deepSearcher2/fxml/matchInfoView.fxml"), bundle);
-//        Parent root = loader.load();
-//        Stage stage = new Stage();
-//        stage.setTitle(bundle.getString("matchInfo"));
-//        stage.setScene(new Scene(root));
-//
-//        MatchInfoViewController controller = loader.getController();
-//        controller.show(contentRes);
-//
-//        stage.show();
-//    }
 
     public File getFile() {
         return file;
