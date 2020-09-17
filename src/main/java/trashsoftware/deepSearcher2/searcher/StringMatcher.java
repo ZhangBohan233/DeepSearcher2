@@ -16,7 +16,7 @@ public abstract class StringMatcher {
      * @param pattern the target string fragment
      * @return the first occurrence position of {@code pattern} in {@code this.string}, {@code -1} if not found
      */
-    abstract int search(String pattern);
+    public abstract int search(String pattern);
 
     /**
      * Creates a matcher instance of {@code matcherClass}, with {@code string} as constructor argument.

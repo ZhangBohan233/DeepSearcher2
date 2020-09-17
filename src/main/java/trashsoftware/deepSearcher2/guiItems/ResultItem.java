@@ -1,17 +1,10 @@
 package trashsoftware.deepSearcher2.guiItems;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Hyperlink;
-import javafx.stage.Stage;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -99,52 +92,55 @@ public class ResultItem {
 
     public String showInfo() {
         if (contentRes != null) {
-            StringBuilder builder = new StringBuilder();
-            if (contentRes.getKey1() != null) {
-                List<Integer> v1 = contentRes.getValues1();
-                String showK1 = getShowStringByKey(contentRes.getKey1());
-                String ordNum = bundle.getString("ordNum");
-                if (contentRes.getKey2() != null) {
-                    List<Integer> v2 = contentRes.getValues2();
-                    if (v1.size() != v2.size()) throw new RuntimeException("Unexpected unequal size.");
-                    String showK2 = getShowStringByKey(contentRes.getKey2());
-                    for (int i = 0; i < v1.size(); i++) {
-                        builder.append(ordNum)
-                                .append(v1.get(i))
-                                .append(showK1)
-                                .append(", ")
-                                .append(ordNum)
-                                .append(v2.get(i))
-                                .append(showK2)
-                                .append('\n');
-                    }
-                } else {
-                    for (Integer integer : v1) {
-                        builder.append(ordNum)
-                                .append(integer)
-                                .append(showK1)
-                                .append('\n');
-                    }
-                }
-            }
-            return builder.toString();
+            return contentRes.getAsString(bundle);
+//            StringBuilder builder = new StringBuilder();
+//            if (contentRes.getKey1() != null) {
+//                List<Integer> v1 = contentRes.getValues1();
+//                String showK1 = getShowStringByKey(contentRes.getKey1());
+//                String ordNum = bundle.getString("ordNum");
+//                if (contentRes.getKey2() != null) {
+//                    List<Integer> v2 = contentRes.getValues2();
+//                    if (v1.size() != v2.size()) throw new RuntimeException("Unexpected unequal size.");
+//                    String showK2 = getShowStringByKey(contentRes.getKey2());
+//                    for (int i = 0; i < v1.size(); i++) {
+//                        builder.append(ordNum)
+//                                .append(v1.get(i))
+//                                .append(showK1)
+//                                .append(", ")
+//                                .append(ordNum)
+//                                .append(v2.get(i))
+//                                .append(showK2)
+//                                .append('\n');
+//                    }
+//                } else {
+//                    for (Integer integer : v1) {
+//                        builder.append(ordNum)
+//                                .append(integer)
+//                                .append(showK1)
+//                                .append('\n');
+//                    }
+//                }
+//            }
+//            return builder.toString();
         } else {
             return null;
         }
     }
 
-    private String getShowStringByKey(String key) {
-        switch (key) {
-            case ContentSearchingResult.LINES_KEY:
-                return bundle.getString("lines");
-            case ContentSearchingResult.PARAGRAPHS_KEY:
-                return bundle.getString("paragraphs");
-            case ContentSearchingResult.PAGES_KEY:
-                return bundle.getString("pages");
-            case ContentSearchingResult.CHARS_KEY:
-                return bundle.getString("characters");
-            default:
-                throw new RuntimeException("No such key");
-        }
-    }
+//    private String getShowStringByKey(String key) {
+//        switch (key) {
+//            case ContentSearchingResult.LINES_KEY:
+//                return bundle.getString("lineNum");
+//            case ContentSearchingResult.PARAGRAPHS_KEY:
+//                return bundle.getString("paragraphNum");
+//            case ContentSearchingResult.PAGES_KEY:
+//                return bundle.getString("pageNum");
+//            case ContentSearchingResult.CHARS_KEY:
+//                return bundle.getString("characterNum");
+//            case ContentSearchingResult.BLOCKS_KEY:
+//                return bundle.getString("blockNum");
+//            default:
+//                throw new RuntimeException("No such key");
+//        }
+//    }
 }

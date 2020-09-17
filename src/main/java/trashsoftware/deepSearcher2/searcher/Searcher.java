@@ -4,6 +4,7 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.ObservableList;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
+import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
@@ -17,9 +18,11 @@ public class Searcher {
     );
 
     private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
-            "pdf", PdfReader.class,
-            "doc", DocReader.class,
-            "docx", DocxReader.class
+            "pdf", PdfSearcher.class,
+            "doc", DocSearcher.class,
+            "docx", DocxSearcher.class,
+            "ppt", PptSearcher.class,
+            "pptx", PptxSearcher.class
     );
 
     private final PrefSet prefSet;
@@ -132,7 +135,7 @@ public class Searcher {
                         NoSuchMethodException |
                         InstantiationException |
                         IllegalAccessException e) {
-                    throw new InvalidClassException("Unexpected file searcher. ", e);
+                    throw new InvalidClassException("Unexpected file content searcher. ", e);
                 }
             } else {
                 throw new RuntimeException("Unknown format");
