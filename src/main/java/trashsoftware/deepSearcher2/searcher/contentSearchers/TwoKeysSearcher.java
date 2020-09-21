@@ -59,15 +59,28 @@ public abstract class TwoKeysSearcher extends ContentSearcher {
         return null;
     }
 
-    protected void searchInString(String string, List<String> targets, int thisInValue1) {
+    protected void searchInString(String string, List<String> targets, int value1) {
         if (!caseSensitive) string = string.toLowerCase();
         StringMatcher matcher = matcherFactory.createMatcher(string);
         for (String tar : targets) {
             int pos = matcher.search(tar);
             if (pos >= 0) {
                 foundTargets.add(tar);
-                found1s.add(thisInValue1);
-                found2s.add(pos);
+                found1s.add(value1);
+                found2s.add(pos + 1);
+            }
+        }
+    }
+
+    protected void searchInString(String string, List<String> targets, int value1, int value2) {
+        if (!caseSensitive) string = string.toLowerCase();
+        StringMatcher matcher = matcherFactory.createMatcher(string);
+        for (String tar : targets) {
+            int pos = matcher.search(tar);
+            if (pos >= 0) {
+                foundTargets.add(tar);
+                found1s.add(value1);
+                found2s.add(value2);
             }
         }
     }

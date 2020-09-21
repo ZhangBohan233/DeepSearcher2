@@ -9,6 +9,7 @@ module DeepSearcher {
     requires org.apache.pdfbox;
     requires poi.ooxml;
     requires poi.scratchpad;
+    requires poi;
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.guiItems;

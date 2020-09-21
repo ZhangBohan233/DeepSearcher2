@@ -54,7 +54,7 @@ public class PptxSearcher extends TwoIntOneStrSearcher {
                 page++;
             }
             fis.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

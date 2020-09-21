@@ -149,7 +149,7 @@
                 <Insets left="5"/>
             </padding>
             <CheckBox fx:id="selectAllBox" text="%selectAll" onAction="#selectAllAction" disable="true"/>
-            <ComboBox fx:id="filterBox" prefWidth="120.0"/>
+            <ComboBox fx:id="filterBox" prefWidth="120.0" disable="true"/>
             <Label text="%filter"/>
         </HBox>
 

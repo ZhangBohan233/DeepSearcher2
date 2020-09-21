@@ -24,7 +24,9 @@ public class Searcher {
             "doc", DocSearcher.class,
             "docx", DocxSearcher.class,
             "ppt", PptSearcher.class,
-            "pptx", PptxSearcher.class
+            "pptx", PptxSearcher.class,
+            "xls", XlsSearcher.class,
+            "xlsx", XlsxSearcher.class
     );
 
     private final PrefSet prefSet;

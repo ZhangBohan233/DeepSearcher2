@@ -29,7 +29,7 @@ public class DocSearcher extends TwoKeysSearcher {
             }
             fis.close();
             we.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

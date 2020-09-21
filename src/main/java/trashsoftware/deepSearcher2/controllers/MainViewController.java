@@ -410,9 +410,11 @@ public class MainViewController implements Initializable {
             if (t1) {
                 formatTable.setDisable(false);
                 selectAllBox.setDisable(false);
+                filterBox.setDisable(false);
             } else {
                 formatTable.setDisable(true);
                 selectAllBox.setDisable(true);
+                filterBox.setDisable(true);
             }
             Configs.writeStringCache("searchContent", String.valueOf(t1));
         });

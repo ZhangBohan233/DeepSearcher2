@@ -10,6 +10,8 @@ public class ContentSearchingResult {
     public static final int PARAGRAPHS_KEY = 3;
     public static final int PAGES_KEY = 4;
     public static final int BLOCKS_KEY = 5;
+    public static final int ROWS_KEY = 6;
+    public static final int COLUMNS_KEY = 7;
 
     public static final int TITLE_VALUE = 101;
     public static final int TEXT_VALUE = 102;
@@ -20,10 +22,7 @@ public class ContentSearchingResult {
     private List<Integer> values1;
     private List<Integer> values2;
 
-    /**
-     * This list stores int identifiers starts with 100, e.g., TITLE_VALUE = 101
-     */
-    private List<Integer> strValues;
+    private List<StringValue> strValues;
 
     public ContentSearchingResult() {
     }
@@ -41,7 +40,7 @@ public class ContentSearchingResult {
     }
 
     public ContentSearchingResult(int key1, List<Integer> values1, int key2, List<Integer> values2,
-                                  List<Integer> strValues) {
+                                  List<StringValue> strValues) {
         this.key1 = key1;
         this.values1 = values1;
         this.key2 = key2;
@@ -69,43 +68,32 @@ public class ContentSearchingResult {
         StringBuilder builder = new StringBuilder();
         if (key1 != 0) {
             List<Integer> v1 = getValues1();
-            String showK1 = getShowStringByKey(getKey1(), bundle);
-            String ordNum = bundle.getString("ordNum");
+            String fmt1 = getFmtStringByKey(getKey1(), bundle);
             if (key2 != 0) {
                 List<Integer> v2 = getValues2();
                 if (v1.size() != v2.size()) throw new RuntimeException("Unexpected unequal size.");
-                String showK2 = getShowStringByKey(getKey2(), bundle);
+                String fmt2 = getFmtStringByKey(getKey2(), bundle);
                 if (strValues != null) {
                     if (v1.size() != strValues.size()) throw new RuntimeException("Unexpected unequal size.");
                     for (int i = 0; i < v1.size(); i++) {
-                        builder.append(ordNum)
-                                .append(v1.get(i))
-                                .append(showK1)
+                        builder.append(String.format(fmt1, v1.get(i)))
                                 .append(", ")
-                                .append(ordNum)
-                                .append(v2.get(i))
-                                .append(showK2)
+                                .append(String.format(fmt2, v2.get(i)))
                                 .append(", ")
-                                .append(getShowStringByKey(strValues.get(i), bundle))
+                                .append(strValues.get(i).getShowString(bundle))
                                 .append('\n');
                     }
                 } else {
                     for (int i = 0; i < v1.size(); i++) {
-                        builder.append(ordNum)
-                                .append(v1.get(i))
-                                .append(showK1)
+                        builder.append(String.format(fmt1, v1.get(i)))
                                 .append(", ")
-                                .append(ordNum)
-                                .append(v2.get(i))
-                                .append(showK2)
+                                .append(String.format(fmt2, v2.get(i)))
                                 .append('\n');
                     }
                 }
             } else {
                 for (Integer integer : v1) {
-                    builder.append(ordNum)
-                            .append(integer)
-                            .append(showK1)
+                    builder.append(String.format(fmt1, integer))
                             .append('\n');
                 }
             }
@@ -113,18 +101,22 @@ public class ContentSearchingResult {
         return builder.toString();
     }
 
-    private static String getShowStringByKey(int key, ResourceBundle bundle) {
+    private static String getFmtStringByKey(int key, ResourceBundle bundle) {
         switch (key) {
             case LINES_KEY:
-                return bundle.getString("lineNum");
+                return bundle.getString("lineFmt");
             case PARAGRAPHS_KEY:
-                return bundle.getString("paragraphNum");
+                return bundle.getString("paragraphFmt");
             case PAGES_KEY:
-                return bundle.getString("pageNum");
+                return bundle.getString("pageFmt");
             case CHARS_KEY:
-                return bundle.getString("characterNum");
+                return bundle.getString("characterFmt");
             case BLOCKS_KEY:
-                return bundle.getString("blockNum");
+                return bundle.getString("blockFmt");
+            case ROWS_KEY:
+                return bundle.getString("rowFmt");
+            case COLUMNS_KEY:
+                return bundle.getString("colFmt");
             case TITLE_VALUE:
                 return bundle.getString("titleStr");
             case TEXT_VALUE:
@@ -132,7 +124,28 @@ public class ContentSearchingResult {
             case TABLE_VALUE:
                 return bundle.getString("tableStr");
             default:
-                throw new RuntimeException("No such key");
+                throw new RuntimeException("No such key: " + key);
+        }
+    }
+
+    public static class StringValue {
+        private int category = 0;
+        private String realStringValue;
+
+        public StringValue(int category) {
+            this.category = category;
+        }
+
+        public StringValue(String realStringValue) {
+            this.realStringValue = realStringValue;
+        }
+
+        private String getShowString(ResourceBundle bundle) {
+            if (category != 0 || realStringValue == null) {
+                return getFmtStringByKey(category, bundle);
+            } else {
+                return realStringValue;
+            }
         }
     }
 }

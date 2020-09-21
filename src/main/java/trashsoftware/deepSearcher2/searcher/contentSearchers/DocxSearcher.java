@@ -28,7 +28,7 @@ public class DocxSearcher extends TwoKeysSearcher {
                 searchInString(par, targets, i);
             }
             fis.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

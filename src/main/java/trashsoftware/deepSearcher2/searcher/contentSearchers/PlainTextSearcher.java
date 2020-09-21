@@ -35,7 +35,7 @@ public class PlainTextSearcher extends TwoKeysSearcher {
             }
             bufferedReader.close();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

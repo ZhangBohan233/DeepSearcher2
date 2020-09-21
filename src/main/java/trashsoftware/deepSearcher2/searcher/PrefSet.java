@@ -87,7 +87,7 @@ public class PrefSet {
 
         /**
          * Sets up the directories to search
-         *
+         * <p>
          * This method eliminates duplicate directories, including sub-directories of existing directory.
          *
          * @param searchDirs all directories to search
@@ -96,10 +96,10 @@ public class PrefSet {
         public PrefSetBuilder setSearchDirs(List<File> searchDirs) {
             List<String> addedDirs = new ArrayList<>();
             List<File> addedFiles = new ArrayList<>();
-            for (File f: searchDirs) {
+            for (File f : searchDirs) {
                 String absDir = f.getAbsolutePath();
                 boolean foundParent = false;
-                for (String added: addedDirs) {
+                for (String added : addedDirs) {
                     if (absDir.startsWith(added)) {  // added is not the parent of absDir
                         foundParent = true;
                         break;
