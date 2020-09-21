@@ -34,6 +34,9 @@
             <MenuItem text="%settings" onAction="#openSettingsAction"/>
             <MenuItem text="%history" onAction="#openHistoryAction"/>
         </Menu>
+        <Menu text="%help">
+            <MenuItem text="%about" onAction="#openAboutAction"/>
+        </Menu>
     </MenuBar>
 
     <GridPane

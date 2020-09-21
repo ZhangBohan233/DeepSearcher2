@@ -230,6 +230,18 @@ public class MainViewController implements Initializable {
         stage.show();
     }
 
+    @FXML
+    void openAboutAction() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/trashsoftware/deepSearcher2/fxml/aboutView.fxml"), bundle);
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.setTitle(bundle.getString("title"));
+        stage.setScene(new Scene(root));
+
+        stage.show();
+    }
+
     // Factories and listeners
 
     private void setResultTableFactory() {

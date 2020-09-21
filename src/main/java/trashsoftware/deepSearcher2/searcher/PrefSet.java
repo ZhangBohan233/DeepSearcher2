@@ -3,6 +3,8 @@ package trashsoftware.deepSearcher2.searcher;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -83,8 +85,33 @@ public class PrefSet {
             return this;
         }
 
+        /**
+         * Sets up the directories to search
+         *
+         * This method eliminates duplicate directories, including sub-directories of existing directory.
+         *
+         * @param searchDirs all directories to search
+         * @return this builder
+         */
         public PrefSetBuilder setSearchDirs(List<File> searchDirs) {
-            prefSet.searchDirs = searchDirs;
+            List<String> addedDirs = new ArrayList<>();
+            List<File> addedFiles = new ArrayList<>();
+            for (File f: searchDirs) {
+                String absDir = f.getAbsolutePath();
+                boolean foundParent = false;
+                for (String added: addedDirs) {
+                    if (absDir.startsWith(added)) {  // added is not the parent of absDir
+                        foundParent = true;
+                        break;
+                    }
+                }
+                if (!foundParent) {
+                    addedDirs.add(absDir);
+                    addedFiles.add(f);
+                }
+            }
+//            System.out.println(addedFiles);
+            prefSet.searchDirs = addedFiles;
             return this;
         }
 
