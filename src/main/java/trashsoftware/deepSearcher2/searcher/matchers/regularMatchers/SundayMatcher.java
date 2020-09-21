@@ -1,6 +1,5 @@
 package trashsoftware.deepSearcher2.searcher.matchers.regularMatchers;
 
-import org.apache.commons.collections4.Factory;
 import trashsoftware.deepSearcher2.searcher.matchers.FixedMatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;

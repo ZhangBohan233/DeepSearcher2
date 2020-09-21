@@ -543,13 +543,13 @@ public class MainViewController implements Initializable {
     }
 
     private void selectAllFormats() {
-        for (FormatItem formatItem : formatTable.getAllItems()) {
+        for (FormatItem formatItem : formatTable.getShowingItems()) {
             formatItem.getCheckBox().setSelected(true);
         }
     }
 
     private void deselectAllFormats() {
-        for (FormatItem formatItem : formatTable.getAllItems()) {
+        for (FormatItem formatItem : formatTable.getShowingItems()) {
             formatItem.getCheckBox().setSelected(false);
         }
     }

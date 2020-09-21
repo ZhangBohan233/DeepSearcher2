@@ -22,7 +22,7 @@ public class FormatFilterItem {
     );
 
     public static final Set<String> MS_OFFICE_FORMATS = Set.of(
-            "doc", "docx", "ppt", "pptx"
+            "doc", "docx", "ppt", "pptx", "xls", "xlsx"
     );
 
     private final int filterType;

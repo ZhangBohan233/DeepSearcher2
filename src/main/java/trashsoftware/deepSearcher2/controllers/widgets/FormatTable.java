@@ -10,7 +10,7 @@ import java.util.List;
 
 public class FormatTable extends TableView<FormatItem> {
 
-    private List<FormatItem> allItems = new ArrayList<>();
+    private final List<FormatItem> allItems = new ArrayList<>();
 
     public void addItem(FormatItem formatItem) {
         allItems.add(formatItem);
@@ -24,5 +24,9 @@ public class FormatTable extends TableView<FormatItem> {
 
     public List<FormatItem> getAllItems() {
         return allItems;
+    }
+
+    public List<FormatItem> getShowingItems() {
+        return getItems();
     }
 }
