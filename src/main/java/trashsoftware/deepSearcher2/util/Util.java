@@ -1,5 +1,8 @@
 package trashsoftware.deepSearcher2.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Util {
 
     /**
@@ -30,6 +33,13 @@ public class Util {
     public static String getFileExtension(String fileName) {
         int extIndex = fileName.lastIndexOf(".");
         return extIndex == -1 ? "" : fileName.substring(extIndex + 1).toLowerCase();
+    }
+
+    @SafeVarargs
+    public static Set<String> mergeSets(Set<String>... sets) {
+        Set<String> res = new HashSet<>();
+        for (Set<String> set: sets) res.addAll(set);
+        return res;
     }
 
     private static String numToReadable(double num) {

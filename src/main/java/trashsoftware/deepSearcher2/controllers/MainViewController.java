@@ -13,11 +13,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -41,8 +41,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class MainViewController implements Initializable {
 
@@ -524,6 +524,7 @@ public class MainViewController implements Initializable {
                 new FormatFilterItem(FormatFilterItem.FILTER_TEXT, bundle.getString("textFiles")),
                 new FormatFilterItem(FormatFilterItem.FILTER_CODES, bundle.getString("sourceCodeFiles")),
                 new FormatFilterItem(FormatFilterItem.FILTER_MS_OFFICE, bundle.getString("officeFiles")),
+                new FormatFilterItem(FormatFilterItem.FILTER_DOCUMENTS, bundle.getString("documentFiles")),
                 new FormatFilterItem(FormatFilterItem.FILTER_OTHERS, bundle.getString("otherFiles"))
         );
     }

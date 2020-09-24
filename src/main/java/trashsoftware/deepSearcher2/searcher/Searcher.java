@@ -16,7 +16,7 @@ import java.util.*;
 public class Searcher {
 
     private static final Set<String> PLAIN_TEXT_FORMAT = Set.of(
-            "bat", "c", "cmd", "cpp", "h", "java", "js", "log", "py", "txt"
+            "bat", "c", "cmd", "cpp", "h", "java", "js", "log", "py", "r", "rmd", "tex", "txt"
     );
 
     private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
