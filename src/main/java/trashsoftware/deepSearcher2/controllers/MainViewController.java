@@ -36,6 +36,7 @@ import trashsoftware.deepSearcher2.searcher.PrefSet;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
 import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
 import trashsoftware.deepSearcher2.searcher.Searcher;
+import trashsoftware.deepSearcher2.util.CacheObservable;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.Util;
 
@@ -46,7 +47,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 
-public class MainViewController implements Initializable {
+public class MainViewController implements Initializable, CacheObservable {
 
     private final ResourceBundle fileTypeBundle =
             ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
@@ -244,6 +245,7 @@ public class MainViewController implements Initializable {
             File nv = event.getNewValue();
             if (nv.exists()) {
                 dirList.getItems().set(event.getIndex(), nv);
+                addOpenedDir(nv);
             }
         });
         dirList.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {

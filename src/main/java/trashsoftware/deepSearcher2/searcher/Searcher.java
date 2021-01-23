@@ -58,8 +58,9 @@ public class Searcher {
     }
 
     public void search() {
-        for (File dir : prefSet.getSearchDirs()) {
-            searchFile(dir);
+        for (File f : prefSet.getSearchDirs()) {
+            searchFileIterative(f);
+//            searchFileRecursive(f);
         }
     }
 
@@ -67,8 +68,45 @@ public class Searcher {
         searching = false;
     }
 
-    private void searchFile(File file) {
-        if (!searching) return;  // Check if searching is cancelled
+    private void searchFileIterative(File rootFile) {
+        Deque<File> stack = new ArrayDeque<>();
+        stack.addLast(rootFile);
+        while (!stack.isEmpty()) {
+            if (!searching) return;
+
+            File file = stack.removeLast();
+            if (file.isDirectory()) {
+                // Check if this directory is excluded
+                if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) continue;
+
+                // Check dir is selected
+                if (prefSet.isDirName()) {
+                    matchName(file);
+                }
+
+                File[] subFiles = file.listFiles();
+                if (subFiles == null) continue;
+                for (File f : subFiles) {
+                    stack.addLast(f);
+                }
+            } else {
+                // Check if this format is excluded
+                if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) continue;
+
+                // check file name is selected
+                if (prefSet.isFileName()) {
+                    matchName(file);
+                }
+                // check file content is selected
+                if (prefSet.getExtensions() != null) {
+                    matchFileContent(file);
+                }
+            }
+        }
+    }
+
+    private void searchFileRecursive(File file) {
+        if (!searching) return;
 
         if (file.isDirectory()) {
             // Check if this directory is excluded
@@ -79,10 +117,10 @@ public class Searcher {
                 matchName(file);
             }
 
-            File[] files = file.listFiles();
-            if (files == null) return;
-            for (File f : files) {
-                searchFile(f);
+            File[] subFiles = file.listFiles();
+            if (subFiles == null) return;
+            for (File f : subFiles) {
+                searchFileRecursive(f);
             }
         } else {
             // Check if this format is excluded

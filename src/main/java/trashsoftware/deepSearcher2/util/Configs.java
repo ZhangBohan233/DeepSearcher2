@@ -117,10 +117,6 @@ public class Configs {
         saveCache();
     }
 
-//    public static void addFormat(String format) {
-//        addToArrayCache("formats", format);
-//    }
-
     public static void removeFromArrayCache(String key, String item) {
         JSONArray set = getArrayCache(key);
         for (int i = 0; i < set.length(); ++i) {
