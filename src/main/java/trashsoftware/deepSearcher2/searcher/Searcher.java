@@ -16,7 +16,7 @@ import java.util.*;
 public class Searcher {
 
     private static final Set<String> PLAIN_TEXT_FORMAT = Set.of(
-            "bat", "c", "cmd", "cpp", "h", "java", "js", "log", "py", "r", "rmd", "tex", "txt"
+            "bat", "c", "cmd", "cpp", "csv", "h", "java", "js", "json", "log", "py", "r", "rmd", "tex", "txt"
     );
 
     private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
@@ -167,40 +167,6 @@ public class Searcher {
             else return file.getName().toLowerCase();
         }
     }
-
-//    private Class<? extends StringMatcher> getMatcherClass() {
-//        if (prefSet.getMatchMode() == PrefSet.NORMAL) {
-//            switch (prefSet.getMatchingAlgorithm()) {
-//                case "algNative":
-//                    return NativeMatcher.class;
-//                case "algNaive":
-//                    return NaiveMatcher.class;
-//                case "algKmp":
-//                    return KMPMatcher.class;
-//                case "algSunday":
-//                    return SundayMatcher.class;
-//                default:
-//                    throw new RuntimeException("Not a valid matching algorithm");
-//            }
-//        } else if (prefSet.getMatchMode() == PrefSet.WORD) {
-//            switch (prefSet.getWordMatchingAlgorithm()) {
-//                case "algNaive":
-//                    return NaiveWordMatcher.class;
-//                case "algHash":
-//                    return HashedWordMatcher.class;
-//                default:
-//                    throw new RuntimeException("Not a valid matching algorithm for words");
-//            }
-//        } else if (prefSet.getMatchMode() == PrefSet.REGEX) {
-//            if (prefSet.getRegexAlgorithm().equals("algNative")) {
-//                return NativeRegexMatcher.class;
-//            } else {
-//                throw new RuntimeException("Not a valid matching algorithm for regex");
-//            }
-//        } else {
-//            throw new RuntimeException("Invalid match mode");
-//        }
-//    }
 
     private void updateResultCount() {
         resultCountWrapper.setValue(tableList.size());

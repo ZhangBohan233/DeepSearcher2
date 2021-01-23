@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import trashsoftware.deepSearcher2.Main;
@@ -96,6 +97,8 @@ public class ExclusionPage extends SettingsPage {
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.setTitle(Client.getBundle().getString("excludedFormats"));
+        stage.initOwner(getController().getStage());
+        stage.initModality(Modality.WINDOW_MODAL);
         stage.initStyle(StageStyle.UTILITY);
         stage.setScene(new Scene(root));
 
