@@ -1,22 +1,18 @@
 package trashsoftware.deepSearcher2.util;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
-
-import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.json.*;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
 import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
 import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
-public class Configs {
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-    public static final String FORMATS_KEY = "formats";
-    public static final String OPENED_DIRS_KEY = "openedDirs";
+public class Configs {
 
     private static final String USER_DATA_DIR = "userData";
     private static final String CONFIG_FILE_NAME = "userData/config.cfg";
@@ -24,12 +20,7 @@ public class Configs {
     private static final String EXCLUDED_FORMATS_NAME = "userData/excludedFormats.cfg";
     private static final String HISTORY_DIR = "userData/history";
 
-    private static final String CACHE_DIR = "cache";
-    private static final String COMMON_CACHE_NAME = CACHE_DIR + File.separator + "cache.json";
-
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
-
-    private static JSONObject cache;
 
     public static Locale getCurrentLocale() {
         String localeName = getConfig("locale");
@@ -89,63 +80,6 @@ public class Configs {
         writeConfigFile(configs);
     }
 
-    public static String getStringCache(String key) {
-        if (cache == null) loadCache();
-        if (cache.has(key))
-            return cache.getString(key);
-        else return null;
-    }
-
-    public static void writeStringCache(String key, String value) {
-        cache.put(key, value);
-        saveCache();
-    }
-
-    public static JSONArray getArrayCache(String key) {
-        if (cache == null) loadCache();
-        if (cache.has(key))
-            return cache.getJSONArray(key);
-        else {
-            JSONArray array = new JSONArray();
-            cache.put(key, array);
-            return array;
-        }
-    }
-
-    /**
-     * Adds a new element to {@code JSONArray} at toplevel, if the element is not currently in this array.
-     *
-     * @param key   the name of this {@code JSONArray} in the toplevel {@code JSONObject}
-     * @param value the element to be added to this {@code JSONArray}
-     */
-    public static void addToArrayCacheNoDup(String key, String value) {
-        JSONArray array = getArrayCache(key);
-        for (Object obj : array) {
-            if (value.equals(obj)) return;
-        }
-        array.put(value);
-        saveCache();
-    }
-
-    public static void removeFromArrayCache(String key, String item) {
-        JSONArray set = getArrayCache(key);
-        for (int i = 0; i < set.length(); ++i) {
-            if (item.equals(set.get(i))) {
-                set.remove(i);
-                break;
-            }
-        }
-        saveCache();
-    }
-
-    public static Set<String> getAllFormats() {
-        Set<String> list = new HashSet<>();
-        for (Object fmt : getFormats()) {
-            list.add((String) fmt);
-        }
-        return list;
-    }
-
     public static void addExcludedDir(String path) {
         Set<String> set = readListFile(EXCLUDED_DIRS_NAME);
         set.add(path);
@@ -180,11 +114,12 @@ public class Configs {
 
     public static List<HistoryItem> getAllHistory() {
         List<HistoryItem> list = new ArrayList<>();
-        try {
-            createDirsIfNotExist();
-            File historyDir = new File(HISTORY_DIR);
-            for (File his : Objects.requireNonNull(historyDir.listFiles())) {
-                BufferedReader reader = new BufferedReader(new FileReader(his));
+        createDirsIfNotExist();
+        File historyDir = new File(HISTORY_DIR);
+        for (File his : Objects.requireNonNull(historyDir.listFiles())) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(his));
                 StringBuilder builder = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -195,10 +130,19 @@ public class Configs {
                 PrefSet prefSet = toPrefSet(jsonObject);
                 HistoryItem historyItem = new HistoryItem(prefSet, date);
                 list.add(historyItem);
-                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                //
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
         }
         return list;
     }
@@ -212,23 +156,19 @@ public class Configs {
         }
     }
 
-    public static void clearCache() {
-        deleteFileByName(COMMON_CACHE_NAME);
-    }
-
     public static void clearSettings() {
         deleteFileByName(CONFIG_FILE_NAME);
     }
 
     public static void clearAllData() {
-        clearCache();
+        Cache.clearCache();
         clearSettings();
         clearAllHistory();
         deleteFileByName(EXCLUDED_DIRS_NAME);
         deleteFileByName(EXCLUDED_FORMATS_NAME);
     }
 
-    private static void deleteFileByName(String path) {
+    static void deleteFileByName(String path) {
         File file = new File(path);
         if (!file.delete()) {
             System.err.println("Failed to delete '" + path + "'!");
@@ -300,37 +240,6 @@ public class Configs {
         writeMapFile(CONFIG_FILE_NAME, map);
     }
 
-    private static void loadCache() {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(COMMON_CACHE_NAME));
-            StringBuilder builder = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                builder.append(line);
-            }
-            br.close();
-            cache = new JSONObject(builder.toString());
-        } catch (FileNotFoundException e) {
-            cache = new JSONObject();
-            saveCache();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveCache() {
-        try {
-            createDirsIfNotExist();
-            String s = cache.toString(2);
-            FileWriter fw = new FileWriter(COMMON_CACHE_NAME);
-            fw.write(s);
-            fw.flush();
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private static Map<String, String> readMapFile(String fileName) {
         Map<String, String> map = new HashMap<>();
         try {
@@ -396,27 +305,23 @@ public class Configs {
         }
     }
 
-    private static JSONArray getFormats() {
-        return getArrayCache(FORMATS_KEY);
-    }
-
-    private static void createDirsIfNotExist() throws IOException {
-        File cache = new File(CACHE_DIR);
+    static void createDirsIfNotExist() {
+        File cache = new File(Cache.CACHE_DIR);
         if (!cache.exists()) {
             if (!cache.mkdirs()) {
-                throw new IOException("Cannot create directory 'cache'");
+                System.err.println("Cannot create directory 'cache'");
             }
         }
         File userData = new File(USER_DATA_DIR);
         if (!userData.exists()) {
             if (!userData.mkdirs()) {
-                throw new IOException("Cannot create directory 'userData'");
+                System.err.println("Cannot create directory 'userData'");
             }
         }
         File history = new File(HISTORY_DIR);
         if (!history.exists()) {
             if (!history.mkdirs()) {
-                throw new IOException("Cannot create directory 'userData/history'");
+                System.err.println("Cannot create directory 'userData/history'");
             }
         }
     }

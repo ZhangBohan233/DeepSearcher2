@@ -6,6 +6,7 @@ import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.ConfirmBox;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
@@ -63,6 +64,6 @@ public class OthersPage extends SettingsPage {
 
     @FXML
     void clearCache() {
-        Configs.clearCache();
+        Cache.clearCache();
     }
 }

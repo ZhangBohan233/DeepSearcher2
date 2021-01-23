@@ -18,10 +18,10 @@ public class FormatItem implements Comparable<FormatItem> {
     }
 
     private void addCheckBoxListener() {
-        checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
-            if (t1) Configs.addToArrayCacheNoDup(Configs.FORMATS_KEY, extension);
-            else Configs.removeFromArrayCache(Configs.FORMATS_KEY, extension);
-        }));
+//        checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
+//            if (t1) Configs.addToArrayCacheNoDup(Configs.FORMATS_KEY, extension);
+//            else Configs.removeFromArrayCache(Configs.FORMATS_KEY, extension);
+//        }));
     }
 
     @FXML

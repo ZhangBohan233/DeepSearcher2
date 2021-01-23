@@ -7,10 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Client extends Application {
@@ -39,39 +41,6 @@ public class Client extends Application {
         });
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        showMainUi(primaryStage);
-    }
-
-    private void showMainUi(Stage stage) throws Exception {
-        bundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.LangBundle",
-                Configs.getCurrentLocale());
-
-        if (isRunning()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle(bundle.getString("title"));
-            alert.setHeaderText(bundle.getString("warning"));
-            alert.setContentText(bundle.getString("title") + " " + bundle.getString("alreadyRunning"));
-            alert.show();
-            return;
-        }
-
-        createRunningMarkFile();
-
-        currentStage = stage;
-        FXMLLoader loader =
-                new FXMLLoader(getClass().getResource("/trashsoftware/deepSearcher2/fxml/mainView.fxml"), bundle);
-        Parent root = loader.load();
-
-        stage.setTitle("Deep Searcher 2");
-        stage.setScene(new Scene(root));
-
-        stage.setOnHidden(e -> deleteMarkFile());
-
-        stage.show();
-    }
-
     public static ResourceBundle getBundle() {
         return bundle;
     }
@@ -98,5 +67,46 @@ public class Client extends Application {
                 alert.show();
             }
         }
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        showMainUi(primaryStage);
+    }
+
+    private void showMainUi(Stage stage) throws Exception {
+        bundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.LangBundle",
+                Configs.getCurrentLocale());
+
+        if (isRunning()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle(bundle.getString("title"));
+            alert.setHeaderText(bundle.getString("warning"));
+            alert.setContentText(bundle.getString("title") + " " + bundle.getString("alreadyRunning"));
+            alert.show();
+            return;
+        }
+
+        createRunningMarkFile();
+        Cache.startCache(List.of());
+
+        currentStage = stage;
+        FXMLLoader loader =
+                new FXMLLoader(getClass().getResource("/trashsoftware/deepSearcher2/fxml/mainView.fxml"),
+                        bundle);
+        Parent root = loader.load();
+
+        stage.setTitle("Deep Searcher 2");
+        stage.setScene(new Scene(root));
+
+        MainViewController controller = loader.getController();
+        Cache.getCache().addObservable(controller);
+
+        stage.setOnHidden(e -> {
+            deleteMarkFile();
+            Cache.stopCache();
+        });
+
+        stage.show();
     }
 }
