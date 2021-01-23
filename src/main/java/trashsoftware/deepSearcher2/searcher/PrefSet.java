@@ -1,19 +1,14 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class PrefSet {
-
-    public static final int NORMAL = 0;
-    public static final int WORD = 1;
-    public static final int REGEX = 2;
-
     private boolean matchAll;
     private List<File> searchDirs;
     private List<String> targets;
@@ -29,6 +24,78 @@ public class PrefSet {
     private String regexMatchingAlg;
     private Set<String> excludedDirs;
     private Set<String> excludedFormats;
+
+    public List<File> getSearchDirs() {
+        return searchDirs;
+    }
+
+    public Set<String> getExtensions() {
+        return extensions;
+    }
+
+    /**
+     * @return a list of all targets, if {@code isCaseSensitive()}, all targets are in lower case already.
+     */
+    public List<String> getTargets() {
+        return targets;
+    }
+
+    public boolean isMatchAll() {
+        return matchAll;
+    }
+
+    public boolean isCaseSensitive() {
+        return matchCase;
+    }
+
+    public boolean isDirName() {
+        return dirName;
+    }
+
+    public boolean isFileName() {
+        return fileName;
+    }
+
+    public boolean isIncludePathName() {
+        return includePathName;
+    }
+
+    public MatchMode getMatchMode() {
+        if (matchWord) return MatchMode.WORD;
+        else if (matchRegex) return MatchMode.REGEX;
+        else return MatchMode.NORMAL;
+    }
+
+    public String getMatchingAlgorithm() {
+        if (matchingAlg == null) {
+            matchingAlg = Configs.getCurrentSearchingAlgorithm();
+        }
+        return matchingAlg;
+    }
+
+    public String getWordMatchingAlgorithm() {
+        if (wordMatchingAlg == null) {
+            wordMatchingAlg = Configs.getCurrentWordSearchingAlgorithm();
+        }
+        return wordMatchingAlg;
+    }
+
+    public String getRegexAlgorithm() {
+        if (regexMatchingAlg == null) {
+            regexMatchingAlg = Configs.getCurrentRegexSearchingAlgorithm();
+        }
+        return regexMatchingAlg;
+    }
+
+    Set<String> getExcludedDirs() {
+        if (excludedDirs == null) excludedDirs = Configs.getAllExcludedDirs();
+        return excludedDirs;
+    }
+
+    Set<String> getExcludedFormats() {
+        if (excludedFormats == null) excludedFormats = Configs.getAllExcludedFormats();
+        return excludedFormats;
+    }
 
     public static class PrefSetBuilder {
 
@@ -69,14 +136,14 @@ public class PrefSet {
             return this;
         }
 
-        public PrefSetBuilder directSetMatchMode(int matchMode) {
-            if (matchMode == NORMAL) {
+        public PrefSetBuilder directSetMatchMode(MatchMode matchMode) {
+            if (matchMode == MatchMode.NORMAL) {
                 prefSet.matchWord = false;
                 prefSet.matchRegex = false;
-            } else if (matchMode == WORD) {
+            } else if (matchMode == MatchMode.WORD) {
                 prefSet.matchWord = true;
                 prefSet.matchRegex = false;
-            } else if (matchMode == REGEX) {
+            } else if (matchMode == MatchMode.REGEX) {
                 prefSet.matchWord = false;
                 prefSet.matchRegex = true;
             } else {
@@ -146,77 +213,5 @@ public class PrefSet {
             }
             return true;
         }
-    }
-
-    public List<File> getSearchDirs() {
-        return searchDirs;
-    }
-
-    public Set<String> getExtensions() {
-        return extensions;
-    }
-
-    /**
-     * @return a list of all targets, if {@code isCaseSensitive()}, all targets are in lower case already.
-     */
-    public List<String> getTargets() {
-        return targets;
-    }
-
-    public boolean isMatchAll() {
-        return matchAll;
-    }
-
-    public boolean isCaseSensitive() {
-        return matchCase;
-    }
-
-    public boolean isDirName() {
-        return dirName;
-    }
-
-    public boolean isFileName() {
-        return fileName;
-    }
-
-    public boolean isIncludePathName() {
-        return includePathName;
-    }
-
-    public int getMatchMode() {
-        if (matchWord) return WORD;
-        else if (matchRegex) return REGEX;
-        else return NORMAL;
-    }
-
-    public String getMatchingAlgorithm() {
-        if (matchingAlg == null) {
-            matchingAlg = Configs.getCurrentSearchingAlgorithm();
-        }
-        return matchingAlg;
-    }
-
-    public String getWordMatchingAlgorithm() {
-        if (wordMatchingAlg == null) {
-            wordMatchingAlg = Configs.getCurrentWordSearchingAlgorithm();
-        }
-        return wordMatchingAlg;
-    }
-
-    public String getRegexAlgorithm() {
-        if (regexMatchingAlg == null) {
-            regexMatchingAlg = Configs.getCurrentRegexSearchingAlgorithm();
-        }
-        return regexMatchingAlg;
-    }
-
-    Set<String> getExcludedDirs() {
-        if (excludedDirs == null) excludedDirs = Configs.getAllExcludedDirs();
-        return excludedDirs;
-    }
-
-    Set<String> getExcludedFormats() {
-        if (excludedFormats == null) excludedFormats = Configs.getAllExcludedFormats();
-        return excludedFormats;
     }
 }

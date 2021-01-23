@@ -11,6 +11,7 @@ import java.util.*;
 import org.json.*;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
 import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
+import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
 public class Configs {
 
@@ -53,6 +54,15 @@ public class Configs {
     public static String getCurrentRegexSearchingAlgorithm() {
         String savedAlg = Configs.getConfig("regexAlg");
         return Objects.requireNonNullElse(savedAlg, "algNative");
+    }
+
+    public static int getCurrentCpuThreads() {
+        String threadLimit = Configs.getConfig("cpuThreads");
+        try {
+            return Integer.parseInt(threadLimit);
+        } catch (NumberFormatException e) {
+            return 4;
+        }
     }
 
     public static List<NamedLocale> getAllLocales() {
@@ -231,7 +241,7 @@ public class Configs {
         String fileName = HISTORY_DIR + File.separator + DATE_FORMAT.format(new Date()) + ".json";
         try {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName));
-            bufferedWriter.write(object.toString());
+            bufferedWriter.write(object.toString(2));
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (IOException e) {
@@ -244,7 +254,7 @@ public class Configs {
         root.put("searchFileName", historyItem.isFileName());
         root.put("includePathName", historyItem.isIncludePathName());
         root.put("matchCase", historyItem.isCaseSensitive());
-        root.put("matchMode", historyItem.getMatchMode());
+        root.put("matchMode", historyItem.getMatchMode().name());
         root.put("searchContent", historyItem.getExtensions() != null);
         root.put("searchDirName", historyItem.isDirName());
         root.put("matchAll", historyItem.isMatchAll());
@@ -269,7 +279,7 @@ public class Configs {
                     .searchFileName(root.getBoolean("searchFileName"))
                     .includePathName(root.getBoolean("includePathName"))
                     .caseSensitive(root.getBoolean("matchCase"))
-                    .directSetMatchMode(root.getInt("matchMode"))
+                    .directSetMatchMode(MatchMode.valueOf(root.getString("matchMode")))
                     .searchDirName(root.getBoolean("searchDirName"))
                     .setMatchAll(root.getBoolean("matchAll"))
                     .setSearchDirs(dirs)
@@ -285,10 +295,6 @@ public class Configs {
     private static Map<String, String> readConfigFile() {
         return readMapFile(CONFIG_FILE_NAME);
     }
-
-//    private static void writePairedCache(Map<String, String> map) {
-//        writeMapFile(PAIRED_CACHE_NAME, map);
-//    }
 
     private static void writeConfigFile(Map<String, String> map) {
         writeMapFile(CONFIG_FILE_NAME, map);

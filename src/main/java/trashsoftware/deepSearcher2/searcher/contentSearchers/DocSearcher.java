@@ -17,9 +17,9 @@ public class DocSearcher extends TwoKeysSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
+        WordExtractor we = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
-            WordExtractor we = new WordExtractor(fis);
+            we = new WordExtractor(new FileInputStream(file));
 
             String[] paragraphs = we.getParagraphText();
 
@@ -27,10 +27,17 @@ public class DocSearcher extends TwoKeysSearcher {
                 String paragraph = paragraphs[i];
                 searchInString(paragraph, targets, i);
             }
-            fis.close();
             we.close();
         } catch (Exception e) {
             e.printStackTrace();
+        }  finally {
+            if (we != null) {
+                try {
+                    we.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ public abstract class MatcherFactory {
     public abstract StringMatcher createMatcher(String string);
 
     public static MatcherFactory createFactoryByPrefSet(PrefSet prefSet) {
-        if (prefSet.getMatchMode() == PrefSet.NORMAL) {
+        if (prefSet.getMatchMode() == MatchMode.NORMAL) {
             switch (prefSet.getMatchingAlgorithm()) {
                 case "algAuto":
                     return new AutoRegularMatcherFactory();
@@ -29,7 +29,7 @@ public abstract class MatcherFactory {
                 default:
                     throw new RuntimeException("Not a valid matching algorithm");
             }
-        } else if (prefSet.getMatchMode() == PrefSet.WORD) {
+        } else if (prefSet.getMatchMode() == MatchMode.WORD) {
             switch (prefSet.getWordMatchingAlgorithm()) {
                 case "algNaive":
                     return new FixedMatcherFactory(NaiveWordMatcher.class);
@@ -38,7 +38,7 @@ public abstract class MatcherFactory {
                 default:
                     throw new RuntimeException("Not a valid matching algorithm for words");
             }
-        } else if (prefSet.getMatchMode() == PrefSet.REGEX) {
+        } else if (prefSet.getMatchMode() == MatchMode.REGEX) {
             if (prefSet.getRegexAlgorithm().equals("algNative")) {
                 return new FixedMatcherFactory(NativeRegexMatcher.class);
             } else {

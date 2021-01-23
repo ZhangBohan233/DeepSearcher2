@@ -17,9 +17,9 @@ public class PptxSearcher extends TwoIntOneStrSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
+        XMLSlideShow slideShow = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
-            XMLSlideShow slideShow = new XMLSlideShow(fis);
+            slideShow = new XMLSlideShow(new FileInputStream(file));
             int page = 1;
             for (XSLFSlide slide : slideShow.getSlides()) {
                 List<XSLFShape> shapes = slide.getShapes();
@@ -53,9 +53,16 @@ public class PptxSearcher extends TwoIntOneStrSearcher {
 
                 page++;
             }
-            fis.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (slideShow != null) {
+                try {
+                    slideShow.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

@@ -5,13 +5,11 @@ import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ResultItem {
-
-//    public static final int MATCH_NAME = 1;
-//    public static final int MATCH_CONTENT = 2;
 
     private final File file;
     private final FileSizeItem fileSizeItem;
@@ -93,54 +91,8 @@ public class ResultItem {
     public String showInfo() {
         if (contentRes != null) {
             return contentRes.getAsString(bundle);
-//            StringBuilder builder = new StringBuilder();
-//            if (contentRes.getKey1() != null) {
-//                List<Integer> v1 = contentRes.getValues1();
-//                String showK1 = getShowStringByKey(contentRes.getKey1());
-//                String ordNum = bundle.getString("ordNum");
-//                if (contentRes.getKey2() != null) {
-//                    List<Integer> v2 = contentRes.getValues2();
-//                    if (v1.size() != v2.size()) throw new RuntimeException("Unexpected unequal size.");
-//                    String showK2 = getShowStringByKey(contentRes.getKey2());
-//                    for (int i = 0; i < v1.size(); i++) {
-//                        builder.append(ordNum)
-//                                .append(v1.get(i))
-//                                .append(showK1)
-//                                .append(", ")
-//                                .append(ordNum)
-//                                .append(v2.get(i))
-//                                .append(showK2)
-//                                .append('\n');
-//                    }
-//                } else {
-//                    for (Integer integer : v1) {
-//                        builder.append(ordNum)
-//                                .append(integer)
-//                                .append(showK1)
-//                                .append('\n');
-//                    }
-//                }
-//            }
-//            return builder.toString();
         } else {
             return null;
         }
     }
-
-//    private String getShowStringByKey(String key) {
-//        switch (key) {
-//            case ContentSearchingResult.LINES_KEY:
-//                return bundle.getString("lineNum");
-//            case ContentSearchingResult.PARAGRAPHS_KEY:
-//                return bundle.getString("paragraphNum");
-//            case ContentSearchingResult.PAGES_KEY:
-//                return bundle.getString("pageNum");
-//            case ContentSearchingResult.CHARS_KEY:
-//                return bundle.getString("characterNum");
-//            case ContentSearchingResult.BLOCKS_KEY:
-//                return bundle.getString("blockNum");
-//            default:
-//                throw new RuntimeException("No such key");
-//        }
-//    }
 }

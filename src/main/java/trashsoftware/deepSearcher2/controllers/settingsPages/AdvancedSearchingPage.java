@@ -3,7 +3,6 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
-import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
@@ -15,6 +14,9 @@ public class AdvancedSearchingPage extends SettingsPage {
     @FXML
     ComboBox<AlgorithmBundle> algorithmBox, wordAlgorithmBox, regexAlgorithmBox;
 
+    @FXML
+    ComboBox<Integer> cpuThreadsBox;
+
     public AdvancedSearchingPage(SettingsPanelController controller) throws IOException {
         super(controller);
 
@@ -25,9 +27,10 @@ public class AdvancedSearchingPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
-        addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox);
+        addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox, cpuThreadsBox);
 
         initAlgorithmBoxes();
+        initThreadsBox();
     }
 
     @Override
@@ -44,6 +47,21 @@ public class AdvancedSearchingPage extends SettingsPage {
             Configs.writeConfig("regexAlg", regexAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
             statusSaver.store(regexAlgorithmBox);
         }
+        if (statusSaver.hasChanged(cpuThreadsBox)) {
+            Configs.writeConfig("cpuThreads", String.valueOf(cpuThreadsBox.getSelectionModel().getSelectedItem()));
+            statusSaver.store(cpuThreadsBox);
+        }
+    }
+
+    private void initThreadsBox() {
+        int curThreadNum = Configs.getCurrentCpuThreads();
+        int maxThreadLimit = Runtime.getRuntime().availableProcessors();
+        if (curThreadNum > maxThreadLimit) curThreadNum = maxThreadLimit;
+        for (int i = 1; i <= maxThreadLimit; i++) {
+            cpuThreadsBox.getItems().add(i);
+        }
+        cpuThreadsBox.getSelectionModel().select(Integer.valueOf(curThreadNum));
+        statusSaver.store(cpuThreadsBox);
     }
 
     private void initAlgorithmBoxes() {

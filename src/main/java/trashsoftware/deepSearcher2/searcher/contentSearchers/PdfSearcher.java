@@ -4,7 +4,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
-import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +17,9 @@ public class PdfSearcher extends TwoKeysSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
+        PDDocument document = null;
         try {
-            PDDocument document = PDDocument.load(file);
+            document = PDDocument.load(file);
             if (!document.isEncrypted()) {
 
                 PDFTextStripper stripper = new PDFTextStripper();
@@ -37,7 +37,15 @@ public class PdfSearcher extends TwoKeysSearcher {
                 document.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            //
+        } finally {
+            if (document != null) {
+                try {
+                    document.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

@@ -1,13 +1,12 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import org.apache.poi.hslf.usermodel.*;
-import org.apache.poi.xslf.usermodel.*;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
-import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class PptSearcher extends TwoIntOneStrSearcher {
@@ -18,9 +17,9 @@ public class PptSearcher extends TwoIntOneStrSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
+        HSLFSlideShow slideShow = null;
         try {
-            FileInputStream fis = new FileInputStream(file);
-            HSLFSlideShow slideShow = new HSLFSlideShow(fis);
+            slideShow = new HSLFSlideShow(new FileInputStream(file));
             int page = 1;
             for (HSLFSlide slide : slideShow.getSlides()) {
                 List<HSLFShape> shapes = slide.getShapes();
@@ -54,9 +53,16 @@ public class PptSearcher extends TwoIntOneStrSearcher {
 
                 page++;
             }
-            fis.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (slideShow != null) {
+                try {
+                    slideShow.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

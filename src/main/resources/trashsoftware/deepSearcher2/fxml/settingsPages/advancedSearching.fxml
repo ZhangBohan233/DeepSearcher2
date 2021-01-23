@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import trashsoftware.deepSearcher2.controllers.settingsPages.AdvancedSearchingPage?>
 <fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.AdvancedSearchingPage"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
          alignment="CENTER" spacing="10">
@@ -28,5 +25,10 @@
 
     <Label text="%regexMatchingAlgorithm"/>
     <ComboBox fx:id="regexAlgorithmBox"/>
+
+    <Separator/>
+
+    <Label text="%cpuThreads"/>
+    <ComboBox fx:id="cpuThreadsBox"/>
 
 </fx:root>

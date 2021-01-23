@@ -7,11 +7,15 @@ import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
+import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Searcher {
 
@@ -30,16 +34,13 @@ public class Searcher {
     );
 
     private final PrefSet prefSet;
+    private final ExecutorService contentService;
 
     private final ReadOnlyIntegerWrapper resultCountWrapper = new ReadOnlyIntegerWrapper();
 
     private final ObservableList<ResultItem> tableList;
 
-    /**
-     * This list tracks the added order, since the {@code tableList} will be sorted if user select 'sort' on
-     * TableView.
-     */
-    private final Deque<ResultItem> orderTrackingList = new ArrayDeque<>();
+    private final Map<File, ResultItem> resultFilesMap = new HashMap<>();
 
     private final ResourceBundle bundle;
     private final ResourceBundle fileTypeBundle;
@@ -47,6 +48,7 @@ public class Searcher {
     private boolean searching = true;
 
     private final MatcherFactory nameMatcherFactory;
+    private final MatcherFactory contentMatcherFactory;
 
     public Searcher(PrefSet prefSet, ObservableList<ResultItem> tableList, ResourceBundle bundle,
                     ResourceBundle fileTypeBundle) {
@@ -55,6 +57,9 @@ public class Searcher {
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
         this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
+        this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
+
+        contentService = Executors.newFixedThreadPool(Configs.getCurrentCpuThreads());
     }
 
     public void search() {
@@ -62,10 +67,19 @@ public class Searcher {
             searchFileIterative(f);
 //            searchFileRecursive(f);
         }
+        contentService.shutdown();
+        try {
+            if (!contentService.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS)) {
+                System.out.println("Cannot stop!");
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void stop() {
         searching = false;
+        contentService.shutdownNow();
     }
 
     private void searchFileIterative(File rootFile) {
@@ -166,34 +180,7 @@ public class Searcher {
     }
 
     private void matchFileContent(File file) {
-        String ext = Util.getFileExtension(file.getName());
-        MatcherFactory matcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
-        if (prefSet.getExtensions().contains(ext)) {
-            ContentSearcher searcher;
-            if (PLAIN_TEXT_FORMAT.contains(ext)) {
-                searcher = new PlainTextSearcher(file, matcherFactory, prefSet.isCaseSensitive());
-            } else if (FORMAT_MAP.containsKey(ext)) {
-                try {
-                    searcher = FORMAT_MAP.get(ext)
-                            .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
-                            .newInstance(file, matcherFactory, prefSet.isCaseSensitive());
-                } catch (InvocationTargetException |
-                        NoSuchMethodException |
-                        InstantiationException |
-                        IllegalAccessException e) {
-                    throw new InvalidClassException("Unexpected file content searcher. ", e);
-                }
-            } else {
-                throw new RuntimeException("Unknown format");
-            }
-            ContentSearchingResult result;
-            if (prefSet.isMatchAll()) {
-                result = searcher.searchAll(prefSet.getTargets());
-            } else {
-                result = searcher.searchAny(prefSet.getTargets());
-            }
-            if (result != null) addContentResult(file, result);
-        }
+        contentService.execute(new SearchContentTask(file));
     }
 
     private String getSearchingFileName(File file) {
@@ -210,27 +197,24 @@ public class Searcher {
         resultCountWrapper.setValue(tableList.size());
     }
 
-    private void addContentResult(File file, ContentSearchingResult csr) {
-        // check if previous one is this one
+    private synchronized void addContentResult(File file, ContentSearchingResult csr) {
+        // check if previous some result is already added
         // This situation occurs when this file is already matched by name successfully
-        if (!orderTrackingList.isEmpty()) {
-            ResultItem lastItem = orderTrackingList.getLast();
-            if (lastItem.isSameFileAs(file)) {
-                lastItem.setContentRes(csr);
-                return;
-            }
+        ResultItem item = resultFilesMap.get(file);
+        if (item != null) {
+            item.setContentRes(csr);
+        } else {
+            ResultItem resultItem = ResultItem.createContentMatch(file, bundle, fileTypeBundle, csr);
+            tableList.add(resultItem);
+            resultFilesMap.put(file, resultItem);
+            updateResultCount();
         }
-
-        ResultItem resultItem = ResultItem.createContentMatch(file, bundle, fileTypeBundle, csr);
-        tableList.add(resultItem);
-        orderTrackingList.addLast(resultItem);
-        updateResultCount();
     }
 
     private void addNameResult(File file) {
         ResultItem resultItem = ResultItem.createNameMatch(file, bundle, fileTypeBundle);
         tableList.add(resultItem);
-        orderTrackingList.addLast(resultItem);
+        resultFilesMap.put(file, resultItem);
         updateResultCount();
     }
 
@@ -240,5 +224,45 @@ public class Searcher {
 
     public ReadOnlyIntegerProperty resultCountProperty() {
         return resultCountWrapper;
+    }
+
+    private class SearchContentTask implements Runnable {
+        private final File file;
+
+        private SearchContentTask(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public void run() {
+            String ext = Util.getFileExtension(file.getName());
+
+            if (prefSet.getExtensions().contains(ext)) {
+                ContentSearcher searcher;
+                if (PLAIN_TEXT_FORMAT.contains(ext)) {
+                    searcher = new PlainTextSearcher(file, contentMatcherFactory, prefSet.isCaseSensitive());
+                } else if (FORMAT_MAP.containsKey(ext)) {
+                    try {
+                        searcher = FORMAT_MAP.get(ext)
+                                .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
+                                .newInstance(file, contentMatcherFactory, prefSet.isCaseSensitive());
+                    } catch (InvocationTargetException |
+                            NoSuchMethodException |
+                            InstantiationException |
+                            IllegalAccessException e) {
+                        throw new InvalidClassException("Unexpected file content searcher. ", e);
+                    }
+                } else {
+                    throw new RuntimeException("Unknown format");
+                }
+                ContentSearchingResult result;
+                if (prefSet.isMatchAll()) {
+                    result = searcher.searchAll(prefSet.getTargets());
+                } else {
+                    result = searcher.searchAny(prefSet.getTargets());
+                }
+                if (result != null) addContentResult(file, result);
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class SettingsPage extends Page {
 
-    private final List<ComboBox> comboBoxes = new ArrayList<>();
+    private final List<ComboBox<?>> comboBoxes = new ArrayList<>();
     private final List<CheckBox> checkBoxes = new ArrayList<>();
 
     StatusSaver statusSaver = new StatusSaver();
@@ -25,34 +25,25 @@ public abstract class SettingsPage extends Page {
      */
     public abstract void saveChanges();
 
-//    /**
-//     * Returns the title to be displayed on the main page of settings.
-//     *
-//     * @return the title to be displayed on the main page of settings
-//     */
-//    public abstract String getTitle();
-
     public void setApplyButtonStatusChanger(Button applyButton) {
-        for (ComboBox comboBox : comboBoxes) {
-            comboBox.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) -> {
-                applyButton.setDisable(!isAnyStatusChanged());
-            }));
+        for (ComboBox<?> comboBox : comboBoxes) {
+            comboBox.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) ->
+                    applyButton.setDisable(noStatusChanged())));
         }
         for (CheckBox checkBox : checkBoxes) {
-            checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
-                applyButton.setDisable(!isAnyStatusChanged());
-            }));
+            checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
+                    applyButton.setDisable(noStatusChanged())));
         }
     }
 
-    private boolean isAnyStatusChanged() {
-        for (ComboBox comboBox : comboBoxes) {
-            if (statusSaver.hasChanged(comboBox)) return true;
+    private boolean noStatusChanged() {
+        for (ComboBox<?> comboBox : comboBoxes) {
+            if (statusSaver.hasChanged(comboBox)) return false;
         }
         for (CheckBox checkBox : checkBoxes) {
-            if (statusSaver.hasChanged(checkBox)) return true;
+            if (statusSaver.hasChanged(checkBox)) return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -64,7 +55,7 @@ public abstract class SettingsPage extends Page {
      */
     void addControls(Control... controls) {
         for (Control control : controls) {
-            if (control instanceof ComboBox) comboBoxes.add((ComboBox) control);
+            if (control instanceof ComboBox) comboBoxes.add((ComboBox<?>) control);
             else if (control instanceof CheckBox) checkBoxes.add((CheckBox) control);
 
             else throw new RuntimeException("Unrecognizable Control");

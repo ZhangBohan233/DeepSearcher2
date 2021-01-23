@@ -25,18 +25,25 @@ public class PlainTextSearcher extends TwoKeysSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
+        BufferedReader bufferedReader = null;
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            bufferedReader = new BufferedReader(new FileReader(file));
             String line;
             int lineCount = 1;
             while ((line = bufferedReader.readLine()) != null) {
                 searchInString(line, targets, lineCount);
                 lineCount++;
             }
-            bufferedReader.close();
-
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
