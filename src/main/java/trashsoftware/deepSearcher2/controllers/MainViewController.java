@@ -19,11 +19,13 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.json.JSONArray;
 import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
@@ -46,63 +48,44 @@ import java.util.*;
 
 public class MainViewController implements Initializable {
 
-    @FXML
-    TableView<ResultItem> resultTable;
-
-    @FXML
-    TableColumn<ResultItem, String> fileNameCol;
-
-    @FXML
-    TableColumn<ResultItem, String> matchingModeCol;
-
-    @FXML
-    TableColumn<FormatItem, String> formatNameCol;
-
-    @FXML
-    FormatTable formatTable;
-
-    @FXML
-    TextFieldList searchItemsList;
-
-    @FXML
-    ListView<File> dirList;
-
-    @FXML
-    ToggleGroup andOrGroup;
-
-    @FXML
-    RadioButton matchAllRadioBtn, matchAnyRadioBtn;
-
-    @FXML
-    CheckBox searchFileNameBox, searchDirNameBox, searchContentBox, includeDirNameBox;
-
-    @FXML
-    CheckBox matchCaseBox, matchWordBox, matchRegexBox;
-
-    @FXML
-    CheckBox selectAllBox;
-
-    @FXML
-    ComboBox<FormatFilterItem> filterBox;
-
-    @FXML
-    Button searchButton;
-
-    @FXML
-    Button deleteDirButton, deleteTargetButton;
-
-    @FXML
-    Label searchingStatusText, resultNumberText, statusSuffixText, timeUsedLabelText, timeUsedText, timeUnitText;
-
-    @FXML
-    ProgressIndicator progressIndicator;
-
-    private ResourceBundle bundle;
-
     private final ResourceBundle fileTypeBundle =
             ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
                     Configs.getCurrentLocale());
-
+    @FXML
+    TableView<ResultItem> resultTable;
+    @FXML
+    TableColumn<ResultItem, String> fileNameCol;
+    @FXML
+    TableColumn<ResultItem, String> matchingModeCol;
+    @FXML
+    TableColumn<FormatItem, String> formatNameCol;
+    @FXML
+    FormatTable formatTable;
+    @FXML
+    TextFieldList searchItemsList;
+    @FXML
+    ListView<File> dirList;
+    @FXML
+    ToggleGroup andOrGroup;
+    @FXML
+    RadioButton matchAllRadioBtn, matchAnyRadioBtn;
+    @FXML
+    CheckBox searchFileNameBox, searchDirNameBox, searchContentBox, includeDirNameBox;
+    @FXML
+    CheckBox matchCaseBox, matchWordBox, matchRegexBox;
+    @FXML
+    CheckBox selectAllBox;
+    @FXML
+    ComboBox<FormatFilterItem> filterBox;
+    @FXML
+    Button searchButton;
+    @FXML
+    Button deleteDirButton, deleteTargetButton;
+    @FXML
+    Label searchingStatusText, resultNumberText, statusSuffixText, timeUsedLabelText, timeUsedText, timeUnitText;
+    @FXML
+    ProgressIndicator progressIndicator;
+    private ResourceBundle bundle;
     private boolean isSearching;
 
     private SearchService service;
@@ -115,6 +98,7 @@ public class MainViewController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         bundle = resourceBundle;
 
+        setDirListFactory();
         setResultTableFactory();
         setFormatTableFactory();
 
@@ -122,7 +106,6 @@ public class MainViewController implements Initializable {
         addMatchingModeColumnHoverListener();
         addFormatNameColumnHoverListener();
         addResultTableClickListeners();
-        addDirListListener();
         addTargetListListener();
 
         addRadioButtonsListeners();
@@ -244,6 +227,30 @@ public class MainViewController implements Initializable {
 
     // Factories and listeners
 
+    private void setDirListFactory() {
+        dirList.setCellFactory(TextFieldListCell.forListView(new StringConverter<>() {
+            @Override
+            public String toString(File object) {
+                return object.getAbsolutePath();
+            }
+
+            @Override
+            public File fromString(String string) {
+                return new File(string);
+            }
+        }));
+        dirList.setEditable(true);
+        dirList.setOnEditCommit(event -> {
+            File nv = event.getNewValue();
+            if (nv.exists()) {
+                dirList.getItems().set(event.getIndex(), nv);
+            }
+        });
+        dirList.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            deleteDirButton.setDisable(newValue.intValue() == -1);
+        });
+    }
+
     private void setResultTableFactory() {
         TableColumn<ResultItem, ?> fileSizeCol = resultTable.getColumns().get(1);
         TableColumn<ResultItem, ?> fileTypeCol = resultTable.getColumns().get(2);
@@ -268,65 +275,11 @@ public class MainViewController implements Initializable {
     }
 
     private void addFileNameColumnHoverListener() {
-        fileNameCol.setCellFactory(new Callback<>() {
-            @Override
-            public TableCell<ResultItem, String> call(TableColumn<ResultItem, String> param) {
-                return new TableCell<>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setText(null);
-                        } else {
-                            setText(item);
-
-                            hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
-                                                         Boolean isNowHovered) -> {
-                                if (isNowHovered && !isEmpty()) {
-                                    Tooltip tp = new Tooltip();
-                                    tp.setText(getText());
-
-                                    resultTable.setTooltip(tp);
-                                } else {
-                                    resultTable.setTooltip(null);
-                                }
-                            });
-                        }
-                    }
-                };
-            }
-        });
+        fileNameCol.setCellFactory(new ResTableCallback<>(resultTable));
     }
 
     private void addFormatNameColumnHoverListener() {
-        formatNameCol.setCellFactory(new Callback<>() {
-            @Override
-            public TableCell<FormatItem, String> call(TableColumn<FormatItem, String> param) {
-                return new TableCell<>() {
-                    @Override
-                    protected void updateItem(String item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (item == null || empty) {
-                            setText(null);
-                        } else {
-                            setText(item);
-
-                            hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
-                                                         Boolean isNowHovered) -> {
-                                if (isNowHovered && !isEmpty()) {
-                                    Tooltip tp = new Tooltip();
-                                    tp.setText(getText());
-
-                                    formatTable.setTooltip(tp);
-                                } else {
-                                    formatTable.setTooltip(null);
-                                }
-                            });
-                        }
-                    }
-                };
-            }
-        });
+        formatNameCol.setCellFactory(new ResTableCallback<>(formatTable));
     }
 
     private void addMatchingModeColumnHoverListener() {
@@ -341,7 +294,6 @@ public class MainViewController implements Initializable {
                             setText(null);
                         } else {
                             setText(item);
-
                             hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
                                                          Boolean isNowHovered) -> {
                                 if (isNowHovered && !isEmpty()) {
@@ -352,10 +304,10 @@ public class MainViewController implements Initializable {
                                         tp.setText(tips);
 
                                         resultTable.setTooltip(tp);
+                                        return;
                                     }
-                                } else {
-                                    resultTable.setTooltip(null);
                                 }
+                                resultTable.setTooltip(null);
                             });
                         }
                     }
@@ -390,12 +342,6 @@ public class MainViewController implements Initializable {
                             .otherwise(contextMenu)
             );
             return row;
-        });
-    }
-
-    private void addDirListListener() {
-        dirList.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            deleteDirButton.setDisable(newValue.intValue() == -1);
         });
     }
 
@@ -456,11 +402,11 @@ public class MainViewController implements Initializable {
                 Configs.writeStringCache("matchAll", String.valueOf(t1))));
     }
 
-    // Helper functions
-
     private void addOpenedDir(File file) {
         Configs.addToArrayCacheNoDup(Configs.OPENED_DIRS_KEY, file.getAbsolutePath());
     }
+
+    // Helper functions
 
     private void deleteOpenedDir(File file) {
         Configs.removeFromArrayCache(Configs.OPENED_DIRS_KEY, file.getAbsolutePath());
@@ -687,6 +633,44 @@ public class MainViewController implements Initializable {
             return null;
     }
 
+    private void unbindListeners() {
+        service.getSearcher().resultCountProperty().removeListener(fileCountListener);
+    }
+
+    private static class ResTableCallback<T> implements
+            Callback<TableColumn<T, String>, TableCell<T, String>> {
+
+        private final TableView<T> table;
+
+        private ResTableCallback(TableView<T> table) {
+            this.table = table;
+        }
+
+        @Override
+        public TableCell<T, String> call(TableColumn<T, String> param) {
+            return new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                    } else {
+                        setText(item);
+
+                        hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
+                                                     Boolean isNowHovered) -> {
+                            if (isNowHovered && !isEmpty()) {
+                                table.setTooltip(new Tooltip(getText()));
+                            } else {
+                                table.setTooltip(null);
+                            }
+                        });
+                    }
+                }
+            };
+        }
+    }
+
     private class SearchService extends Service<Void> {
         private final Searcher searcher;
 
@@ -716,9 +700,5 @@ public class MainViewController implements Initializable {
         Searcher getSearcher() {
             return searcher;
         }
-    }
-
-    private void unbindListeners() {
-        service.getSearcher().resultCountProperty().removeListener(fileCountListener);
     }
 }
