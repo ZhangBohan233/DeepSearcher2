@@ -3,6 +3,7 @@
 .idea/
 *.iml
 out/
+product/
 
 # User data and cache
 cache/
