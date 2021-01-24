@@ -27,7 +27,6 @@ public class OthersPage extends SettingsPage {
 
     @Override
     public void saveChanges() {
-
     }
 
     private void showConfirm(String msg, String confirmButtonText, Runnable onConfirm) {
@@ -51,7 +50,7 @@ public class OthersPage extends SettingsPage {
         showConfirm(Client.getBundle().getString("confirmRestoreSettings") +
                         "\n" + Client.getBundle().getString("needRestart"),
                 Client.getBundle().getString("clear"),
-                Configs::clearAllHistory);
+                Configs::clearSettings);
     }
 
     @FXML
@@ -59,7 +58,7 @@ public class OthersPage extends SettingsPage {
         showConfirm(Client.getBundle().getString("confirmClearData") +
                         "\n" + Client.getBundle().getString("needRestart"),
                 Client.getBundle().getString("clear"),
-                Configs::clearAllHistory);
+                Configs::clearAllData);
     }
 
     @FXML

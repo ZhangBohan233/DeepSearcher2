@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.*;
 import trashsoftware.deepSearcher2.guiItems.SettingsItem;
+import trashsoftware.deepSearcher2.util.CacheObservable;
 
 import java.io.IOException;
 import java.net.URL;
@@ -24,6 +25,7 @@ public class SettingsPanelController implements Initializable {
     Button okButton, cancelButton, applyButton;
 
     private Stage thisStage;
+    private MainViewController mainView;
     private ResourceBundle bundle;
 
     @Override
@@ -36,12 +38,17 @@ public class SettingsPanelController implements Initializable {
         contentPane.setFitToWidth(true);
     }
 
-    void setStage(Stage stage) {
+    void setStage(Stage stage, MainViewController mainView) {
         this.thisStage = stage;
+        this.mainView = mainView;
     }
 
     public Stage getStage() {
         return thisStage;
+    }
+
+    public MainViewController getMainView() {
+        return mainView;
     }
 
     @FXML

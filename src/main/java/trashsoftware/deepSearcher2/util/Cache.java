@@ -54,18 +54,21 @@ public class Cache {
         activeCache.stop();
         Configs.deleteFileByName(COMMON_CACHE_NAME);
         activeCache = new Cache(cos);
+        for (CacheObservable co : cos) {
+            co.loadFromCache(activeCache);
+        }
     }
 
     public void stop() {
-        saveToDisk();
         autoSave.cancel();
+        saveToDisk();
     }
 
     public void addObservable(CacheObservable cacheObservable) {
         cacheObservables.add(cacheObservable);
     }
 
-    private void saveToDisk() {
+    private synchronized void saveToDisk() {
         for (CacheObservable co : cacheObservables) {
             co.putCache(root);
         }
@@ -77,6 +80,8 @@ public class Cache {
             fw.write(s);
             fw.flush();
         } catch (IOException e) {
+            //
+        } finally {
             if (fw != null) {
                 try {
                     fw.close();

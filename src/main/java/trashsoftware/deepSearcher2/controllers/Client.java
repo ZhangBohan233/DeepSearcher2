@@ -80,9 +80,9 @@ public class Client extends Application {
 
         if (isRunning()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle(bundle.getString("title"));
+            alert.setTitle(bundle.getString("appName"));
             alert.setHeaderText(bundle.getString("warning"));
-            alert.setContentText(bundle.getString("title") + " " + bundle.getString("alreadyRunning"));
+            alert.setContentText(bundle.getString("appName") + " " + bundle.getString("alreadyRunning"));
             alert.show();
             return;
         }
@@ -96,7 +96,7 @@ public class Client extends Application {
                         bundle);
         Parent root = loader.load();
 
-        stage.setTitle("Deep Searcher 2");
+        stage.setTitle(bundle.getString("appName"));
         stage.setScene(new Scene(root));
 
         MainViewController controller = loader.getController();

@@ -12,9 +12,9 @@
     </padding>
 
     <HBox alignment="CENTER" spacing="10">
-        <Separator prefWidth="80"/>
+        <Separator prefWidth="80.0"/>
         <Label text="%advancedSearching"/>
-        <Separator prefWidth="80"/>
+        <Separator prefWidth="80.0"/>
     </HBox>
 
     <Label text="%matchingAlgorithm"/>
