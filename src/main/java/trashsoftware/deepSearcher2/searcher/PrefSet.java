@@ -24,6 +24,7 @@ public class PrefSet {
     private String regexMatchingAlg;
     private Set<String> excludedDirs;
     private Set<String> excludedFormats;
+    private int depthFirstIndicator = -1;  // -1 for not read, 0 for breadth first 1, for depth first
 
     public List<File> getSearchDirs() {
         return searchDirs;
@@ -64,6 +65,13 @@ public class PrefSet {
         if (matchWord) return MatchMode.WORD;
         else if (matchRegex) return MatchMode.REGEX;
         else return MatchMode.NORMAL;
+    }
+
+    public boolean isDepthFirst() {
+        if (depthFirstIndicator == -1) {
+            depthFirstIndicator = Configs.getDepthFirst() ? 1 : 0;
+        }
+        return depthFirstIndicator == 1;
     }
 
     public String getMatchingAlgorithm() {
@@ -177,7 +185,6 @@ public class PrefSet {
                     addedFiles.add(f);
                 }
             }
-//            System.out.println(addedFiles);
             prefSet.searchDirs = addedFiles;
             return this;
         }

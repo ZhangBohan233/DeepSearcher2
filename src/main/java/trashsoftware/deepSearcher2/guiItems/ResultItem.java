@@ -27,7 +27,7 @@ public class ResultItem {
         this.matchModes = new boolean[]{matchName, matchContent};
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
-        this.fileSizeItem = new FileSizeItem(file.length(), bundle);
+        this.fileSizeItem = file.isDirectory() ? null : new FileSizeItem(file.length(), bundle);
         this.contentRes = contentRes;
     }
 
@@ -71,7 +71,7 @@ public class ResultItem {
 
     @FXML
     public FileSizeItem getSize() {
-        return fileSizeItem;
+        return fileSizeItem;  // nullable
     }
 
     @FXML

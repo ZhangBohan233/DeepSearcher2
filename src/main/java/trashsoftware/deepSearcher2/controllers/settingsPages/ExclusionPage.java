@@ -10,7 +10,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.controllers.widgets.FormatInputBox;
@@ -18,7 +17,6 @@ import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ResourceBundle;
 import java.util.Set;
 
 public class ExclusionPage extends SettingsPage {
@@ -48,23 +46,13 @@ public class ExclusionPage extends SettingsPage {
     }
 
     private void addDirListListener() {
-        excludedDirList.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) -> {
-            if (t1.intValue() == -1) {
-                deleteDirButton.setDisable(true);
-            } else {
-                deleteDirButton.setDisable(false);
-            }
-        }));
+        excludedDirList.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) ->
+                deleteDirButton.setDisable(t1.intValue() == -1)));
     }
 
     private void addFormatListListener() {
-        excludedFormatList.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) -> {
-            if (t1.intValue() == -1) {
-                deleteFormatButton.setDisable(true);
-            } else {
-                deleteFormatButton.setDisable(false);
-            }
-        }));
+        excludedFormatList.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) ->
+                deleteFormatButton.setDisable(t1.intValue() == -1)));
     }
 
     @Override
@@ -74,7 +62,7 @@ public class ExclusionPage extends SettingsPage {
 
     @FXML
     void addExcludedDir() {
-        File file = new DirectoryChooser().showDialog(null);
+        File file = new DirectoryChooser().showDialog(getController().getStage());
         if (file != null) {
             Configs.addExcludedDir(file.getAbsolutePath());
             refreshDirList();

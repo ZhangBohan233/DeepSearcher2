@@ -100,6 +100,7 @@ public class Client extends Application {
         stage.setScene(new Scene(root));
 
         MainViewController controller = loader.getController();
+        controller.setStage(stage);
         Cache.getCache().addObservable(controller);
 
         stage.setOnHidden(e -> {

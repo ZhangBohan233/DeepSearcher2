@@ -24,6 +24,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.json.JSONArray;
@@ -89,6 +90,7 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     ProgressIndicator progressIndicator;
     private ResourceBundle bundle;
+    private Stage thisStage;
     private boolean isSearching;
 
     private SearchService service;
@@ -120,8 +122,14 @@ public class MainViewController implements Initializable, CacheObservable {
         fillFilterBox();
         filterBox.getSelectionModel().select(0);  // this step must run after 'fillFormatTable()'
 
+        initContextMenus();
+
         // restore saved status
         loadFromCache();
+    }
+
+    public void setStage(Stage stage) {
+        thisStage = stage;
     }
 
     // Controls
@@ -132,9 +140,11 @@ public class MainViewController implements Initializable, CacheObservable {
         File lastOpenDir = getLastOpenedDir(Cache.getCache());
         if (lastOpenDir != null)
             dc.setInitialDirectory(lastOpenDir.getParentFile());
-        File dir = dc.showDialog(null);
+        File dir = dc.showDialog(thisStage);
         if (dir != null) {
-            dirList.getItems().add(dir);
+            if (!dirList.getItems().contains(dir)) {
+                dirList.getItems().add(dir);
+            }
         }
     }
 
@@ -142,6 +152,9 @@ public class MainViewController implements Initializable, CacheObservable {
     void addSearchItem() {
         TextField textField = new TextField();
         textField.setPromptText(bundle.getString("searchPrompt"));
+        textField.setOnAction(e -> {
+            if (!isSearching) startSearching();
+        });
         searchItemsList.getTextFields().add(textField);
     }
 
@@ -184,6 +197,8 @@ public class MainViewController implements Initializable, CacheObservable {
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/settingsPanel.fxml"), bundle);
         Parent root = loader.load();
         Stage stage = new Stage();
+        stage.initOwner(thisStage);
+        stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("settings"));
         stage.setScene(new Scene(root));
 
@@ -199,6 +214,8 @@ public class MainViewController implements Initializable, CacheObservable {
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/historyListView.fxml"), bundle);
         Parent root = loader.load();
         Stage stage = new Stage();
+        stage.initOwner(thisStage);
+        stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("history"));
         stage.setScene(new Scene(root));
 
@@ -214,6 +231,8 @@ public class MainViewController implements Initializable, CacheObservable {
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/aboutView.fxml"), bundle);
         Parent root = loader.load();
         Stage stage = new Stage();
+        stage.initOwner(thisStage);
+        stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("appName"));
         stage.setScene(new Scene(root));
 
@@ -253,6 +272,14 @@ public class MainViewController implements Initializable, CacheObservable {
         loadFromCache(Cache.getCache());
     }
 
+    private void clearSearchDirs() {
+        dirList.getItems().clear();
+    }
+
+    private void clearSearchItems() {
+        searchItemsList.getTextFields().clear();
+    }
+
     // Factories and listeners
 
     private void setDirListFactory() {
@@ -287,7 +314,6 @@ public class MainViewController implements Initializable, CacheObservable {
         fileSizeCol.setCellValueFactory(new PropertyValueFactory<>("Size"));
         fileTypeCol.setCellValueFactory(new PropertyValueFactory<>("Type"));
         matchModeCol.setCellValueFactory(new PropertyValueFactory<>("Mode"));
-//        infoCol.setCellValueFactory(new PropertyValueFactory<>("Info"));
     }
 
     private void setFormatTableFactory() {
@@ -432,8 +458,8 @@ public class MainViewController implements Initializable, CacheObservable {
     }
 
     private void loadSavedCheckBoxesStatus(Cache cache) {
-        setBoxInitialStatus(searchFileNameBox, "searchFileName",cache);
-        setBoxInitialStatus(searchDirNameBox, "searchDirName",cache);
+        setBoxInitialStatus(searchFileNameBox, "searchFileName", cache);
+        setBoxInitialStatus(searchDirNameBox, "searchDirName", cache);
         setBoxInitialStatus(searchContentBox, "searchContent", cache);
         setBoxInitialStatus(includeDirNameBox, "includePathName", cache);
         setBoxInitialStatus(matchCaseBox, "matchCase", cache);
@@ -466,6 +492,33 @@ public class MainViewController implements Initializable, CacheObservable {
                 new FormatFilterItem(FormatFilterItem.FILTER_DOCUMENTS, bundle.getString("documentFiles")),
                 new FormatFilterItem(FormatFilterItem.FILTER_OTHERS, bundle.getString("otherFiles"))
         );
+    }
+
+    private void initContextMenus() {
+        MenuItem addD = new MenuItem(bundle.getString("addItem"));
+        addD.setOnAction(e -> addSearchDir());
+        MenuItem clearD = new MenuItem(bundle.getString("clearItems"));
+        clearD.setOnAction(e -> clearSearchDirs());
+        MenuItem deleteDirMenu = new MenuItem(bundle.getString("deleteItem"));
+        deleteDirMenu.setDisable(true);
+        deleteDirMenu.setOnAction(e -> {
+            int selected = dirList.getSelectionModel().getSelectedIndex();
+            if (selected >= 0) dirList.getItems().remove(selected);
+        });
+        dirList.setContextMenu(new ContextMenu(deleteDirMenu, addD, clearD));
+
+        dirList.setOnContextMenuRequested(e -> {
+            Node node = e.getPickResult().getIntersectedNode();
+            if (node instanceof ListCell) {
+                deleteDirMenu.setDisable(((ListCell<?>) node).getItem() == null);
+            }
+        });
+
+        MenuItem addS = new MenuItem(bundle.getString("addItem"));
+        addS.setOnAction(e -> addSearchItem());
+        MenuItem clearS = new MenuItem(bundle.getString("clear"));
+        clearS.setOnAction(e -> clearSearchItems());
+        searchItemsList.setContextMenu(new ContextMenu(addS, clearS));
     }
 
     private void restoreSavedFormats(Cache cache) {
@@ -525,17 +578,19 @@ public class MainViewController implements Initializable, CacheObservable {
                 unbindListeners();
                 finishSearching(searcher.isNormalFinish());
                 setTimerTexts(System.currentTimeMillis() - beginTime);
+                resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
             });
 
             service.setOnFailed(e -> {
                 unbindListeners();
                 searchingFailed();
                 e.getSource().getException().printStackTrace();
+                resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
             });
 
             Configs.addHistory(prefSet);
+            resultTable.setPlaceholder(new Label(bundle.getString("isSearching")));
             service.start();
-
         } catch (SearchTargetNotSetException e) {
             showHoverMessage("targetNotSet", searchButton);
         } catch (SearchDirNotSetException e) {

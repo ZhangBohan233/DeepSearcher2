@@ -32,6 +32,15 @@ public class Configs {
         }
     }
 
+    public static void setDepthFirst(boolean value) {
+        writeConfig("depthFirst", String.valueOf(value));
+    }
+
+    public static boolean getDepthFirst() {
+        String savedAlg = Configs.getConfig("depthFirst");
+        return Boolean.parseBoolean(savedAlg);
+    }
+
     public static String getCurrentSearchingAlgorithm() {
         String savedAlg = Configs.getConfig("alg");
         return Objects.requireNonNullElse(savedAlg, "algNative");

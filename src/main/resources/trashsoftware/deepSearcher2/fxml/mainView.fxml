@@ -142,6 +142,9 @@
                 <TableColumn text="%fileType" minWidth="180"/>
                 <TableColumn fx:id="matchingModeCol" text="%matchMode" minWidth="100"/>
             </columns>
+            <placeholder>
+                <Label text="%resTablePlaceHolder"/>
+            </placeholder>
         </TableView>
 
         <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2">

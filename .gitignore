@@ -8,6 +8,7 @@ product/
 # User data and cache
 cache/
 userData/
+.running
 
 target/
 pom.xml.tag

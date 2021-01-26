@@ -17,12 +17,10 @@ import java.util.List;
 
 public class TextFieldList extends ScrollPane {
 
+    private final ReadOnlyIntegerWrapper selectedIndexWrapper = new ReadOnlyIntegerWrapper(-1);
+    private final List<ChangeListener<Boolean>> itemFocusListeners = new ArrayList<>();
     @FXML
     private VBox baseList;
-
-    private ReadOnlyIntegerWrapper selectedIndexWrapper = new ReadOnlyIntegerWrapper(-1);
-
-    private List<ChangeListener<Boolean>> itemFocusListeners = new ArrayList<>();
 
     public TextFieldList() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass()

@@ -31,4 +31,7 @@
     <Label text="%cpuThreads"/>
     <ComboBox fx:id="cpuThreadsBox"/>
 
+    <Label text="%traversalOrder"/>
+    <ComboBox fx:id="traversalOrderBox"/>
+
 </fx:root>

@@ -17,6 +17,9 @@ public class AdvancedSearchingPage extends SettingsPage {
     @FXML
     ComboBox<Integer> cpuThreadsBox;
 
+    @FXML
+    ComboBox<TraversalOrder> traversalOrderBox;
+
     public AdvancedSearchingPage(SettingsPanelController controller) throws IOException {
         super(controller);
 
@@ -27,10 +30,11 @@ public class AdvancedSearchingPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
-        addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox, cpuThreadsBox);
+        addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox, cpuThreadsBox, traversalOrderBox);
 
         initAlgorithmBoxes();
         initThreadsBox();
+        initTraversalOrderBox();
     }
 
     @Override
@@ -51,6 +55,10 @@ public class AdvancedSearchingPage extends SettingsPage {
             Configs.writeConfig("cpuThreads", String.valueOf(cpuThreadsBox.getSelectionModel().getSelectedItem()));
             statusSaver.store(cpuThreadsBox);
         }
+        if (statusSaver.hasChanged(traversalOrderBox)) {
+            Configs.setDepthFirst(traversalOrderBox.getSelectionModel().getSelectedItem() == TraversalOrder.DEPTH_FIRST);
+            statusSaver.store(traversalOrderBox);
+        }
     }
 
     private void initThreadsBox() {
@@ -62,6 +70,12 @@ public class AdvancedSearchingPage extends SettingsPage {
         }
         cpuThreadsBox.getSelectionModel().select(Integer.valueOf(curThreadNum));
         statusSaver.store(cpuThreadsBox);
+    }
+
+    private void initTraversalOrderBox() {
+        traversalOrderBox.getItems().addAll(TraversalOrder.DEPTH_FIRST, TraversalOrder.BREADTH_FIRST);
+        traversalOrderBox.getSelectionModel().select(Configs.getDepthFirst() ? 0 : 1);
+        statusSaver.store(traversalOrderBox);
     }
 
     private void initAlgorithmBoxes() {
@@ -108,6 +122,22 @@ public class AdvancedSearchingPage extends SettingsPage {
         @Override
         public String toString() {
             return showingName;
+        }
+    }
+
+    private enum TraversalOrder {
+        DEPTH_FIRST("depthFirst"),
+        BREADTH_FIRST("breadthFirst");
+
+        private final String nameKey;
+
+        TraversalOrder(String nameKey) {
+            this.nameKey = nameKey;
+        }
+
+        @Override
+        public String toString() {
+            return Client.getBundle().getString(nameKey);
         }
     }
 }

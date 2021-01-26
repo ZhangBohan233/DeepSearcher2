@@ -12,6 +12,7 @@ import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -88,7 +89,7 @@ public class Searcher {
         while (!stack.isEmpty()) {
             if (!searching) return;
 
-            File file = stack.removeLast();
+            File file = prefSet.isDepthFirst() ? stack.removeLast() : stack.removeFirst();
             if (file.isDirectory()) {
                 // Check if this directory is excluded
                 if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) continue;
@@ -115,38 +116,6 @@ public class Searcher {
                 if (prefSet.getExtensions() != null) {
                     matchFileContent(file);
                 }
-            }
-        }
-    }
-
-    private void searchFileRecursive(File file) {
-        if (!searching) return;
-
-        if (file.isDirectory()) {
-            // Check if this directory is excluded
-            if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) return;
-
-            // Check dir is selected
-            if (prefSet.isDirName()) {
-                matchName(file);
-            }
-
-            File[] subFiles = file.listFiles();
-            if (subFiles == null) return;
-            for (File f : subFiles) {
-                searchFileRecursive(f);
-            }
-        } else {
-            // Check if this format is excluded
-            if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) return;
-
-            // check file name is selected
-            if (prefSet.isFileName()) {
-                matchName(file);
-            }
-            // check file content is selected
-            if (prefSet.getExtensions() != null) {
-                matchFileContent(file);
             }
         }
     }
