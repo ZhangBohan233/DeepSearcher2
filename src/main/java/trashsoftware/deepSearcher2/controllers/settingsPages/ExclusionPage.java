@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-public class ExclusionPage extends SettingsPage {
+public class ExclusionPage extends SettingsPage implements FormatInputAble {
 
     @FXML
     ListView<String> excludedDirList, excludedFormatList;
@@ -57,7 +57,6 @@ public class ExclusionPage extends SettingsPage {
 
     @Override
     public void saveChanges() {
-
     }
 
     @FXML
@@ -79,21 +78,11 @@ public class ExclusionPage extends SettingsPage {
 
     @FXML
     void addExcludedFormat() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/trashsoftware/deepSearcher2/fxml/widgets/formatInputBox.fxml"),
-                Client.getBundle());
-        Parent root = loader.load();
-        Stage stage = new Stage();
-        stage.setTitle(Client.getBundle().getString("excludedFormats"));
-        stage.initOwner(getController().getStage());
-        stage.initModality(Modality.WINDOW_MODAL);
-        stage.initStyle(StageStyle.UTILITY);
-        stage.setScene(new Scene(root));
-
-        FormatInputBox fib = loader.getController();
-        fib.setParentAndStage(this, stage);
-
-        stage.show();
+        FormatInputBox.showInputBox(
+                this,
+                getController().getStage(),
+                Client.getBundle().getString("excludedFormats"),
+                false);
     }
 
     @FXML
@@ -104,7 +93,8 @@ public class ExclusionPage extends SettingsPage {
         refreshFormatsList();
     }
 
-    public void addFormat(String extension) {
+    @Override
+    public void addFormat(String extension, String description) {
         String pureExt;
         if (extension.startsWith(".")) {
             pureExt = extension.substring(1);

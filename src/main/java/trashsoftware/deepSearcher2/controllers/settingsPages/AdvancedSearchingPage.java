@@ -74,7 +74,7 @@ public class AdvancedSearchingPage extends SettingsPage {
 
     private void initTraversalOrderBox() {
         traversalOrderBox.getItems().addAll(TraversalOrder.DEPTH_FIRST, TraversalOrder.BREADTH_FIRST);
-        traversalOrderBox.getSelectionModel().select(Configs.getDepthFirst() ? 0 : 1);
+        traversalOrderBox.getSelectionModel().select(Configs.isDepthFirst() ? 0 : 1);
         statusSaver.store(traversalOrderBox);
     }
 

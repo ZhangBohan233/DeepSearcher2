@@ -69,7 +69,7 @@ public class PrefSet {
 
     public boolean isDepthFirst() {
         if (depthFirstIndicator == -1) {
-            depthFirstIndicator = Configs.getDepthFirst() ? 1 : 0;
+            depthFirstIndicator = Configs.isDepthFirst() ? 1 : 0;
         }
         return depthFirstIndicator == 1;
     }

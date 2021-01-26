@@ -12,7 +12,6 @@ import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,11 +44,9 @@ public class Searcher {
 
     private final ResourceBundle bundle;
     private final ResourceBundle fileTypeBundle;
-
-    private boolean searching = true;
-
     private final MatcherFactory nameMatcherFactory;
     private final MatcherFactory contentMatcherFactory;
+    private boolean searching = true;
 
     public Searcher(PrefSet prefSet, ObservableList<ResultItem> tableList, ResourceBundle bundle,
                     ResourceBundle fileTypeBundle) {
@@ -66,7 +63,6 @@ public class Searcher {
     public void search() {
         for (File f : prefSet.getSearchDirs()) {
             searchFileIterative(f);
-//            searchFileRecursive(f);
         }
         contentService.shutdown();
         try {
@@ -84,12 +80,15 @@ public class Searcher {
     }
 
     private void searchFileIterative(File rootFile) {
+        boolean depthFirst = prefSet.isDepthFirst();
+        boolean notShowHidden = Configs.isShowHidden();
         Deque<File> stack = new ArrayDeque<>();
         stack.addLast(rootFile);
         while (!stack.isEmpty()) {
             if (!searching) return;
 
-            File file = prefSet.isDepthFirst() ? stack.removeLast() : stack.removeFirst();
+            File file = depthFirst ? stack.removeLast() : stack.removeFirst();
+            if (notShowHidden && file.isHidden()) continue;
             if (file.isDirectory()) {
                 // Check if this directory is excluded
                 if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) continue;

@@ -10,12 +10,12 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="trashsoftware.deepSearcher2.controllers.ConfirmBox"
-      prefWidth="200" spacing="10">
+      prefWidth="320.0" spacing="10.0">
     <padding>
-        <Insets left="5" right="5" top="5" bottom="5"/>
+        <Insets left="5.0" right="5.0" top="5.0" bottom="5.0"/>
     </padding>
-    <Label fx:id="messageBox"/>
-    <HBox alignment="CENTER_RIGHT" spacing="10">
+    <Label fx:id="messageBox" wrapText="true"/>
+    <HBox alignment="CENTER_RIGHT" spacing="10.0">
         <Button fx:id="confirmButton" text="%confirm" onAction="#onConfirmed"/>
         <Button text="%cancel" onAction="#onCancelled"/>
     </HBox>

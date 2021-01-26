@@ -80,6 +80,11 @@ public class SettingsPanelController implements Initializable {
                     new SettingsItem(bundle.getString("exclusions"), exclusionPage)
             ));
 
+            CustomPage customPage = new CustomPage(this);
+            searchingRoot.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("custom"), customPage)
+            ));
+
             AdvancedSearchingPage advancedSearchingPage = new AdvancedSearchingPage(this);
             searchingRoot.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("advancedSearching"), advancedSearchingPage)));

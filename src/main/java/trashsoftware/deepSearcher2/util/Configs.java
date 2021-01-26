@@ -18,6 +18,7 @@ public class Configs {
     private static final String CONFIG_FILE_NAME = "userData/config.cfg";
     private static final String EXCLUDED_DIRS_NAME = "userData/excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = "userData/excludedFormats.cfg";
+    private static final String CUSTOM_FORMATS_NAME = "userData/customFormats.cfg";
     private static final String HISTORY_DIR = "userData/history";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
@@ -36,9 +37,14 @@ public class Configs {
         writeConfig("depthFirst", String.valueOf(value));
     }
 
-    public static boolean getDepthFirst() {
-        String savedAlg = Configs.getConfig("depthFirst");
-        return Boolean.parseBoolean(savedAlg);
+    public static boolean isShowHidden() {
+        String saved = Configs.getConfig("showHidden");
+        return Boolean.parseBoolean(saved);
+    }
+
+    public static boolean isDepthFirst() {
+        String saved = Configs.getConfig("depthFirst");
+        return Boolean.parseBoolean(saved);
     }
 
     public static String getCurrentSearchingAlgorithm() {
@@ -119,6 +125,22 @@ public class Configs {
 
     public static Set<String> getAllExcludedFormats() {
         return readListFile(EXCLUDED_FORMATS_NAME);
+    }
+
+    public static void addCustomFormat(String ext, String description) {
+        Map<String, String> map = readMapFile(CUSTOM_FORMATS_NAME);
+        map.put(ext, description);
+        writeMapFile(CUSTOM_FORMATS_NAME, map);
+    }
+
+    public static void removeCustomFormat(String ext) {
+        Map<String, String> map = readMapFile(CUSTOM_FORMATS_NAME);
+        map.remove(ext);
+        writeMapFile(CUSTOM_FORMATS_NAME, map);
+    }
+
+    public static Map<String, String> getAllCustomFormats() {
+        return readMapFile(CUSTOM_FORMATS_NAME);
     }
 
     public static List<HistoryItem> getAllHistory() {
@@ -251,14 +273,16 @@ public class Configs {
 
     private static Map<String, String> readMapFile(String fileName) {
         Map<String, String> map = new HashMap<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] keyValue = line.split("=");
-                map.put(keyValue[0], keyValue[1]);
+                if (keyValue.length == 1) {
+                    map.put(keyValue[0], "");
+                } else if (keyValue.length == 2) {
+                    map.put(keyValue[0], keyValue[1]);
+                }
             }
-            br.close();
         } catch (FileNotFoundException e) {
             writeMapFile(fileName, map);
         } catch (IOException e) {
@@ -268,15 +292,13 @@ public class Configs {
     }
 
     private static void writeMapFile(String fileName, Map<String, String> map) {
-        try {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             createDirsIfNotExist();
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String line = entry.getKey() + "=" + entry.getValue() + '\n';
                 bw.write(line);
             }
             bw.flush();
-            bw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
