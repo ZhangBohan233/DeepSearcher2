@@ -22,6 +22,12 @@
         </font>
     </Label>
 
+    <Label fx:id="versionLabel">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+
     <HBox spacing="5.0" alignment="CENTER">
         <Label text="%authorText"/>
         <Label fx:id="authorLabel"/>
