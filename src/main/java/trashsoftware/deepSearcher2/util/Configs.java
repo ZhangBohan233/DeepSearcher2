@@ -94,6 +94,19 @@ public class Configs {
         return locales;
     }
 
+    public static int getTestPort(int defaultPort) {
+        String s = getConfig("testPort");
+        try {
+            int res = Integer.parseInt(s);
+            if (res <= 1000 || res > 65535) {
+                return defaultPort;
+            }
+            return res;
+        } catch (NumberFormatException nfe) {
+            return defaultPort;
+        }
+    }
+
     private static boolean getBoolean(String key) {
         return Boolean.parseBoolean(getConfig(key));
     }
