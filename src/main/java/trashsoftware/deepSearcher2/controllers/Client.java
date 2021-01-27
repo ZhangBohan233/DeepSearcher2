@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
+import trashsoftware.deepSearcher2.util.EventLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class Client extends Application {
             try {
                 new Client().showMainUi(new Stage());
             } catch (Exception e) {
+                EventLogger.log(e);
                 e.printStackTrace();
             }
         });

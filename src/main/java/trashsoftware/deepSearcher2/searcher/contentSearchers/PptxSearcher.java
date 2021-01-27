@@ -3,11 +3,9 @@ package trashsoftware.deepSearcher2.searcher.contentSearchers;
 import org.apache.poi.xslf.usermodel.*;
 import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
-import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 public class PptxSearcher extends TwoIntOneStrSearcher {
@@ -17,9 +15,7 @@ public class PptxSearcher extends TwoIntOneStrSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
-        XMLSlideShow slideShow = null;
-        try {
-            slideShow = new XMLSlideShow(new FileInputStream(file));
+        try (XMLSlideShow slideShow = new XMLSlideShow(new FileInputStream(file))) {
             int page = 1;
             for (XSLFSlide slide : slideShow.getSlides()) {
                 List<XSLFShape> shapes = slide.getShapes();
@@ -55,14 +51,6 @@ public class PptxSearcher extends TwoIntOneStrSearcher {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (slideShow != null) {
-                try {
-                    slideShow.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }

@@ -6,7 +6,6 @@ import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 public class PptSearcher extends TwoIntOneStrSearcher {
@@ -17,9 +16,7 @@ public class PptSearcher extends TwoIntOneStrSearcher {
 
     @Override
     protected void searchFile(List<String> targets) {
-        HSLFSlideShow slideShow = null;
-        try {
-            slideShow = new HSLFSlideShow(new FileInputStream(file));
+        try (HSLFSlideShow slideShow = new HSLFSlideShow(new FileInputStream(file))) {
             int page = 1;
             for (HSLFSlide slide : slideShow.getSlides()) {
                 List<HSLFShape> shapes = slide.getShapes();
@@ -55,14 +52,6 @@ public class PptSearcher extends TwoIntOneStrSearcher {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (slideShow != null) {
-                try {
-                    slideShow.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 }
