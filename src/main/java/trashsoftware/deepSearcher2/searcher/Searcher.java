@@ -22,6 +22,7 @@ public class Searcher {
     private static final Set<String> PLAIN_TEXT_FORMAT = Set.of(
             "bat", "c", "cmd", "cpp", "csv", "h", "java", "js", "json", "log", "py", "r", "rmd", "tex", "txt"
     );
+    private final Map<String, String> customFormats;
 
     private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
             "pdf", PdfSearcher.class,
@@ -49,13 +50,14 @@ public class Searcher {
     private boolean searching = true;
 
     public Searcher(PrefSet prefSet, ObservableList<ResultItem> tableList, ResourceBundle bundle,
-                    ResourceBundle fileTypeBundle) {
+                    ResourceBundle fileTypeBundle, Map<String,String> customFormats) {
         this.prefSet = prefSet;
         this.tableList = tableList;
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
         this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
         this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
+        this.customFormats = customFormats;
 
         contentService = Executors.newFixedThreadPool(Configs.getCurrentCpuThreads());
     }
@@ -148,7 +150,25 @@ public class Searcher {
     }
 
     private void matchFileContent(File file) {
-        contentService.execute(new SearchContentTask(file));
+        String ext = Util.getFileExtension(file.getName());
+        if (prefSet.getExtensions().contains(ext)) {
+            ContentSearcher searcher;
+            if (FORMAT_MAP.containsKey(ext)) {
+                try {
+                    searcher = FORMAT_MAP.get(ext)
+                            .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
+                            .newInstance(file, contentMatcherFactory, prefSet.isCaseSensitive());
+                } catch (InvocationTargetException |
+                        NoSuchMethodException |
+                        InstantiationException |
+                        IllegalAccessException e) {
+                    throw new InvalidClassException("Unexpected file content searcher. ", e);
+                }
+            } else {
+                searcher = new PlainTextSearcher(file, contentMatcherFactory, prefSet.isCaseSensitive());
+            }
+            contentService.execute(new SearchContentTask(file, searcher));
+        }
     }
 
     private String getSearchingFileName(File file) {
@@ -172,7 +192,7 @@ public class Searcher {
         if (item != null) {
             item.setContentRes(csr);
         } else {
-            ResultItem resultItem = ResultItem.createContentMatch(file, bundle, fileTypeBundle, csr);
+            ResultItem resultItem = ResultItem.createContentMatch(file, bundle, fileTypeBundle, csr, customFormats);
             tableList.add(resultItem);
             resultFilesMap.put(file, resultItem);
             updateResultCount();
@@ -180,7 +200,7 @@ public class Searcher {
     }
 
     private void addNameResult(File file) {
-        ResultItem resultItem = ResultItem.createNameMatch(file, bundle, fileTypeBundle);
+        ResultItem resultItem = ResultItem.createNameMatch(file, bundle, fileTypeBundle, customFormats);
         tableList.add(resultItem);
         resultFilesMap.put(file, resultItem);
         updateResultCount();
@@ -196,41 +216,22 @@ public class Searcher {
 
     private class SearchContentTask implements Runnable {
         private final File file;
+        private final ContentSearcher searcher;
 
-        private SearchContentTask(File file) {
+        private SearchContentTask(File file, ContentSearcher searcher) {
             this.file = file;
+            this.searcher = searcher;
         }
 
         @Override
         public void run() {
-            String ext = Util.getFileExtension(file.getName());
-
-            if (prefSet.getExtensions().contains(ext)) {
-                ContentSearcher searcher;
-                if (PLAIN_TEXT_FORMAT.contains(ext)) {
-                    searcher = new PlainTextSearcher(file, contentMatcherFactory, prefSet.isCaseSensitive());
-                } else if (FORMAT_MAP.containsKey(ext)) {
-                    try {
-                        searcher = FORMAT_MAP.get(ext)
-                                .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
-                                .newInstance(file, contentMatcherFactory, prefSet.isCaseSensitive());
-                    } catch (InvocationTargetException |
-                            NoSuchMethodException |
-                            InstantiationException |
-                            IllegalAccessException e) {
-                        throw new InvalidClassException("Unexpected file content searcher. ", e);
-                    }
-                } else {
-                    throw new RuntimeException("Unknown format");
-                }
-                ContentSearchingResult result;
-                if (prefSet.isMatchAll()) {
-                    result = searcher.searchAll(prefSet.getTargets());
-                } else {
-                    result = searcher.searchAny(prefSet.getTargets());
-                }
-                if (result != null) addContentResult(file, result);
+            ContentSearchingResult result;
+            if (prefSet.isMatchAll()) {
+                result = searcher.searchAll(prefSet.getTargets());
+            } else {
+                result = searcher.searchAny(prefSet.getTargets());
             }
+            if (result != null) addContentResult(file, result);
         }
     }
 }

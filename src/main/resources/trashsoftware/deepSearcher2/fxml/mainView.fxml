@@ -104,10 +104,13 @@
 
             <FormatTable fx:id="formatTable" GridPane.rowIndex="3" GridPane.columnSpan="2" disable="true">
                 <columns>
-                    <TableColumn minWidth="25" maxWidth="25"/>
-                    <TableColumn fx:id="formatNameCol" text="%format" prefWidth="170"/>
-                    <TableColumn text="%extension" prefWidth="50"/>
+                    <TableColumn minWidth="25.0" maxWidth="25.0"/>
+                    <TableColumn fx:id="formatNameCol" text="%format" prefWidth="170.0"/>
+                    <TableColumn text="%extension" prefWidth="50.0"/>
                 </columns>
+                <placeholder>
+                    <Label text="%formatTablePlaceHolder"/>
+                </placeholder>
             </FormatTable>
 
         </GridPane>

@@ -54,6 +54,7 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
         String removedExt = customFmtTable.getItems().remove(index).ext.substring(1);  // also remove the dot
         Configs.removeCustomFormat(removedExt);
         refreshTable();
+        getController().getMainView().refreshFormatTable();
     }
 
     @Override
@@ -72,6 +73,7 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
         }
         Configs.addCustomFormat(pureExt, realDes);
         refreshTable();
+        getController().getMainView().refreshFormatTable();
     }
 
     private void refreshTable() {

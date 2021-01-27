@@ -22,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -33,6 +34,7 @@ import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
+import trashsoftware.deepSearcher2.guiItems.FormatType;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
@@ -92,6 +94,7 @@ public class MainViewController implements Initializable, CacheObservable {
     private ResourceBundle bundle;
     private Stage thisStage;
     private boolean isSearching;
+    private File dirDialogInitFile;
 
     private SearchService service;
 
@@ -137,13 +140,13 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     void addSearchDir() {
         DirectoryChooser dc = new DirectoryChooser();
-        File lastOpenDir = getLastOpenedDir(Cache.getCache());
-        if (lastOpenDir != null)
-            dc.setInitialDirectory(lastOpenDir.getParentFile());
+        if (dirDialogInitFile != null && dirDialogInitFile.exists())
+            dc.setInitialDirectory(dirDialogInitFile);
         File dir = dc.showDialog(thisStage);
         if (dir != null) {
             if (!dirList.getItems().contains(dir)) {
                 dirList.getItems().add(dir);
+                dirDialogInitFile = dir.getParentFile();
             }
         }
     }
@@ -251,6 +254,8 @@ public class MainViewController implements Initializable, CacheObservable {
         rootObject.put("matchRegex", matchRegexBox.isSelected());
         rootObject.put("matchAll", matchAllRadioBtn.isSelected());
 
+        if (dirDialogInitFile != null) rootObject.put("dirDialogInit", dirDialogInitFile.getAbsolutePath());
+
         rootObject.put(Cache.OPENED_DIRS_KEY, new JSONArray(dirList.getItems()));
 
         JSONArray selectedFmts = new JSONArray();
@@ -266,6 +271,8 @@ public class MainViewController implements Initializable, CacheObservable {
         restoreLastOpenedDirs(cache);
         loadRadioButtonsInitialStatus(cache);
         loadSavedCheckBoxesStatus(cache);
+        String initD = cache.getStringCache("dirDialogInit");
+        if (initD != null) dirDialogInitFile = new File(initD);
     }
 
     private void loadFromCache() {
@@ -442,11 +449,6 @@ public class MainViewController implements Initializable, CacheObservable {
 
     // Helper functions
 
-    private File getLastOpenedDir(Cache cache) {
-        JSONArray lastOpens = lastOpenedDirs(cache);
-        return lastOpens.isEmpty() ? null : new File(lastOpens.getString(lastOpens.length() - 1));
-    }
-
     private JSONArray lastOpenedDirs(Cache cache) {
         return cache.getArrayCache(Cache.OPENED_DIRS_KEY);
     }
@@ -472,6 +474,15 @@ public class MainViewController implements Initializable, CacheObservable {
         checkBox.setSelected(checked);
     }
 
+    public void refreshFormatTable() {
+        formatTable.clearItems();
+        fillFormatTable();
+        // manually trigger the filters
+        int index = filterBox.getSelectionModel().getSelectedIndex();
+        filterBox.getSelectionModel().select(0);
+        filterBox.getSelectionModel().select(index);
+    }
+
     private void fillFormatTable() {
         Enumeration<String> keys = fileTypeBundle.getKeys();
         while (keys.hasMoreElements()) {
@@ -479,18 +490,25 @@ public class MainViewController implements Initializable, CacheObservable {
             FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
             formatTable.addItem(formatItem);
         }
+        Map<String, String> customFormats = Configs.getAllCustomFormats();
+        for (Map.Entry<String, String> extDes : customFormats.entrySet()) {
+            FormatItem formatItem = new FormatItem(extDes.getKey(), extDes.getValue());
+            formatTable.addItem(formatItem);
+        }
+        formatTable.setCustomFormats(customFormats);
         Collections.sort(formatTable.getAllItems());
     }
 
     private void fillFilterBox() {
         filterBox.getItems().clear();
         filterBox.getItems().addAll(
-                new FormatFilterItem(FormatFilterItem.FILTER_ALL, bundle.getString("allFiles")),
-                new FormatFilterItem(FormatFilterItem.FILTER_TEXT, bundle.getString("textFiles")),
-                new FormatFilterItem(FormatFilterItem.FILTER_CODES, bundle.getString("sourceCodeFiles")),
-                new FormatFilterItem(FormatFilterItem.FILTER_MS_OFFICE, bundle.getString("officeFiles")),
-                new FormatFilterItem(FormatFilterItem.FILTER_DOCUMENTS, bundle.getString("documentFiles")),
-                new FormatFilterItem(FormatFilterItem.FILTER_OTHERS, bundle.getString("otherFiles"))
+                new FormatFilterItem(FormatType.ALL, bundle.getString("allFiles"), formatTable),
+                new FormatFilterItem(FormatType.TEXT, bundle.getString("textFiles"), formatTable),
+                new FormatFilterItem(FormatType.CODES, bundle.getString("sourceCodeFiles"), formatTable),
+                new FormatFilterItem(FormatType.MS_OFFICE, bundle.getString("officeFiles"), formatTable),
+                new FormatFilterItem(FormatType.DOCUMENTS, bundle.getString("documentFiles"), formatTable),
+                new FormatFilterItem(FormatType.OTHERS, bundle.getString("otherFiles"), formatTable),
+                new FormatFilterItem(FormatType.CUSTOMS, bundle.getString("custom"), formatTable)
         );
     }
 
@@ -509,9 +527,9 @@ public class MainViewController implements Initializable, CacheObservable {
 
         dirList.setOnContextMenuRequested(e -> {
             Node node = e.getPickResult().getIntersectedNode();
-            if (node instanceof ListCell) {
-                deleteDirMenu.setDisable(((ListCell<?>) node).getItem() == null);
-            }
+            boolean enabled = (node instanceof TextFieldListCell && ((TextFieldListCell<?>) node).getItem() != null)
+                    || node instanceof Text;
+            deleteDirMenu.setDisable(!enabled);
         });
 
         MenuItem addS = new MenuItem(bundle.getString("addItem"));
@@ -571,7 +589,12 @@ public class MainViewController implements Initializable, CacheObservable {
             resultTable.getItems().clear();
             setInSearchingUi();
 
-            Searcher searcher = new Searcher(prefSet, resultTable.getItems(), bundle, fileTypeBundle);
+            Searcher searcher = new Searcher(
+                    prefSet,
+                    resultTable.getItems(),
+                    bundle,
+                    fileTypeBundle,
+                    formatTable.getCustomFormats());
             service = new SearchService(searcher);
 
             service.setOnSucceeded(e -> {

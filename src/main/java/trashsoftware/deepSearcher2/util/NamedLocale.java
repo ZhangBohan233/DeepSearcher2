@@ -3,8 +3,8 @@ package trashsoftware.deepSearcher2.util;
 import java.util.Locale;
 
 public class NamedLocale  {
-    private Locale locale;
-    private String description;
+    private final Locale locale;
+    private final String description;
 
     NamedLocale(String language, String country, String description) {
         this.locale = new Locale(language, country);

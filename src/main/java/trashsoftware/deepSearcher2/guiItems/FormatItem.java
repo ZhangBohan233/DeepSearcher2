@@ -37,4 +37,9 @@ public class FormatItem implements Comparable<FormatItem> {
     public int compareTo(FormatItem o) {
         return extension.compareTo(o.extension);
     }
+
+    @Override
+    public String toString() {
+        return "FormatItem{" + extension + ", " + description + '}';
+    }
 }

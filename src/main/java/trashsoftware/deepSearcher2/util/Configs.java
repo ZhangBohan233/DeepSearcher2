@@ -197,6 +197,7 @@ public class Configs {
         clearAllHistory();
         deleteFileByName(EXCLUDED_DIRS_NAME);
         deleteFileByName(EXCLUDED_FORMATS_NAME);
+        deleteFileByName(CUSTOM_FORMATS_NAME);
     }
 
     static void deleteFileByName(String path) {
@@ -271,7 +272,7 @@ public class Configs {
         writeMapFile(CONFIG_FILE_NAME, map);
     }
 
-    private static Map<String, String> readMapFile(String fileName) {
+    private synchronized static Map<String, String> readMapFile(String fileName) {
         Map<String, String> map = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -291,7 +292,7 @@ public class Configs {
         return map;
     }
 
-    private static void writeMapFile(String fileName, Map<String, String> map) {
+    private synchronized static void writeMapFile(String fileName, Map<String, String> map) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             createDirsIfNotExist();
             for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -304,7 +305,7 @@ public class Configs {
         }
     }
 
-    private static Set<String> readListFile(String fileName) {
+    private synchronized static Set<String> readListFile(String fileName) {
         Set<String> set = new HashSet<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -321,7 +322,7 @@ public class Configs {
         return set;
     }
 
-    private static void writeListFile(String fileName, Set<String> set) {
+    private synchronized static void writeListFile(String fileName, Set<String> set) {
         try {
             createDirsIfNotExist();
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));

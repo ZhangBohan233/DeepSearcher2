@@ -31,7 +31,7 @@
         </columnConstraints>
 
         <Label text="%customTextFormats"/>
-        <TableView fx:id="customFmtTable" prefHeight="300.0" GridPane.rowIndex="1">
+        <TableView fx:id="customFmtTable" prefHeight="380.0" GridPane.rowIndex="1">
             <columns>
                 <TableColumn text="%description" prefWidth="200.0"/>
                 <TableColumn text="%extension" prefWidth="140.0"/>
