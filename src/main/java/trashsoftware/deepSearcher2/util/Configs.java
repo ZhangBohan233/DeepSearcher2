@@ -33,18 +33,28 @@ public class Configs {
         }
     }
 
+    public static boolean isIncludePathName() {
+        return getBoolean("includePathName");
+    }
+
+    public static void setIncludePathName(boolean value) {
+        writeConfig("includePathName", String.valueOf(value));
+    }
+
     public static void setDepthFirst(boolean value) {
         writeConfig("depthFirst", String.valueOf(value));
     }
 
+    public static void setShowHidden(boolean value) {
+        writeConfig("showHidden", String.valueOf(value));
+    }
+
     public static boolean isShowHidden() {
-        String saved = Configs.getConfig("showHidden");
-        return Boolean.parseBoolean(saved);
+        return getBoolean("showHidden");
     }
 
     public static boolean isDepthFirst() {
-        String saved = Configs.getConfig("depthFirst");
-        return Boolean.parseBoolean(saved);
+        return getBoolean("depthFirst");
     }
 
     public static String getCurrentSearchingAlgorithm() {
@@ -82,6 +92,10 @@ public class Configs {
             locales.add(namedLocale);
         }
         return locales;
+    }
+
+    private static boolean getBoolean(String key) {
+        return Boolean.parseBoolean(getConfig(key));
     }
 
     private static String getConfig(String key) {
@@ -249,7 +263,6 @@ public class Configs {
         try {
             return new PrefSet.PrefSetBuilder()
                     .searchFileName(root.getBoolean("searchFileName"))
-                    .includePathName(root.getBoolean("includePathName"))
                     .caseSensitive(root.getBoolean("matchCase"))
                     .directSetMatchMode(MatchMode.valueOf(root.getString("matchMode")))
                     .searchDirName(root.getBoolean("searchDirName"))

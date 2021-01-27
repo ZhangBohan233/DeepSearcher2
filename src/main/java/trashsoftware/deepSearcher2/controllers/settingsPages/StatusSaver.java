@@ -15,6 +15,10 @@ class StatusSaver {
         comboBoxesIndexStatus.put(comboBox.getId(), comboBox.getSelectionModel().getSelectedIndex());
     }
 
+    void store(CheckBox checkBox) {
+        checkBoxesStatus.put(checkBox.getId(), checkBox.isSelected());
+    }
+
     boolean hasChanged(ComboBox<?> comboBox) {
         Integer storedIndex = comboBoxesIndexStatus.get(comboBox.getId());
         if (storedIndex == null) throw new RuntimeException("Status of ComboBox Not Saved");

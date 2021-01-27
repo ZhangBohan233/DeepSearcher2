@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class Client extends Application {
+    public static final String AUTHOR_ZH = "张博涵";
+    public static final String AUTHOR_EN = "Bohan Zhang";
 
     /**
      * Name of a file which marks the program is running. Create on launch and delete on exit.

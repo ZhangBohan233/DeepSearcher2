@@ -50,6 +50,23 @@ public class SettingsPanelController implements Initializable {
         return mainView;
     }
 
+    public void expandUntil(Class<? extends Page> targetPage) {
+        expandUntil(targetPage, treeView.getRoot());
+    }
+
+    private boolean expandUntil(Class<? extends Page> targetPage, TreeItem<SettingsItem> item) {
+        if (item.getValue().getPage().getClass() == targetPage) {
+            treeView.getSelectionModel().select(item);
+            return true;
+        }
+        for (TreeItem<SettingsItem> child : item.getChildren()) {
+            if (expandUntil(targetPage, child)) {
+                item.setExpanded(true);
+            }
+        }
+        return false;
+    }
+
     @FXML
     void cancelAction() {
         closeWindow();
@@ -74,6 +91,11 @@ public class SettingsPanelController implements Initializable {
             NavigatorPage searchingMainPage = new NavigatorPage(this);
             searchingRoot.setValue(new SettingsItem(bundle.getString("searchSettings"), searchingMainPage));
             root.getChildren().add(searchingRoot);
+
+            SearchingOptionsPage searchingOptionsPage = new SearchingOptionsPage(this);
+            searchingRoot.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("searchingOptions"), searchingOptionsPage)
+            ));
 
             ExclusionPage exclusionPage = new ExclusionPage(this);
             searchingRoot.getChildren().add(new TreeItem<>(

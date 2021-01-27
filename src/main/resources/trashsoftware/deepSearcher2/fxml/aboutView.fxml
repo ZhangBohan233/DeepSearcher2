@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="trashsoftware.deepSearcher2.controllers.AboutViewController"
       prefHeight="320.0" prefWidth="480.0"
-      alignment="CENTER">
+      alignment="CENTER" spacing="20.0">
 
     <Label text="%appName">
         <font>
@@ -15,4 +16,14 @@
         </font>
     </Label>
 
+    <Label text="(Deep Searcher 2)">
+        <font>
+            <Font size="16.0"/>
+        </font>
+    </Label>
+
+    <HBox spacing="5.0" alignment="CENTER">
+        <Label text="%authorText"/>
+        <Label fx:id="authorLabel"/>
+    </HBox>
 </VBox>

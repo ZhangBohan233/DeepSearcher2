@@ -8,7 +8,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.util.Configs;
 

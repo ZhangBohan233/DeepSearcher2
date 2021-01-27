@@ -16,6 +16,7 @@ public class PrefSet {
     private boolean dirName;
     private boolean matchCase;
     private boolean includePathName;
+    private boolean showHidden;
     private boolean matchRegex;
     private boolean matchWord;
     private Set<String> extensions;  // null if not searching content
@@ -59,6 +60,10 @@ public class PrefSet {
 
     public boolean isIncludePathName() {
         return includePathName;
+    }
+
+    public boolean isShowHidden() {
+        return showHidden;
     }
 
     public MatchMode getMatchMode() {
@@ -116,11 +121,6 @@ public class PrefSet {
 
         public PrefSetBuilder caseSensitive(boolean matchCase) {
             prefSet.matchCase = matchCase;
-            return this;
-        }
-
-        public PrefSetBuilder includePathName(boolean includePathName) {
-            prefSet.includePathName = includePathName;
             return this;
         }
 
@@ -199,6 +199,13 @@ public class PrefSet {
             return this;
         }
 
+        /**
+         * Builds a new {@code PrefSet} with all options specified and some other options reads from config.
+         *
+         * @return a new {@code PrefSet}
+         * @throws SearchTargetNotSetException if search target is not set
+         * @throws SearchDirNotSetException    if no search directory is set
+         */
         public PrefSet build() throws SearchTargetNotSetException, SearchDirNotSetException {
             if (prefSet.targets == null || prefSet.targets.isEmpty() || areTargetsAllEmpty()) {
                 throw new SearchTargetNotSetException("No searching targets");
@@ -211,6 +218,8 @@ public class PrefSet {
                     prefSet.targets.set(i, prefSet.targets.get(i).toLowerCase());
                 }
             }
+            prefSet.showHidden = Configs.isShowHidden();
+            prefSet.includePathName = Configs.isIncludePathName();
             return prefSet;
         }
 

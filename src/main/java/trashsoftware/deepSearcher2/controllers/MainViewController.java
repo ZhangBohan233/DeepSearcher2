@@ -30,6 +30,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import trashsoftware.deepSearcher2.controllers.settingsPages.SearchingOptionsPage;
 import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
@@ -76,7 +77,7 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     RadioButton matchAllRadioBtn, matchAnyRadioBtn;
     @FXML
-    CheckBox searchFileNameBox, searchDirNameBox, searchContentBox, includeDirNameBox;
+    CheckBox searchFileNameBox, searchDirNameBox, searchContentBox;
     @FXML
     CheckBox matchCaseBox, matchWordBox, matchRegexBox;
     @FXML
@@ -196,19 +197,7 @@ public class MainViewController implements Initializable, CacheObservable {
 
     @FXML
     void openSettingsAction() throws IOException {
-        FXMLLoader loader = new FXMLLoader(
-                getClass().getResource("/trashsoftware/deepSearcher2/fxml/settingsPanel.fxml"), bundle);
-        Parent root = loader.load();
-        Stage stage = new Stage();
-        stage.initOwner(thisStage);
-        stage.initStyle(StageStyle.UTILITY);
-        stage.setTitle(bundle.getString("settings"));
-        stage.setScene(new Scene(root));
-
-        SettingsPanelController controller = loader.getController();
-        controller.setStage(stage, this);
-
-        stage.show();
+        openSettings();
     }
 
     @FXML
@@ -242,11 +231,26 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.show();
     }
 
+    @FXML
+    void moreOptionAction() throws IOException {
+        SettingsPanelController controller = openSettings();
+        controller.expandUntil(SearchingOptionsPage.class);
+    }
+
+    @FXML
+    void exitAction() {
+        thisStage.close();
+    }
+
+    @FXML
+    void restartAction() {
+        Client.restartClient();
+    }
+
     @Override
     public void putCache(JSONObject rootObject) {
         rootObject.put("searchFileName", searchFileNameBox.isSelected());
         rootObject.put("searchDirName", searchDirNameBox.isSelected());
-        rootObject.put("includePathName", includeDirNameBox.isSelected());
 
         rootObject.put("searchContent", searchContentBox.isSelected());
         rootObject.put("matchCase", matchCaseBox.isSelected());
@@ -285,6 +289,23 @@ public class MainViewController implements Initializable, CacheObservable {
 
     private void clearSearchItems() {
         searchItemsList.getTextFields().clear();
+    }
+
+    private SettingsPanelController openSettings() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/trashsoftware/deepSearcher2/fxml/settingsPanel.fxml"), bundle);
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.initOwner(thisStage);
+        stage.initStyle(StageStyle.UTILITY);
+        stage.setTitle(bundle.getString("settings"));
+        stage.setScene(new Scene(root));
+
+        SettingsPanelController controller = loader.getController();
+        controller.setStage(stage, this);
+
+        stage.show();
+        return controller;
     }
 
     // Factories and listeners
@@ -431,20 +452,6 @@ public class MainViewController implements Initializable, CacheObservable {
                 matchWordBox.setSelected(false);
             }
         }));
-        searchFileNameBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
-            if (t1) {
-                includeDirNameBox.setDisable(false);
-            } else if (!searchDirNameBox.isSelected()) {
-                includeDirNameBox.setDisable(true);
-            }
-        }));
-        searchDirNameBox.selectedProperty().addListener(((observableValue, aBoolean, t1) -> {
-            if (t1) {
-                includeDirNameBox.setDisable(false);
-            } else if (!searchFileNameBox.isSelected()) {
-                includeDirNameBox.setDisable(true);
-            }
-        }));
     }
 
     // Helper functions
@@ -463,7 +470,6 @@ public class MainViewController implements Initializable, CacheObservable {
         setBoxInitialStatus(searchFileNameBox, "searchFileName", cache);
         setBoxInitialStatus(searchDirNameBox, "searchDirName", cache);
         setBoxInitialStatus(searchContentBox, "searchContent", cache);
-        setBoxInitialStatus(includeDirNameBox, "includePathName", cache);
         setBoxInitialStatus(matchCaseBox, "matchCase", cache);
         setBoxInitialStatus(matchWordBox, "matchWord", cache);
         setBoxInitialStatus(matchRegexBox, "matchRegex", cache);
@@ -577,7 +583,6 @@ public class MainViewController implements Initializable, CacheObservable {
                     .setMatchAll(matchAllRadioBtn.isSelected())
                     .searchFileName(searchFileNameBox.isSelected())
                     .searchDirName(searchDirNameBox.isSelected())
-                    .includePathName(includeDirNameBox.isSelected())
                     .caseSensitive(matchCaseBox.isSelected())
                     .matchWord(matchWordBox.isSelected())
                     .matchRegex(matchRegexBox.isSelected())

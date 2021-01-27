@@ -23,4 +23,5 @@ module DeepSearcher {
     exports trashsoftware.deepSearcher2.guiItems;
     exports trashsoftware.deepSearcher2.util;
     exports trashsoftware.deepSearcher2.controllers.widgets;
+    exports trashsoftware.deepSearcher2.controllers.settingsPages;
 }

@@ -83,7 +83,7 @@ public class Searcher {
 
     private void searchFileIterative(File rootFile) {
         boolean depthFirst = prefSet.isDepthFirst();
-        boolean notShowHidden = Configs.isShowHidden();
+        boolean notShowHidden = !prefSet.isShowHidden();
         Deque<File> stack = new ArrayDeque<>();
         stack.addLast(rootFile);
         while (!stack.isEmpty()) {
