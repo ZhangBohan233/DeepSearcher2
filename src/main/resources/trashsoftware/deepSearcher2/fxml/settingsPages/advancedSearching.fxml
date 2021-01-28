@@ -12,9 +12,9 @@
     </padding>
 
     <HBox alignment="CENTER" spacing="10.0">
-        <Separator prefWidth="80.0"/>
+        <Separator prefWidth="100.0"/>
         <Label text="%advancedSearching"/>
-        <Separator prefWidth="80.0"/>
+        <Separator prefWidth="100.0"/>
     </HBox>
 
     <Label text="%matchingAlgorithm"/>
@@ -26,7 +26,9 @@
     <Label text="%regexMatchingAlgorithm"/>
     <ComboBox fx:id="regexAlgorithmBox"/>
 
-    <Separator/>
+    <HBox alignment="CENTER">
+        <Separator prefWidth="200.0"/>
+    </HBox>
 
     <Label text="%cpuThreads"/>
     <ComboBox fx:id="cpuThreadsBox"/>

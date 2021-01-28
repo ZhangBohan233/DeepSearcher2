@@ -22,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
@@ -58,6 +59,8 @@ public class MainViewController implements Initializable, CacheObservable {
     private final ResourceBundle fileTypeBundle =
             ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
                     Configs.getCurrentLocale());
+    @FXML
+    GridPane basePane;
     @FXML
     TableView<ResultItem> resultTable;
     @FXML
@@ -136,6 +139,16 @@ public class MainViewController implements Initializable, CacheObservable {
         thisStage = stage;
     }
 
+    public void rescaleUi(int fontSize) {
+        double defaultC1 = basePane.getColumnConstraints().get(0).getPercentWidth();
+        double expectedTimes = 1 + ((double) fontSize / 12 - 1) * 0.75;
+        double times = Math.max(0.75, Math.min(2, expectedTimes));
+        double percentageWidth1 = times * defaultC1;
+        double percentageWidth2 = 100 - percentageWidth1;
+        basePane.getColumnConstraints().get(1).setPercentWidth(percentageWidth2);
+        basePane.getColumnConstraints().get(0).setPercentWidth(percentageWidth1);
+    }
+
     // Controls
 
     @FXML
@@ -209,7 +222,12 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.initOwner(thisStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("history"));
-        stage.setScene(new Scene(root));
+
+        Scene scene = new Scene(root);
+        if (Configs.isUseCustomFont()) {
+            Configs.applyCustomFont(scene);
+        }
+        stage.setScene(scene);
 
         HistoryListController controller = loader.getController();
         controller.setStage(stage);
@@ -299,7 +317,11 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.initOwner(thisStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("settings"));
-        stage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        if (Configs.isUseCustomFont()) {
+            Configs.applyCustomFont(scene);
+        }
+        stage.setScene(scene);
 
         SettingsPanelController controller = loader.getController();
         controller.setStage(stage, this);

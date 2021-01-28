@@ -19,9 +19,9 @@
     </padding>
 
     <HBox alignment="CENTER" spacing="10.0">
-        <Separator prefWidth="80.0"/>
+        <Separator prefWidth="100.0"/>
         <Label text="%custom"/>
-        <Separator prefWidth="80.0"/>
+        <Separator prefWidth="100.0"/>
     </HBox>
 
     <GridPane vgap="5.0" hgap="5.0">

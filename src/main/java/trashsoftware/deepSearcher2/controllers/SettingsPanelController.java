@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.*;
 import trashsoftware.deepSearcher2.guiItems.SettingsItem;
+import trashsoftware.deepSearcher2.util.EventLogger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -116,6 +117,7 @@ public class SettingsPanelController implements Initializable {
                     new SettingsItem(bundle.getString("others"), othersPage)));
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            EventLogger.log(ioe);
         }
         root.setExpanded(true);
         treeView.setRoot(root);

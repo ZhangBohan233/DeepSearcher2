@@ -2,9 +2,11 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import trashsoftware.deepSearcher2.Main;
+import javafx.scene.text.Font;
 import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.controllers.ConfirmBox;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.NamedLocale;
@@ -15,7 +17,13 @@ import java.util.List;
 public class GeneralPage extends SettingsPage {
 
     @FXML
+    ComboBox<Integer> fontSizeBox;
+    @FXML
+    ComboBox<String> fontBox;
+    @FXML
     ComboBox<NamedLocale> languageBox;
+    @FXML
+    CheckBox useCustomFontBox;
 
     public GeneralPage(SettingsPanelController controller) throws IOException {
         super(controller);
@@ -27,9 +35,11 @@ public class GeneralPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
-        addControls(languageBox);
+        addControls(languageBox, fontSizeBox, languageBox, useCustomFontBox);
 
         initLanguageBox();
+        initUseCusFontBox();
+        initFontBoxes();
     }
 
     @Override
@@ -39,9 +49,31 @@ public class GeneralPage extends SettingsPage {
             Configs.writeConfig("locale", selectedLocale.getConfigValue());
             statusSaver.store(languageBox);
 
+            askRestart();
+        }
+        if (statusSaver.hasChanged(useCustomFontBox) ||
+                statusSaver.hasChanged(fontBox) ||
+                statusSaver.hasChanged(fontSizeBox)) {
+            Configs.setUseCustomFont(
+                    useCustomFontBox.isSelected(),
+                    fontBox.getSelectionModel().getSelectedItem(),
+                    fontSizeBox.getSelectionModel().getSelectedItem());
+            statusSaver.store(useCustomFontBox);
+            statusSaver.store(fontBox);
+            statusSaver.store(fontSizeBox);
+
+            askRestart();
+        }
+    }
+
+    private void askRestart() {
+        ConfirmBox confirmBox = ConfirmBox.createConfirmBox(getController().getStage());
+        confirmBox.setMessage(Client.getBundle().getString("operationApplyAfterRestart"));
+        confirmBox.setOnConfirmed(() -> {
             getController().getStage().close();
             Client.restartClient();
-        }
+        });
+        confirmBox.show();
     }
 
     private void initLanguageBox() {
@@ -53,5 +85,34 @@ public class GeneralPage extends SettingsPage {
             }
         }
         statusSaver.store(languageBox);
+    }
+
+    private void initUseCusFontBox() {
+        useCustomFontBox.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue) {
+                fontBox.setDisable(false);
+                fontSizeBox.setDisable(false);
+            } else {
+                fontBox.setDisable(true);
+                fontSizeBox.setDisable(true);
+            }
+        }));
+        useCustomFontBox.setSelected(Configs.isUseCustomFont());
+        statusSaver.store(useCustomFontBox);
+    }
+
+    private void initFontBoxes() {
+        for (String font : Font.getFamilies()) {
+            fontBox.getItems().add(font);
+        }
+        fontBox.getSelectionModel().select(Configs.getCustomFont());
+        if (fontBox.getSelectionModel().getSelectedIndex() == -1) {
+            fontBox.getSelectionModel().select(Font.getDefault().getFamily());
+        }
+        statusSaver.store(fontBox);
+
+        fontSizeBox.getItems().addAll(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36);
+        fontSizeBox.getSelectionModel().select(Integer.valueOf(Configs.getFontSize(12)));
+        statusSaver.store(fontSizeBox);
     }
 }

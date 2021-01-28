@@ -30,7 +30,7 @@ public class OthersPage extends SettingsPage {
     }
 
     private void showConfirm(String msg, String confirmButtonText, Runnable onConfirm) {
-        ConfirmBox confirmBox = ConfirmBox.createConfirmBox(this, getController().getStage());
+        ConfirmBox confirmBox = ConfirmBox.createConfirmBox(getController().getStage());
         confirmBox.setConfirmButtonText(confirmButtonText);
         confirmBox.setMessage(msg);
         confirmBox.setOnConfirmed(onConfirm);

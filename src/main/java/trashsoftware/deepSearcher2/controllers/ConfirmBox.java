@@ -52,10 +52,10 @@ public class ConfirmBox implements Initializable {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static ConfirmBox createConfirmBox(Object parent, Stage ownerStage) {
+    public static ConfirmBox createConfirmBox(Stage ownerStage) {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    parent.getClass().getResource("/trashsoftware/deepSearcher2/fxml/confirmBox.fxml"),
+                    ConfirmBox.class.getResource("/trashsoftware/deepSearcher2/fxml/confirmBox.fxml"),
                     Client.getBundle());
             Parent root = loader.load();
 

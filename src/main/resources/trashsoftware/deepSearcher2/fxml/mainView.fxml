@@ -6,7 +6,7 @@
 <VBox fx:controller="trashsoftware.deepSearcher2.controllers.MainViewController"
       xmlns:fx="http://javafx.com/fxml" prefWidth="1080.0" prefHeight="640.0">
 
-    <MenuBar GridPane.columnSpan="2">
+    <MenuBar>
         <Menu text="%file">
             <MenuItem text="%settings" onAction="#openSettingsAction"/>
             <MenuItem text="%history" onAction="#openHistoryAction"/>
@@ -19,8 +19,7 @@
         </Menu>
     </MenuBar>
 
-    <GridPane
-            alignment="TOP_CENTER" hgap="10.0" vgap="10.0">
+    <GridPane fx:id="basePane" alignment="TOP_CENTER" hgap="10.0" vgap="10.0">
         <padding>
             <Insets top="5.0" left="5.0" right="5.0" bottom="5.0"/>
         </padding>
@@ -132,10 +131,10 @@
 
         <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2">
             <padding>
-                <Insets left="5"/>
+                <Insets left="5.0"/>
             </padding>
             <CheckBox fx:id="selectAllBox" text="%selectAll" onAction="#selectAllAction" disable="true"/>
-            <ComboBox fx:id="filterBox" prefWidth="120.0" disable="true"/>
+            <ComboBox fx:id="filterBox" disable="true"/>
             <Label text="%filter"/>
         </HBox>
 

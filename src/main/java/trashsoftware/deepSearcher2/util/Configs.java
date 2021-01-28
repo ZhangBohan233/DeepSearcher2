@@ -1,5 +1,7 @@
 package trashsoftware.deepSearcher2.util;
 
+import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
@@ -19,6 +21,7 @@ public class Configs {
     private static final String EXCLUDED_DIRS_NAME = "userData/excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = "userData/excludedFormats.cfg";
     private static final String CUSTOM_FORMATS_NAME = "userData/customFormats.cfg";
+    private static final String CUSTOM_CSS = "userData/style.css";
     private static final String HISTORY_DIR = "userData/history";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
@@ -33,6 +36,48 @@ public class Configs {
         }
     }
 
+    public static void applyCustomFont(Scene scene) {
+        String fontFamily = getCustomFont();
+        if (fontFamily == null) fontFamily = Font.getDefault().getFamily();
+        int fontSize = getFontSize(12);
+        String content = String.format(
+                ".root {\n    -fx-font-family: %s;\n    -fx-font-size: %dpx;\n}",
+                fontFamily,
+                fontSize);
+        try (FileWriter fw = new FileWriter(CUSTOM_CSS)) {
+            fw.write(content);
+            fw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            EventLogger.log(e);
+        }
+        scene.getStylesheets().add(CUSTOM_CSS);
+    }
+
+    public static String getCustomFont() {
+        return getConfig("font");
+    }
+
+    public static int getFontSize(int defaultValue) {
+        String value = getConfig("fontSize");
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public static boolean isUseCustomFont() {
+        return getBoolean("useCustomFont");
+    }
+
+    public static void setUseCustomFont(boolean value, String customFont, int fontSize) {
+        writeConfigs(
+                "useCustomFont", String.valueOf(value),
+                "font", customFont,
+                "fontSize", String.valueOf(fontSize));
+    }
+
     public static boolean isIncludePathName() {
         return getBoolean("includePathName");
     }
@@ -41,20 +86,20 @@ public class Configs {
         writeConfig("includePathName", String.valueOf(value));
     }
 
-    public static void setDepthFirst(boolean value) {
-        writeConfig("depthFirst", String.valueOf(value));
+    public static boolean isShowHidden() {
+        return getBoolean("showHidden");
     }
 
     public static void setShowHidden(boolean value) {
         writeConfig("showHidden", String.valueOf(value));
     }
 
-    public static boolean isShowHidden() {
-        return getBoolean("showHidden");
-    }
-
     public static boolean isDepthFirst() {
         return getBoolean("depthFirst");
+    }
+
+    public static void setDepthFirst(boolean value) {
+        writeConfig("depthFirst", String.valueOf(value));
     }
 
     public static String getCurrentSearchingAlgorithm() {
@@ -94,19 +139,6 @@ public class Configs {
         return locales;
     }
 
-    public static int getTestPort(int defaultPort) {
-        String s = getConfig("testPort");
-        try {
-            int res = Integer.parseInt(s);
-            if (res <= 1000 || res > 65535) {
-                return defaultPort;
-            }
-            return res;
-        } catch (NumberFormatException nfe) {
-            return defaultPort;
-        }
-    }
-
     private static boolean getBoolean(String key) {
         return Boolean.parseBoolean(getConfig(key));
     }
@@ -114,6 +146,21 @@ public class Configs {
     private static String getConfig(String key) {
         Map<String, String> configs = readConfigFile();
         return configs.get(key);
+    }
+
+    /**
+     * Write multiple key-value pairs in one time.
+     * <p>
+     * Length of {@code keyValues} must be even.
+     *
+     * @param keyValues key-value pairs
+     */
+    public static void writeConfigs(String... keyValues) {
+        Map<String, String> configs = readConfigFile();
+        for (int i = 0; i < keyValues.length; i += 2) {
+            configs.put(keyValues[i], keyValues[i + 1]);
+        }
+        writeConfigFile(configs);
     }
 
     public static void writeConfig(String key, String value) {

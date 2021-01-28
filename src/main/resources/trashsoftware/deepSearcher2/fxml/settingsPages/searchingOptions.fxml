@@ -13,9 +13,9 @@
     </padding>
 
     <HBox alignment="CENTER" spacing="10.0">
-        <Separator prefWidth="80.0"/>
+        <Separator prefWidth="100.0"/>
         <Label text="%searchingOptions"/>
-        <Separator prefWidth="80.0"/>
+        <Separator prefWidth="100.0"/>
     </HBox>
 
     <CheckBox fx:id="includePathNameBox" text="%includeDirName"/>

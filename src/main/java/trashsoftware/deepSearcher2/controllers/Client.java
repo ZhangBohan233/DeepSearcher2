@@ -93,7 +93,6 @@ public class Client extends Application {
             return;
         }
 
-        createRunningMarkFile();
         Cache.startCache(List.of());
 
         currentStage = stage;
@@ -101,11 +100,16 @@ public class Client extends Application {
                 new FXMLLoader(getClass().getResource("/trashsoftware/deepSearcher2/fxml/mainView.fxml"),
                         bundle);
         Parent root = loader.load();
-
-        stage.setTitle(bundle.getString("appName"));
-        stage.setScene(new Scene(root));
-
         MainViewController controller = loader.getController();
+
+        Scene rootScene = new Scene(root);
+        if (Configs.isUseCustomFont()) {
+            Configs.applyCustomFont(rootScene);
+            controller.rescaleUi(Configs.getFontSize(12));
+        }
+        stage.setTitle(bundle.getString("appName"));
+        stage.setScene(rootScene);
+
         controller.setStage(stage);
         Cache.getCache().addObservable(controller);
 
@@ -113,6 +117,7 @@ public class Client extends Application {
             deleteMarkFile();
             Cache.stopCache();
         });
+        createRunningMarkFile();
 
         stage.show();
     }
