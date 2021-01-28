@@ -222,6 +222,7 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.initOwner(thisStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("history"));
+        stage.getIcons().add(Client.getIconImage());
 
         Scene scene = new Scene(root);
         if (Configs.isUseCustomFont()) {
@@ -244,6 +245,7 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.initOwner(thisStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("appName"));
+        stage.getIcons().add(Client.getIconImage());
         stage.setScene(new Scene(root));
 
         stage.show();
@@ -317,6 +319,7 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.initOwner(thisStage);
         stage.initStyle(StageStyle.UTILITY);
         stage.setTitle(bundle.getString("settings"));
+        stage.getIcons().add(Client.getIconImage());
         Scene scene = new Scene(root);
         if (Configs.isUseCustomFont()) {
             Configs.applyCustomFont(scene);

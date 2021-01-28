@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
@@ -28,6 +29,7 @@ public class Client extends Application {
     private static final String RUNNING_MARK = ".running";
 
     private static ResourceBundle bundle;
+    private static Image iconImage;
 
     private static Stage currentStage;
 
@@ -49,6 +51,10 @@ public class Client extends Application {
 
     public static ResourceBundle getBundle() {
         return bundle;
+    }
+
+    public static Image getIconImage() {
+        return iconImage;
     }
 
     private static void createRunningMarkFile() throws IOException {
@@ -102,12 +108,15 @@ public class Client extends Application {
         Parent root = loader.load();
         MainViewController controller = loader.getController();
 
+        iconImage = new Image(getClass().getResourceAsStream("/trashsoftware/deepSearcher2/images/icon.bmp"));
+
         Scene rootScene = new Scene(root);
         if (Configs.isUseCustomFont()) {
             Configs.applyCustomFont(rootScene);
             controller.rescaleUi(Configs.getFontSize(12));
         }
         stage.setTitle(bundle.getString("appName"));
+        stage.getIcons().add(iconImage);
         stage.setScene(rootScene);
 
         controller.setStage(stage);
