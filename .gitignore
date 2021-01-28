@@ -4,6 +4,7 @@
 *.iml
 out/
 product/
+logs/
 
 # User data and cache
 cache/
