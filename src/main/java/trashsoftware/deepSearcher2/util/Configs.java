@@ -11,18 +11,19 @@ import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
 import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Configs {
 
     private static final String USER_DATA_DIR = "userData";
-    private static final String CONFIG_FILE_NAME = "userData/config.cfg";
-    private static final String EXCLUDED_DIRS_NAME = "userData/excludedDirs.cfg";
-    private static final String EXCLUDED_FORMATS_NAME = "userData/excludedFormats.cfg";
-    private static final String CUSTOM_FORMATS_NAME = "userData/customFormats.cfg";
-    private static final String CUSTOM_CSS = "userData/style.css";
-    private static final String HISTORY_DIR = "userData/history";
+    private static final String CONFIG_FILE_NAME = USER_DATA_DIR + File.separator + "config.cfg";
+    private static final String EXCLUDED_DIRS_NAME = USER_DATA_DIR + File.separator + "excludedDirs.cfg";
+    private static final String EXCLUDED_FORMATS_NAME = USER_DATA_DIR + File.separator + "excludedFormats.cfg";
+    private static final String CUSTOM_FORMATS_NAME = USER_DATA_DIR + File.separator + "customFormats.cfg";
+    private static final String CUSTOM_CSS = USER_DATA_DIR + File.separator + "style.css";
+    private static final String HISTORY_DIR = USER_DATA_DIR + File.separator + "history";
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
 
@@ -51,7 +52,12 @@ public class Configs {
             e.printStackTrace();
             EventLogger.log(e);
         }
-        scene.getStylesheets().add(CUSTOM_CSS);
+        try {
+            scene.getStylesheets().add(new File(CUSTOM_CSS).toURI().toURL().toExternalForm());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            EventLogger.log(e);
+        }
     }
 
     public static String getCustomFont() {
