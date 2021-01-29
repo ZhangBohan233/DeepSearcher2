@@ -20,4 +20,11 @@
 
     <CheckBox fx:id="includePathNameBox" text="%includeDirName"/>
     <CheckBox fx:id="shownHiddenBox" text="%showHidden"/>
+
+    <CheckBox fx:id="limitDepthBox" text="%limitSearchDepth"/>
+
+    <Label text="%maxSearchDepth"/>
+    <HBox alignment="CENTER">
+        <TextField fx:id="searchDepthField" disable="true"/>
+    </HBox>
 </fx:root>

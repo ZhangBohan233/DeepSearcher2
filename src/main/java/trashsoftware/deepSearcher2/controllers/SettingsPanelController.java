@@ -51,6 +51,11 @@ public class SettingsPanelController implements Initializable {
         return mainView;
     }
 
+    /**
+     * Expands the left tree view until a specific page
+     *
+     * @param targetPage the target page
+     */
     public void expandUntil(Class<? extends Page> targetPage) {
         expandUntil(targetPage, treeView.getRoot());
     }
@@ -111,6 +116,7 @@ public class SettingsPanelController implements Initializable {
             AdvancedSearchingPage advancedSearchingPage = new AdvancedSearchingPage(this);
             searchingRoot.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("advancedSearching"), advancedSearchingPage)));
+            searchingRoot.setExpanded(true);
 
             OthersPage othersPage = new OthersPage(this);
             root.getChildren().add(new TreeItem<>(

@@ -1,9 +1,6 @@
 package trashsoftware.deepSearcher2.controllers;
 
 import javafx.application.Platform;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,12 +11,17 @@ import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import trashsoftware.deepSearcher2.Main;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * A utility window that ask user to confirm.
+ * <p>
+ * This window provides a message box, a confirm button, and a cancel button.
+ */
 public class ConfirmBox implements Initializable {
 
     @FXML
@@ -33,6 +35,35 @@ public class ConfirmBox implements Initializable {
     private Runnable onConfirmed;
 
     private Runnable onCancelled;
+
+    /**
+     * Creates a new confirm box, but does not show it.
+     *
+     * @param ownerWindow the parent window, which will be blocked by this confirm box
+     * @return the new instance
+     */
+    public static ConfirmBox createConfirmBox(Window ownerWindow) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    ConfirmBox.class.getResource("/trashsoftware/deepSearcher2/fxml/confirmBox.fxml"),
+                    Client.getBundle());
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle(Client.getBundle().getString("pleaseConfirm"));
+            stage.initStyle(StageStyle.UTILITY);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(ownerWindow);
+            stage.setScene(new Scene(root));
+
+            ConfirmBox controller = loader.getController();
+            controller.stage = stage;
+
+            return controller;
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -51,46 +82,46 @@ public class ConfirmBox implements Initializable {
         stage.close();
     }
 
-    @SuppressWarnings("WeakerAccess")
-    public static ConfirmBox createConfirmBox(Stage ownerStage) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    ConfirmBox.class.getResource("/trashsoftware/deepSearcher2/fxml/confirmBox.fxml"),
-                    Client.getBundle());
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle(Client.getBundle().getString("pleaseConfirm"));
-            stage.initStyle(StageStyle.UTILITY);
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(ownerStage);
-            stage.setScene(new Scene(root));
-
-            ConfirmBox controller = loader.getController();
-            controller.stage = stage;
-
-            return controller;
-        } catch (IOException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-    }
-
+    /**
+     * Sets the text shown on the confirm button.
+     *
+     * @param text text to show
+     */
     public void setConfirmButtonText(String text) {
         confirmButton.setText(text);
     }
 
+    /**
+     * Shows the confirm box until user selects a result or closes the window.
+     */
     public void show() {
         stage.showAndWait();
     }
 
+    /**
+     * Sets the message shown in the message box
+     *
+     * @param message text to show
+     */
     public void setMessage(String message) {
         messageBox.setText(message);
     }
 
+    /**
+     * Sets the action if confirm button is clicked
+     *
+     * @param eventHandler on confirm action
+     */
     public void setOnConfirmed(Runnable eventHandler) {
         this.onConfirmed = eventHandler;
     }
 
+    /**
+     * Sets the action if cancel button is clicked
+     *
+     * @param eventHandler on cancel action
+     */
+    @SuppressWarnings("unused")
     public void setOnCancelled(Runnable eventHandler) {
         this.onCancelled = eventHandler;
     }

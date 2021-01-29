@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
 import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
+import trashsoftware.deepSearcher2.searcher.SearchPrefNotSetException;
 import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
 import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
@@ -65,12 +66,7 @@ public class Configs {
     }
 
     public static int getFontSize(int defaultValue) {
-        String value = getConfig("fontSize");
-        try {
-            return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return getInt("fontSize", defaultValue);
     }
 
     public static boolean isUseCustomFont() {
@@ -82,6 +78,33 @@ public class Configs {
                 "useCustomFont", String.valueOf(value),
                 "font", customFont,
                 "fontSize", String.valueOf(fontSize));
+    }
+
+    /**
+     * Sets whether to limit search depth.
+     *
+     * @param limitDepth whether to limit search depth
+     */
+    public static void setLimitDepth(boolean limitDepth) {
+        writeConfig("limitDepth", String.valueOf(limitDepth));
+    }
+
+    public static boolean isLimitDepth() {
+        return getBoolean("limitDepth");
+    }
+
+    /**
+     * @return the max traversal depth
+     */
+    public static int getMaxSearchDepth() {
+        return getInt("maxDepth", 5);
+    }
+
+    /**
+     * @param searchDepth max traversal depth
+     */
+    public static void setMaxSearchDepth(int searchDepth) {
+        writeConfig("maxDepth", String.valueOf(searchDepth));
     }
 
     public static boolean isIncludePathName() {
@@ -143,6 +166,14 @@ public class Configs {
             locales.add(namedLocale);
         }
         return locales;
+    }
+
+    private static int getInt(String key, int defaultValue) {
+        try {
+            return Integer.parseInt(getConfig(key));
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     private static boolean getBoolean(String key) {
@@ -337,7 +368,7 @@ public class Configs {
                     .setTargets(patterns)
                     .setExtensions(root.getBoolean("searchContent") ? extensions : null)
                     .build();
-        } catch (SearchTargetNotSetException | SearchDirNotSetException e) {
+        } catch (SearchTargetNotSetException | SearchDirNotSetException | SearchPrefNotSetException e) {
             // This would never happen
             throw new RuntimeException("History item cannot be converted");
         }

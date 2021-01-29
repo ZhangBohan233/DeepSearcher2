@@ -8,6 +8,7 @@ import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 import trashsoftware.deepSearcher2.util.Configs;
+import trashsoftware.deepSearcher2.util.EventLogger;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
@@ -22,8 +23,6 @@ public class Searcher {
     private static final Set<String> PLAIN_TEXT_FORMAT = Set.of(
             "bat", "c", "cmd", "cpp", "csv", "h", "java", "js", "json", "log", "py", "r", "rmd", "tex", "txt"
     );
-    private final Map<String, String> customFormats;
-
     private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
             "pdf", PdfSearcher.class,
             "doc", DocSearcher.class,
@@ -33,7 +32,7 @@ public class Searcher {
             "xls", XlsSearcher.class,
             "xlsx", XlsxSearcher.class
     );
-
+    private final Map<String, String> customFormats;
     private final PrefSet prefSet;
     private final ExecutorService contentService;
 
@@ -50,7 +49,7 @@ public class Searcher {
     private boolean searching = true;
 
     public Searcher(PrefSet prefSet, ObservableList<ResultItem> tableList, ResourceBundle bundle,
-                    ResourceBundle fileTypeBundle, Map<String,String> customFormats) {
+                    ResourceBundle fileTypeBundle, Map<String, String> customFormats) {
         this.prefSet = prefSet;
         this.tableList = tableList;
         this.bundle = bundle;
@@ -62,64 +61,140 @@ public class Searcher {
         contentService = Executors.newFixedThreadPool(Configs.getCurrentCpuThreads());
     }
 
+    /**
+     * Start searching
+     */
     public void search() {
-        for (File f : prefSet.getSearchDirs()) {
-            searchFileIterative(f);
+        boolean depthFirst = prefSet.isDepthFirst();
+        if (depthFirst) {
+            for (File f : prefSet.getSearchDirs()) {
+                depthFirstSearch(f);
+            }
+        } else {
+            for (File f : prefSet.getSearchDirs()) {
+                breadthFirstSearch(f);
+            }
         }
         contentService.shutdown();
         try {
             if (!contentService.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS)) {
-                System.out.println("Cannot stop!");
+                EventLogger.log("292,471,208 years have passed! The sun has brightened another 3%!");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Interrupt the search process.
+     * <p>
+     * This method does not shut down the search process immediately. Instead, it marks this searcher as stopped.
+     * All subsequent file traversal and file reading tasks are cancelled.
+     */
     public void stop() {
         searching = false;
         contentService.shutdownNow();
     }
 
-    private void searchFileIterative(File rootFile) {
-        boolean depthFirst = prefSet.isDepthFirst();
-        boolean notShowHidden = !prefSet.isShowHidden();
-        Deque<File> stack = new ArrayDeque<>();
-        stack.addLast(rootFile);
+    private void depthFirstSearch(File rootFile) {
+        boolean notShowHidden = prefSet.notShowHidden();
+        int maxDepth = prefSet.isLimitDepth() ? prefSet.getMaxSearchDepth() : Integer.MAX_VALUE;
+        Deque<DepthFile> stack = new ArrayDeque<>();
+        stack.addLast(new DepthFile(rootFile, 0));
+
         while (!stack.isEmpty()) {
             if (!searching) return;
 
-            File file = depthFirst ? stack.removeLast() : stack.removeFirst();
-            if (notShowHidden && file.isHidden()) continue;
-            if (file.isDirectory()) {
-                // Check if this directory is excluded
-                if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) continue;
+            DepthFile file = stack.removeLast();
+            searchOneDir(notShowHidden, maxDepth, stack, file);
+        }
+    }
 
-                // Check dir is selected
-                if (prefSet.isDirName()) {
-                    matchName(file);
-                }
+    private void breadthFirstSearch(File rootFile) {
+        boolean notShowHidden = prefSet.notShowHidden();
+        int maxDepth = prefSet.isLimitDepth() ? prefSet.getMaxSearchDepth() : Integer.MAX_VALUE;
+        Deque<DepthFile> stack = new ArrayDeque<>();
+        stack.addLast(new DepthFile(rootFile, 0));
 
-                File[] subFiles = file.listFiles();
-                if (subFiles == null) continue;
-                for (File f : subFiles) {
-                    stack.addLast(f);
-                }
-            } else {
-                // Check if this format is excluded
-                if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) continue;
+        while (!stack.isEmpty()) {
+            if (!searching) return;
 
-                // check file name is selected
-                if (prefSet.isFileName()) {
-                    matchName(file);
-                }
-                // check file content is selected
-                if (prefSet.getExtensions() != null) {
-                    matchFileContent(file);
-                }
+            DepthFile file = stack.removeFirst();
+            searchOneDir(notShowHidden, maxDepth, stack, file);
+        }
+    }
+
+    private void searchOneDir(boolean notShowHidden, int maxDepth, Deque<DepthFile> stack, DepthFile file) {
+        if (notShowHidden && file.file.isHidden()) return;
+        if (file.file.isDirectory()) {
+            // Check if this directory is excluded
+            if (prefSet.getExcludedDirs().contains(file.file.getAbsolutePath())) return;
+
+            // Check dir is selected
+            if (prefSet.isDirName()) {
+                matchName(file.file);
+            }
+
+            if (file.depth >= maxDepth) return;
+            File[] subFiles = file.file.listFiles();
+            if (subFiles == null) return;
+            for (File f : subFiles) {
+                stack.addLast(new DepthFile(f, file.depth + 1));
+            }
+        } else {
+            // Check if this format is excluded
+            if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.file.getName()))) return;
+
+            // check file name is selected
+            if (prefSet.isFileName()) {
+                matchName(file.file);
+            }
+            // check file content is selected
+            if (prefSet.getExtensions() != null) {
+                matchFileContent(file.file);
             }
         }
     }
+
+//    private void searchFileIterative(File rootFile) {
+//        boolean depthFirst = prefSet.isDepthFirst();
+//        boolean notShowHidden = !prefSet.isShowHidden();
+//        Deque<File> stack = new ArrayDeque<>();
+//        stack.addLast(rootFile);
+//        while (!stack.isEmpty()) {
+//            if (!searching) return;
+//
+//            File file = depthFirst ? stack.removeLast() : stack.removeFirst();
+//            if (notShowHidden && file.isHidden()) continue;
+//            if (file.isDirectory()) {
+//                // Check if this directory is excluded
+//                if (prefSet.getExcludedDirs().contains(file.getAbsolutePath())) continue;
+//
+//                // Check dir is selected
+//                if (prefSet.isDirName()) {
+//                    matchName(file);
+//                }
+//
+//                File[] subFiles = file.listFiles();
+//                if (subFiles == null) continue;
+//                for (File f : subFiles) {
+//                    stack.addLast(f);
+//                }
+//            } else {
+//                // Check if this format is excluded
+//                if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) continue;
+//
+//                // check file name is selected
+//                if (prefSet.isFileName()) {
+//                    matchName(file);
+//                }
+//                // check file content is selected
+//                if (prefSet.getExtensions() != null) {
+//                    matchFileContent(file);
+//                }
+//            }
+//        }
+//    }
 
     private void matchName(File file) {
         if (prefSet.isMatchAll()) matchNameAll(file);
@@ -212,6 +287,16 @@ public class Searcher {
 
     public ReadOnlyIntegerProperty resultCountProperty() {
         return resultCountWrapper;
+    }
+
+    private static class DepthFile {
+        private final int depth;
+        private final File file;
+
+        DepthFile(File file, int depth) {
+            this.file = file;
+            this.depth = depth;
+        }
     }
 
     private class SearchContentTask implements Runnable {

@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A class that holds the current search preferences set by user.
+ */
 public class PrefSet {
     private boolean matchAll;
     private List<File> searchDirs;
@@ -25,6 +28,8 @@ public class PrefSet {
     private String regexMatchingAlg;
     private Set<String> excludedDirs;
     private Set<String> excludedFormats;
+    private int maxSearchDepth;
+    private boolean limitDepth;
     private int depthFirstIndicator = -1;  // -1 for not read, 0 for breadth first 1, for depth first
 
     public List<File> getSearchDirs() {
@@ -36,12 +41,15 @@ public class PrefSet {
     }
 
     /**
-     * @return a list of all targets, if {@code isCaseSensitive()}, all targets are in lower case already.
+     * @return a list of all targets, if not {@code isCaseSensitive()}, all targets are in lower case already.
      */
     public List<String> getTargets() {
         return targets;
     }
 
+    /**
+     * @return {@code true} if match all, {@code false} if match any
+     */
     public boolean isMatchAll() {
         return matchAll;
     }
@@ -50,6 +58,9 @@ public class PrefSet {
         return matchCase;
     }
 
+    /**
+     * @return is searching directory names
+     */
     public boolean isDirName() {
         return dirName;
     }
@@ -58,12 +69,33 @@ public class PrefSet {
         return fileName;
     }
 
+    /**
+     * Whether to search full path name instead of the last name of a file.
+     * <p>
+     * For example, "C:\Program Files\Java" matches "Files\Java" only when this method returns true.
+     *
+     * @return is including full path names
+     */
     public boolean isIncludePathName() {
         return includePathName;
     }
 
-    public boolean isShowHidden() {
-        return showHidden;
+    public boolean notShowHidden() {
+        return !showHidden;
+    }
+
+    /**
+     * @return the maximum traversal depth
+     */
+    public int getMaxSearchDepth() {
+        return maxSearchDepth;
+    }
+
+    /**
+     * @return whether to limit search depth
+     */
+    public boolean isLimitDepth() {
+        return limitDepth;
     }
 
     public MatchMode getMatchMode() {
@@ -161,7 +193,7 @@ public class PrefSet {
         }
 
         /**
-         * Sets up the directories to search
+         * Sets up the directories to search.
          * <p>
          * This method eliminates duplicate directories, including sub-directories of existing directory.
          *
@@ -205,13 +237,18 @@ public class PrefSet {
          * @return a new {@code PrefSet}
          * @throws SearchTargetNotSetException if search target is not set
          * @throws SearchDirNotSetException    if no search directory is set
+         * @throws SearchPrefNotSetException   if nothing to search
          */
-        public PrefSet build() throws SearchTargetNotSetException, SearchDirNotSetException {
+        public PrefSet build()
+                throws SearchTargetNotSetException, SearchDirNotSetException, SearchPrefNotSetException {
             if (prefSet.targets == null || prefSet.targets.isEmpty() || areTargetsAllEmpty()) {
                 throw new SearchTargetNotSetException("No searching targets");
             }
             if (prefSet.searchDirs == null || prefSet.searchDirs.isEmpty()) {
                 throw new SearchDirNotSetException("No searching directories");
+            }
+            if (noPrefSelected()) {
+                throw new SearchPrefNotSetException("No searching things");
             }
             if (!prefSet.matchCase) {  // if not match case, convert to all lower case
                 for (int i = 0; i < prefSet.targets.size(); i++) {
@@ -220,7 +257,15 @@ public class PrefSet {
             }
             prefSet.showHidden = Configs.isShowHidden();
             prefSet.includePathName = Configs.isIncludePathName();
+            prefSet.limitDepth = Configs.isLimitDepth();
+            prefSet.maxSearchDepth = Configs.getMaxSearchDepth();
             return prefSet;
+        }
+
+        private boolean noPrefSelected() {
+            return !prefSet.fileName &&
+                    !prefSet.dirName &&
+                    (prefSet.extensions == null || prefSet.extensions.isEmpty());
         }
 
         private boolean areTargetsAllEmpty() {

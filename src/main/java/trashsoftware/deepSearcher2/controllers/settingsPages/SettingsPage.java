@@ -1,18 +1,19 @@
 package trashsoftware.deepSearcher2.controllers.settingsPages;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
+import javafx.scene.control.*;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A page that has real setting items.
+ */
 public abstract class SettingsPage extends Page {
 
     private final List<ComboBox<?>> comboBoxes = new ArrayList<>();
     private final List<CheckBox> checkBoxes = new ArrayList<>();
+    private final List<TextField> textFields = new ArrayList<>();
 
     StatusSaver statusSaver = new StatusSaver();
 
@@ -25,6 +26,13 @@ public abstract class SettingsPage extends Page {
      */
     public abstract void saveChanges();
 
+    /**
+     * Sets the enable/disable status listener of apply button.
+     * <p>
+     * The apply button should be enabled when any managed controls have changed their selection.
+     *
+     * @param applyButton the apply button
+     */
     public void setApplyButtonStatusChanger(Button applyButton) {
         for (ComboBox<?> comboBox : comboBoxes) {
             comboBox.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) ->
@@ -34,6 +42,7 @@ public abstract class SettingsPage extends Page {
             checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
                     applyButton.setDisable(noStatusChanged())));
         }
+        // do not set textfield listeners
     }
 
     private boolean noStatusChanged() {
@@ -42,6 +51,9 @@ public abstract class SettingsPage extends Page {
         }
         for (CheckBox checkBox : checkBoxes) {
             if (statusSaver.hasChanged(checkBox)) return false;
+        }
+        for (TextField textField : textFields) {
+            if (statusSaver.hasChanged(textField)) return false;
         }
         return true;
     }
@@ -57,6 +69,7 @@ public abstract class SettingsPage extends Page {
         for (Control control : controls) {
             if (control instanceof ComboBox) comboBoxes.add((ComboBox<?>) control);
             else if (control instanceof CheckBox) checkBoxes.add((CheckBox) control);
+            else if (control instanceof TextField) textFields.add((TextField) control);
 
             else throw new RuntimeException("Unrecognizable Control");
         }

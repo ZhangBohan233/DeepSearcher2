@@ -38,10 +38,7 @@ import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
 import trashsoftware.deepSearcher2.guiItems.FormatType;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
-import trashsoftware.deepSearcher2.searcher.PrefSet;
-import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
-import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
-import trashsoftware.deepSearcher2.searcher.Searcher;
+import trashsoftware.deepSearcher2.searcher.*;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.CacheObservable;
 import trashsoftware.deepSearcher2.util.Configs;
@@ -648,6 +645,8 @@ public class MainViewController implements Initializable, CacheObservable {
             showHoverMessage("targetNotSet", searchButton);
         } catch (SearchDirNotSetException e) {
             showHoverMessage("dirNotSet", searchButton);
+        } catch (SearchPrefNotSetException e) {
+            showHoverMessage("prefNotSet", searchButton);
         }
     }
 
