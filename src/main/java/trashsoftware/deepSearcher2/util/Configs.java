@@ -254,6 +254,11 @@ public class Configs {
         return readMapFile(CUSTOM_FORMATS_NAME);
     }
 
+    /**
+     * Returns a list of history records, ranked from newest to oldest.
+     *
+     * @return a list of histories, ranked from newest to oldest
+     */
     public static List<HistoryItem> getAllHistory() {
         List<HistoryItem> list = new ArrayList<>();
         createDirsIfNotExist();
@@ -286,6 +291,7 @@ public class Configs {
                 }
             }
         }
+        Collections.reverse(list);
         return list;
     }
 
