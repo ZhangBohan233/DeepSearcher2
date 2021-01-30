@@ -12,6 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
 import java.net.URL;
@@ -54,7 +55,11 @@ public class ConfirmBox implements Initializable {
             stage.initStyle(StageStyle.UTILITY);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(ownerWindow);
-            stage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            if (Configs.isUseCustomFont()) {
+                Configs.applyCustomFont(scene);
+            }
+            stage.setScene(scene);
 
             ConfirmBox controller = loader.getController();
             controller.stage = stage;
@@ -67,7 +72,6 @@ public class ConfirmBox implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     @FXML

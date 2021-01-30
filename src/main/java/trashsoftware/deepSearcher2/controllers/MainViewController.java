@@ -2,6 +2,7 @@ package trashsoftware.deepSearcher2.controllers;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Service;
@@ -39,10 +40,7 @@ import trashsoftware.deepSearcher2.guiItems.FormatItem;
 import trashsoftware.deepSearcher2.guiItems.FormatType;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.*;
-import trashsoftware.deepSearcher2.util.Cache;
-import trashsoftware.deepSearcher2.util.CacheObservable;
-import trashsoftware.deepSearcher2.util.Configs;
-import trashsoftware.deepSearcher2.util.Util;
+import trashsoftware.deepSearcher2.util.*;
 
 import java.awt.*;
 import java.io.File;
@@ -83,6 +81,8 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     CheckBox selectAllBox;
     @FXML
+    CheckMenuItem showFullPathMenu, showExtMenu;
+    @FXML
     ComboBox<FormatFilterItem> filterBox;
     @FXML
     Button searchButton;
@@ -118,6 +118,7 @@ public class MainViewController implements Initializable, CacheObservable {
         addTargetListListener();
 
         addCheckBoxesListeners();
+        addCheckMenuListeners();
         addFilterBoxListener();
 
         addSearchItem();  // Add a default search field
@@ -129,6 +130,7 @@ public class MainViewController implements Initializable, CacheObservable {
         initContextMenus();
 
         // restore saved status
+        // this should be called after all listeners are set
         loadFromCache();
     }
 
@@ -274,6 +276,8 @@ public class MainViewController implements Initializable, CacheObservable {
         rootObject.put("matchWord", matchWordBox.isSelected());
         rootObject.put("matchRegex", matchRegexBox.isSelected());
         rootObject.put("matchAll", matchAllRadioBtn.isSelected());
+        rootObject.put("showFullPath", showFullPathMenu.isSelected());
+        rootObject.put("showExt", showExtMenu.isSelected());
 
         if (dirDialogInitFile != null) rootObject.put("dirDialogInit", dirDialogInitFile.getAbsolutePath());
 
@@ -292,6 +296,7 @@ public class MainViewController implements Initializable, CacheObservable {
         restoreLastOpenedDirs(cache);
         loadRadioButtonsInitialStatus(cache);
         loadSavedCheckBoxesStatus(cache);
+        loadSavedCheckMenusStatus(cache);
         String initD = cache.getStringCache("dirDialogInit");
         if (initD != null) dirDialogInitFile = new File(initD);
     }
@@ -360,7 +365,15 @@ public class MainViewController implements Initializable, CacheObservable {
         TableColumn<ResultItem, ?> fileTypeCol = resultTable.getColumns().get(2);
         TableColumn<ResultItem, ?> matchModeCol = resultTable.getColumns().get(3);
 
-        fileNameCol.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        fileNameCol.setCellValueFactory(param -> {
+            File file = param.getValue().getFile();
+            String name = showFullPathMenu.isSelected() ? file.getAbsolutePath() : file.getName();
+            if (!showExtMenu.isSelected() && !file.isDirectory()) {
+                int dotIndex = name.lastIndexOf('.');
+                if (dotIndex > 0) name = name.substring(0, dotIndex);
+            }
+            return new ReadOnlyStringWrapper(name);
+        });
         fileSizeCol.setCellValueFactory(new PropertyValueFactory<>("Size"));
         fileTypeCol.setCellValueFactory(new PropertyValueFactory<>("Type"));
         matchModeCol.setCellValueFactory(new PropertyValueFactory<>("Mode"));
@@ -377,11 +390,21 @@ public class MainViewController implements Initializable, CacheObservable {
     }
 
     private void addFileNameColumnHoverListener() {
-        fileNameCol.setCellFactory(new ResTableCallback<>(resultTable));
+        fileNameCol.setCellFactory(new ResTableCallback<>(resultTable) {
+            @Override
+            protected String tooltipText(ResultItem cellData) {
+                return cellData.getFile().getAbsolutePath();
+            }
+        });
     }
 
     private void addFormatNameColumnHoverListener() {
-        formatNameCol.setCellFactory(new ResTableCallback<>(formatTable));
+        formatNameCol.setCellFactory(new ResTableCallback<>(formatTable) {
+            @Override
+            protected String tooltipText(FormatItem cellData) {
+                return cellData.getDescription();
+            }
+        });
     }
 
     private void addMatchingModeColumnHoverListener() {
@@ -400,11 +423,10 @@ public class MainViewController implements Initializable, CacheObservable {
                                                          Boolean isNowHovered) -> {
                                 if (isNowHovered && !isEmpty()) {
                                     ResultItem res = getTableRow().getItem();
-                                    if (res != null) {
-                                        String tips = res.showInfo();
+                                    String tips;
+                                    if (res != null && (tips = res.showInfo()) != null) {
                                         Tooltip tp = new Tooltip();
                                         tp.setText(tips);
-
                                         resultTable.setTooltip(tp);
                                         return;
                                     }
@@ -476,6 +498,13 @@ public class MainViewController implements Initializable, CacheObservable {
         }));
     }
 
+    private void addCheckMenuListeners() {
+        showFullPathMenu.selectedProperty().addListener(((observable, oldValue, newValue) ->
+                resultTable.refresh()));
+        showExtMenu.selectedProperty().addListener(((observable, oldValue, newValue) ->
+                resultTable.refresh()));
+    }
+
     // Helper functions
 
     private JSONArray lastOpenedDirs(Cache cache) {
@@ -495,6 +524,11 @@ public class MainViewController implements Initializable, CacheObservable {
         setBoxInitialStatus(matchCaseBox, "matchCase", cache);
         setBoxInitialStatus(matchWordBox, "matchWord", cache);
         setBoxInitialStatus(matchRegexBox, "matchRegex", cache);
+    }
+
+    private void loadSavedCheckMenusStatus(Cache cache) {
+        showFullPathMenu.setSelected(cache.getBooleanCache("showFullPath", true));
+        showExtMenu.setSelected(cache.getBooleanCache("showExt", true));
     }
 
     private void setBoxInitialStatus(CheckBox checkBox, String key, Cache cache) {
@@ -642,11 +676,11 @@ public class MainViewController implements Initializable, CacheObservable {
             resultTable.setPlaceholder(new Label(bundle.getString("isSearching")));
             service.start();
         } catch (SearchTargetNotSetException e) {
-            showHoverMessage("targetNotSet", searchButton);
+            showSearchButtonMsg("targetNotSet", searchButton);
         } catch (SearchDirNotSetException e) {
-            showHoverMessage("dirNotSet", searchButton);
+            showSearchButtonMsg("dirNotSet", searchButton);
         } catch (SearchPrefNotSetException e) {
-            showHoverMessage("prefNotSet", searchButton);
+            showSearchButtonMsg("prefNotSet", searchButton);
         }
     }
 
@@ -691,7 +725,7 @@ public class MainViewController implements Initializable, CacheObservable {
         statusSuffixText.setText(bundle.getString("searchDoneSuffix"));
     }
 
-    private void showHoverMessage(String textKey, Node parent) {
+    private void showSearchButtonMsg(String textKey, Node parent) {
         ContextMenu popupMenu = new ContextMenu();
         MenuItem menuItem = new MenuItem(bundle.getString(textKey));
         menuItem.setDisable(true);
@@ -710,6 +744,7 @@ public class MainViewController implements Initializable, CacheObservable {
             Desktop.getDesktop().open(file);
         } catch (IOException e) {
             e.printStackTrace();
+            EventLogger.log(e);
         }
     }
 
@@ -741,7 +776,7 @@ public class MainViewController implements Initializable, CacheObservable {
         service.getSearcher().resultCountProperty().removeListener(fileCountListener);
     }
 
-    private static class ResTableCallback<T> implements
+    private abstract static class ResTableCallback<T> implements
             Callback<TableColumn<T, String>, TableCell<T, String>> {
 
         private final TableView<T> table;
@@ -749,6 +784,8 @@ public class MainViewController implements Initializable, CacheObservable {
         private ResTableCallback(TableView<T> table) {
             this.table = table;
         }
+
+        protected abstract String tooltipText(T cellData);
 
         @Override
         public TableCell<T, String> call(TableColumn<T, String> param) {
@@ -764,7 +801,7 @@ public class MainViewController implements Initializable, CacheObservable {
                         hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
                                                      Boolean isNowHovered) -> {
                             if (isNowHovered && !isEmpty()) {
-                                table.setTooltip(new Tooltip(getText()));
+                                table.setTooltip(new Tooltip(tooltipText(getTableRow().getItem())));
                             } else {
                                 table.setTooltip(null);
                             }

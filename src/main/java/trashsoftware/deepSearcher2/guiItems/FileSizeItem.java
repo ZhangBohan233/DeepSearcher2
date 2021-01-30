@@ -4,6 +4,11 @@ import trashsoftware.deepSearcher2.util.Util;
 
 import java.util.ResourceBundle;
 
+/**
+ * A class that contains a file's size and can convert size in byte to a readable form.
+ * <p>
+ * This class is comparable by its size.
+ */
 public class FileSizeItem implements Comparable<FileSizeItem> {
 
     private final long size;
@@ -16,7 +21,7 @@ public class FileSizeItem implements Comparable<FileSizeItem> {
 
     @Override
     public String toString() {
-         return Util.sizeToReadable(size, bundle.getString("bytes"));
+        return Util.sizeToReadable(size, bundle.getString("bytes"));
     }
 
     @Override

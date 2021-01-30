@@ -14,6 +14,10 @@
             <MenuItem text="%restart" onAction="#restartAction"/>
             <MenuItem text="%exit" onAction="#exitAction"/>
         </Menu>
+        <Menu text="%view">
+            <CheckMenuItem text="%showFullPath" fx:id="showFullPathMenu"/>
+            <CheckMenuItem text="%showExt" fx:id="showExtMenu"/>
+        </Menu>
         <Menu text="%help">
             <MenuItem text="%about" onAction="#openAboutAction"/>
         </Menu>

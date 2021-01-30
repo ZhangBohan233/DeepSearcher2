@@ -111,6 +111,8 @@ public class Client extends Application {
         iconImage = new Image(getClass().getResourceAsStream("/trashsoftware/deepSearcher2/images/icon.bmp"));
 
         Scene rootScene = new Scene(root);
+        rootScene.getStylesheets().add(
+                getClass().getResource("/trashsoftware/deepSearcher2/css/defaultTheme.css").toExternalForm());
         if (Configs.isUseCustomFont()) {
             Configs.applyCustomFont(rootScene);
             controller.rescaleUi(Configs.getFontSize(12));

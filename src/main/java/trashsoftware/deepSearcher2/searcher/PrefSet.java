@@ -4,9 +4,8 @@ import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * A class that holds the current search preferences set by user.
@@ -31,6 +30,14 @@ public class PrefSet {
     private int maxSearchDepth;
     private boolean limitDepth;
     private int depthFirstIndicator = -1;  // -1 for not read, 0 for breadth first 1, for depth first
+
+    /**
+     * Private constructor, avoiding constructing from outside.
+     * <p>
+     * Please use {@code PrefSet.PrefSetBuilder} to create instances of this class.
+     */
+    private PrefSet() {
+    }
 
     public List<File> getSearchDirs() {
         return searchDirs;
@@ -195,29 +202,27 @@ public class PrefSet {
         /**
          * Sets up the directories to search.
          * <p>
-         * This method eliminates duplicate directories, including sub-directories of existing directory.
+         * Precondition: input list contains no duplicate files.
+         * This method removes the children directories of any directories of other directories, if there
+         * is no searching depth limit.
+         * <p>
+         * Reason for not removing children directories when there exists depth limit:
+         * Consider two directories, "A" and "A/B". If the target file is "A/B/x.txt" and the depth limit is 1,
+         * removing "A/B" would result in the absence of "A/B/x.txt".
          *
-         * @param searchDirs all directories to search
+         * @param searchDirs all unique directories to search
          * @return this builder
          */
         public PrefSetBuilder setSearchDirs(List<File> searchDirs) {
-            List<String> addedDirs = new ArrayList<>();
-            List<File> addedFiles = new ArrayList<>();
-            for (File f : searchDirs) {
-                String absDir = f.getAbsolutePath();
-                boolean foundParent = false;
-                for (String added : addedDirs) {
-                    if (absDir.startsWith(added)) {  // added is not the parent of absDir
-                        foundParent = true;
-                        break;
-                    }
-                }
-                if (!foundParent) {
-                    addedDirs.add(absDir);
-                    addedFiles.add(f);
-                }
+            prefSet.limitDepth = Configs.isLimitDepth();
+            prefSet.maxSearchDepth = Configs.getMaxSearchDepth();
+            if (prefSet.limitDepth) {
+                prefSet.searchDirs = new ArrayList<>(searchDirs);
+                return this;
             }
-            prefSet.searchDirs = addedFiles;
+            // uses a trie-like data structure to remove all children directories of added directories
+            FileTree fileTree = new FileTree(searchDirs);
+            prefSet.searchDirs = fileTree.getAllNoDup();
             return this;
         }
 
@@ -257,8 +262,7 @@ public class PrefSet {
             }
             prefSet.showHidden = Configs.isShowHidden();
             prefSet.includePathName = Configs.isIncludePathName();
-            prefSet.limitDepth = Configs.isLimitDepth();
-            prefSet.maxSearchDepth = Configs.getMaxSearchDepth();
+            // depth limits are set in 'addSearchDirs'
             return prefSet;
         }
 
@@ -273,6 +277,75 @@ public class PrefSet {
                 if (s.length() > 0) return false;
             }
             return true;
+        }
+    }
+
+    private static class FileTree {
+        private final FileTreeNode root = new FileTreeNode();
+
+        private FileTree(List<File> files) {
+            for (File f : files) add(f);
+        }
+
+        private void add(File file) {
+            String[] parts = file.getAbsolutePath().split(Pattern.quote(File.separator));
+            FileTreeNode cur = root;
+            for (String part : parts) {
+                FileTreeNode node = cur.children.get(part);
+                if (node == null) {
+                    node = new FileTreeNode();
+                    cur.children.put(part, node);
+                }
+                cur = node;
+            }
+            cur.isEnd = true;
+        }
+
+        /**
+         * @return returns all outermost files that are real paths, i.e. marked as "isEnd=true"
+         */
+        private List<File> getAllNoDup() {
+            List<File> res = new ArrayList<>();
+            root.fillCompleteFile(res, "", "");
+            return res;
+        }
+
+        @Override
+        public String toString() {
+            FileTreeNode.spaceCount = 0;
+            return root.toString(null);
+        }
+    }
+
+    /**
+     * A trie-like data structure, recording an added directory.
+     */
+    private static class FileTreeNode {
+        private static int spaceCount;  // only used for "toString"
+        private final Map<String, FileTreeNode> children = new HashMap<>();
+        private boolean isEnd = false;  // whether this node represents a real file
+
+        private void fillCompleteFile(List<File> files, String nameOfThis, String added) {
+            String thisPath = added + nameOfThis + File.separator;
+            if (isEnd) files.add(new File(thisPath));
+            else for (Map.Entry<String, FileTreeNode> entry : children.entrySet())
+                entry.getValue().fillCompleteFile(files, entry.getKey(), thisPath);
+        }
+
+        private String toString(String nameOfThis) {
+            StringBuilder sb = new StringBuilder()
+                    .append(" ".repeat(spaceCount))
+                    .append(nameOfThis)
+                    .append(" (")
+                    .append(isEnd)
+                    .append(")")
+                    .append('\n');
+            spaceCount += 2;
+            for (Map.Entry<String, FileTreeNode> entry : children.entrySet()) {
+                sb.append(entry.getValue().toString(entry.getKey()));
+            }
+            spaceCount -= 2;
+            return sb.toString();
         }
     }
 }

@@ -249,10 +249,14 @@ public class Searcher {
     }
 
     private void addNameResult(File file) {
-        ResultItem resultItem = ResultItem.createNameMatch(file, bundle, fileTypeBundle, customFormats);
-        tableList.add(resultItem);
-        resultFilesMap.put(file, resultItem);
-        updateResultCount();
+        // check duplicate
+        // duplicate may happens when a depth limit is set, so prefSet does not remove parent-children directories.
+        if (!resultFilesMap.containsKey(file)) {
+            ResultItem resultItem = ResultItem.createNameMatch(file, bundle, fileTypeBundle, customFormats);
+            tableList.add(resultItem);
+            resultFilesMap.put(file, resultItem);
+            updateResultCount();
+        }
     }
 
     public boolean isNormalFinish() {
