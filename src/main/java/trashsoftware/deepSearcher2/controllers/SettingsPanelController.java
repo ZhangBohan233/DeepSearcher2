@@ -11,19 +11,22 @@ import trashsoftware.deepSearcher2.util.EventLogger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class SettingsPanelController implements Initializable {
 
+    private final StatusSaver statusSaver = new StatusSaver();
+    private final List<ComboBox<?>> comboBoxes = new ArrayList<>();
+    private final List<CheckBox> checkBoxes = new ArrayList<>();
+    private final List<TextField> textFields = new ArrayList<>();
     @FXML
     TreeView<SettingsItem> treeView;
-
     @FXML
     ScrollPane contentPane;
-
     @FXML
     Button okButton, cancelButton, applyButton;
-
     private Stage thisStage;
     private MainViewController mainView;
     private ResourceBundle bundle;
@@ -52,6 +55,30 @@ public class SettingsPanelController implements Initializable {
     }
 
     /**
+     * @return the status saver of the whole settings panel.
+     */
+    public StatusSaver getStatusSaver() {
+        return statusSaver;
+    }
+
+    /**
+     * Adds all controllable {@code Control}'s that need to be monitored for changes to page.
+     * <p>
+     * This method should be called just after {@code FXMLLoader.load} in the constructor of any sub-classes of this.
+     *
+     * @param controls array of controllable {@code Control}'s
+     */
+    public void addControls(Control... controls) {
+        for (Control control : controls) {
+            if (control instanceof ComboBox) comboBoxes.add((ComboBox<?>) control);
+            else if (control instanceof CheckBox) checkBoxes.add((CheckBox) control);
+            else if (control instanceof TextField) textFields.add((TextField) control);
+
+            else throw new RuntimeException("Unrecognizable Control");
+        }
+    }
+
+    /**
      * Expands the left tree view until a specific page
      *
      * @param targetPage the target page
@@ -76,6 +103,28 @@ public class SettingsPanelController implements Initializable {
     @FXML
     void cancelAction() {
         closeWindow();
+    }
+
+    @FXML
+    void applyAction() {
+        applyAllChanges(treeView.getRoot());
+        applyButton.setDisable(true);
+    }
+
+    @FXML
+    void okAction() {
+        applyAllChanges(treeView.getRoot());
+        closeWindow();
+    }
+
+    private void applyAllChanges(TreeItem<SettingsItem> item) {
+        Page page = item.getValue().getPage();
+        if (page instanceof SettingsPage) {
+            ((SettingsPage) page).saveChanges();
+        }
+        for (TreeItem<SettingsItem> child : item.getChildren()) {
+            applyAllChanges(child);
+        }
     }
 
     private void closeWindow() {
@@ -125,6 +174,7 @@ public class SettingsPanelController implements Initializable {
             ioe.printStackTrace();
             EventLogger.log(ioe);
         }
+        setApplyButtonStatusChanger();
         root.setExpanded(true);
         treeView.setRoot(root);
     }
@@ -152,16 +202,37 @@ public class SettingsPanelController implements Initializable {
     }
 
     private void showPage(SettingsPage settingsPage) {
-        settingsPage.setApplyButtonStatusChanger(applyButton);
-        applyButton.setOnAction(e -> {
-            settingsPage.saveChanges();
-            applyButton.setDisable(true);
-        });
-        okButton.setOnAction(e -> {
-            settingsPage.saveChanges();
-            closeWindow();
-        });
-
         contentPane.setContent(settingsPage);
+    }
+
+    /**
+     * Sets the enable/disable status listener of apply button.
+     * <p>
+     * The apply button should be enabled when any managed controls have changed their selection.
+     */
+    private void setApplyButtonStatusChanger() {
+        for (ComboBox<?> comboBox : comboBoxes) {
+            comboBox.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) ->
+                    applyButton.setDisable(noStatusChanged())));
+        }
+        for (CheckBox checkBox : checkBoxes) {
+            checkBox.selectedProperty().addListener(((observableValue, aBoolean, t1) ->
+                    applyButton.setDisable(noStatusChanged())));
+        }
+        for (TextField textField : textFields) {
+            textField.textProperty().addListener(((observableValue, aBoolean, t1) ->
+                    applyButton.setDisable(noStatusChanged())));
+        }
+        // do not set textfield listeners
+    }
+
+    private boolean noStatusChanged() {
+        for (ComboBox<?> comboBox : comboBoxes)
+            if (statusSaver.hasChanged(comboBox)) return false;
+        for (CheckBox checkBox : checkBoxes)
+            if (statusSaver.hasChanged(checkBox)) return false;
+        for (TextField textField : textFields)
+            if (statusSaver.hasChanged(textField)) return false;
+        return true;
     }
 }

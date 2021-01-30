@@ -3,7 +3,6 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
@@ -33,7 +32,7 @@ public class SearchingOptionsPage extends SettingsPage {
 
         loader.load();
 
-        addControls(includePathNameBox, shownHiddenBox, limitDepthBox, searchDepthField);
+        controller.addControls(includePathNameBox, shownHiddenBox, limitDepthBox, searchDepthField);
 
         initCheckBoxes();
         initMaxDepthBox();
@@ -41,17 +40,17 @@ public class SearchingOptionsPage extends SettingsPage {
 
     @Override
     public void saveChanges() {
-        if (statusSaver.hasChanged(includePathNameBox)) {
+        if (getStatusSaver().hasChanged(includePathNameBox)) {
             Configs.setIncludePathName(includePathNameBox.isSelected());
-            statusSaver.store(includePathNameBox);
+            getStatusSaver().store(includePathNameBox);
         }
-        if (statusSaver.hasChanged(shownHiddenBox)) {
+        if (getStatusSaver().hasChanged(shownHiddenBox)) {
             Configs.setShowHidden(shownHiddenBox.isSelected());
-            statusSaver.store(shownHiddenBox);
+            getStatusSaver().store(shownHiddenBox);
         }
-        if (statusSaver.hasChanged(limitDepthBox)) {
+        if (getStatusSaver().hasChanged(limitDepthBox)) {
             Configs.setLimitDepth(limitDepthBox.isSelected());
-            statusSaver.store(limitDepthBox);
+            getStatusSaver().store(limitDepthBox);
         }
         if (limitDepthBox.isSelected()) {
             try {
@@ -59,15 +58,15 @@ public class SearchingOptionsPage extends SettingsPage {
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
-            statusSaver.store(searchDepthField);
+            getStatusSaver().store(searchDepthField);
         }
     }
 
     private void initCheckBoxes() {
         includePathNameBox.setSelected(Configs.isIncludePathName());
         shownHiddenBox.setSelected(Configs.isShowHidden());
-        statusSaver.store(includePathNameBox);
-        statusSaver.store(shownHiddenBox);
+        getStatusSaver().store(includePathNameBox);
+        getStatusSaver().store(shownHiddenBox);
     }
 
     private void initMaxDepthBox() {
@@ -91,7 +90,7 @@ public class SearchingOptionsPage extends SettingsPage {
         searchDepthField.setText(String.valueOf(Configs.getMaxSearchDepth()));
         limitDepthBox.setSelected(Configs.isLimitDepth());
 
-        statusSaver.store(limitDepthBox);
-        statusSaver.store(searchDepthField);
+        getStatusSaver().store(limitDepthBox);
+        getStatusSaver().store(searchDepthField);
     }
 }

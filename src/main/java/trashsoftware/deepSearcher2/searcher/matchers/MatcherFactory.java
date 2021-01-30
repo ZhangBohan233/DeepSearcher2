@@ -11,8 +11,12 @@ import trashsoftware.deepSearcher2.searcher.matchers.wordMatchers.NaiveWordMatch
 
 public abstract class MatcherFactory {
 
-    public abstract StringMatcher createMatcher(String string);
-
+    /**
+     * Creates a matcher factory according to a pref set.
+     *
+     * @param prefSet the pref set
+     * @return the new factory
+     */
     public static MatcherFactory createFactoryByPrefSet(PrefSet prefSet) {
         if (prefSet.getMatchMode() == MatchMode.NORMAL) {
             switch (prefSet.getMatchingAlgorithm()) {
@@ -48,4 +52,12 @@ public abstract class MatcherFactory {
             throw new RuntimeException("Invalid match mode");
         }
     }
+
+    /**
+     * Creates a real matcher.
+     *
+     * @param string the string to be searched
+     * @return the matcher
+     */
+    public abstract StringMatcher createMatcher(String string);
 }

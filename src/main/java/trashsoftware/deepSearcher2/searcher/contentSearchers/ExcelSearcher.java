@@ -9,6 +9,11 @@ import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import java.io.File;
 import java.util.List;
 
+/**
+ * Content searcher for Microsoft Excel formats.
+ *
+ * This class is overridden by two subclasses which search .xls and .xlsx
+ */
 abstract class ExcelSearcher extends TwoIntOneStrSearcher {
     public ExcelSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
         super(file, matcherFactory, caseSensitive,

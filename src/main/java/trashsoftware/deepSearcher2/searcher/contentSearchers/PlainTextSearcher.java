@@ -8,14 +8,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
+/**
+ * Searcher for any plain text format.
+ */
 public class PlainTextSearcher extends TwoKeysSearcher {
 
-    /**
-     * Reason for collecting total text:
-     * The regular implementation searches line-by-line, which omits cross-line matches.
-     * So if the regular search does not match, search in total text again.
-     */
-//    private StringBuilder wholeFileBuilder = new StringBuilder();
     public PlainTextSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
         super(file, matcherFactory, caseSensitive, ContentSearchingResult.LINES_KEY, ContentSearchingResult.CHARS_KEY);
     }

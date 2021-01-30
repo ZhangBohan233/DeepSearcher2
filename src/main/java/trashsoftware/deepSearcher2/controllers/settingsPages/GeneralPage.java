@@ -35,7 +35,7 @@ public class GeneralPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
-        addControls(languageBox, fontSizeBox, languageBox, useCustomFontBox);
+        controller.addControls(languageBox, fontSizeBox, languageBox, useCustomFontBox, fontBox);
 
         initLanguageBox();
         initUseCusFontBox();
@@ -44,23 +44,23 @@ public class GeneralPage extends SettingsPage {
 
     @Override
     public void saveChanges() {
-        if (statusSaver.hasChanged(languageBox)) {
+        if (getStatusSaver().hasChanged(languageBox)) {
             NamedLocale selectedLocale = languageBox.getSelectionModel().getSelectedItem();
             Configs.writeConfig("locale", selectedLocale.getConfigValue());
-            statusSaver.store(languageBox);
+            getStatusSaver().store(languageBox);
 
             askRestart();
         }
-        if (statusSaver.hasChanged(useCustomFontBox) ||
-                statusSaver.hasChanged(fontBox) ||
-                statusSaver.hasChanged(fontSizeBox)) {
+        if (getStatusSaver().hasChanged(useCustomFontBox) ||
+                getStatusSaver().hasChanged(fontBox) ||
+                getStatusSaver().hasChanged(fontSizeBox)) {
             Configs.setUseCustomFont(
                     useCustomFontBox.isSelected(),
                     fontBox.getSelectionModel().getSelectedItem(),
                     fontSizeBox.getSelectionModel().getSelectedItem());
-            statusSaver.store(useCustomFontBox);
-            statusSaver.store(fontBox);
-            statusSaver.store(fontSizeBox);
+            getStatusSaver().store(useCustomFontBox);
+            getStatusSaver().store(fontBox);
+            getStatusSaver().store(fontSizeBox);
 
             askRestart();
         }
@@ -84,7 +84,7 @@ public class GeneralPage extends SettingsPage {
                 languageBox.getSelectionModel().selectLast();
             }
         }
-        statusSaver.store(languageBox);
+        getStatusSaver().store(languageBox);
     }
 
     private void initUseCusFontBox() {
@@ -98,7 +98,7 @@ public class GeneralPage extends SettingsPage {
             }
         }));
         useCustomFontBox.setSelected(Configs.isUseCustomFont());
-        statusSaver.store(useCustomFontBox);
+        getStatusSaver().store(useCustomFontBox);
     }
 
     private void initFontBoxes() {
@@ -109,10 +109,10 @@ public class GeneralPage extends SettingsPage {
         if (fontBox.getSelectionModel().getSelectedIndex() == -1) {
             fontBox.getSelectionModel().select(Font.getDefault().getFamily());
         }
-        statusSaver.store(fontBox);
+        getStatusSaver().store(fontBox);
 
         fontSizeBox.getItems().addAll(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36);
         fontSizeBox.getSelectionModel().select(Integer.valueOf(Configs.getFontSize(12)));
-        statusSaver.store(fontSizeBox);
+        getStatusSaver().store(fontSizeBox);
     }
 }

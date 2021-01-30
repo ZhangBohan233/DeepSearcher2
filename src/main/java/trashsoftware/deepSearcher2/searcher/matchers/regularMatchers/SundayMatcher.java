@@ -1,16 +1,19 @@
 package trashsoftware.deepSearcher2.searcher.matchers.regularMatchers;
 
-import trashsoftware.deepSearcher2.searcher.matchers.FixedMatcherFactory;
-import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-
+/**
+ * A string matcher that is implemented according to the "Sunday" algorithm
+ */
 public class SundayMatcher extends StringMatcher {
 
+    /**
+     * Reason for not using array: Unicode character
+     */
     private Map<Character, Integer> indices;
 
     public SundayMatcher(String string) {
@@ -45,38 +48,5 @@ public class SundayMatcher extends StringMatcher {
             s += pLen - lastPos;
         }
         return -1;
-    }
-
-    public static void main(String[] args) {
-        int n = 1000;
-        int len = 10000;
-        String[] strings = new String[n];
-        String pat = "this is the target. that is not a target. This string is long";
-        for (int x = 0; x < n; x++) {
-            StringBuilder sb = new StringBuilder();
-            int pos = (int) (Math.random() * len);
-            int i = 0;
-            for (; i < pos; i++) {
-                sb.append((char) (Math.random() * 128));
-            }
-            sb.append(pat);
-            for (; i < len; i++) {
-                sb.append((char) (Math.random() * 128));
-            }
-            String str = sb.toString();
-            strings[x] = str;
-        }
-
-//        MatcherFactory mf = new FixedMatcherFactory(NativeMatcher.class);
-//        MatcherFactory mf = new FixedMatcherFactory(NaiveMatcher.class);
-        MatcherFactory mf = new FixedMatcherFactory(SundayMatcher.class);
-        long t1 = System.currentTimeMillis();
-        for (int x = 0; x < n; x++) {
-            StringMatcher matcher = mf.createMatcher(strings[x]);
-            for (int y = 0; y < 10; y++)
-                if (matcher.search(pat) < 0) System.out.println("err");
-        }
-        long t2 = System.currentTimeMillis();
-        System.out.println(t2 - t1);
     }
 }

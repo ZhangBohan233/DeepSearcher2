@@ -11,6 +11,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Searchers that have two ints as sub-keys.
+ * <p>
+ * For example, "page" and "line" are two int keys.
+ */
 public abstract class TwoKeysSearcher extends ContentSearcher {
 
     private final int key1;

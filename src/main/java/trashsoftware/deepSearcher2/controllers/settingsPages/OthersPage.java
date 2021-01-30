@@ -2,7 +2,6 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import trashsoftware.deepSearcher2.Main;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.ConfirmBox;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;

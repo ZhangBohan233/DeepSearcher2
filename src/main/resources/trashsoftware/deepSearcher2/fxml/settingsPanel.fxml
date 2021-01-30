@@ -26,8 +26,8 @@
     <ScrollPane fx:id="contentPane" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS"/>
 
     <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="10.0" alignment="CENTER_RIGHT">
-        <Button fx:id="okButton" text="%ok"/>
+        <Button fx:id="okButton" text="%ok" onAction="#okAction"/>
         <Button fx:id="cancelButton" text="%cancel" onAction="#cancelAction"/>
-        <Button fx:id="applyButton" text="%apply" disable="true"/>
+        <Button fx:id="applyButton" text="%apply" onAction="#applyAction" disable="true"/>
     </HBox>
 </GridPane>

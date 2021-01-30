@@ -2,6 +2,9 @@ package trashsoftware.deepSearcher2.searcher.matchers.regularMatchers;
 
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
+/**
+ * A string matcher that is implemented according to the Knuth-Morris-Pratt (KMP) algorithm
+ */
 public class KMPMatcher extends StringMatcher {
 
     private int[] next;
@@ -47,12 +50,5 @@ public class KMPMatcher extends StringMatcher {
         }
         if (j == tLen) return i - j;
         else return -1;
-    }
-
-    public static void main(String[] args) {
-        String txt = "BBC ABCDAB CDABABCDABCDABDE";
-        String pat = "ABCDABD";
-        KMPMatcher matcher = new KMPMatcher(txt);
-        System.out.println(matcher.search(pat));
     }
 }

@@ -2,15 +2,15 @@ package trashsoftware.deepSearcher2.searcher.matchers.regularMatchers;
 
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
+/**
+ * A string matcher that is implemented by the naive algorithm.
+ * <p>
+ * This algorithm is strongly not-recommended.
+ */
 public class NaiveMatcher extends StringMatcher {
 
     public NaiveMatcher(String s) {
         super(s);
-    }
-
-    @Override
-    public int search(String target) {
-        return naiveMatch(string, target);
     }
 
     private static int naiveMatch(String string, String pattern) {
@@ -23,5 +23,10 @@ public class NaiveMatcher extends StringMatcher {
             if (j == pattern.length()) return i;
         }
         return -1;
+    }
+
+    @Override
+    public int search(String target) {
+        return naiveMatch(string, target);
     }
 }
