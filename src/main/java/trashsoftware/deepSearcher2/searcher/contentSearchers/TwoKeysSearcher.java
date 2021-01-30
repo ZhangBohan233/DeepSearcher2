@@ -35,7 +35,6 @@ public abstract class TwoKeysSearcher extends ContentSearcher {
 
     @Override
     public ContentSearchingResult searchAll(List<String> targets) {
-
         foundTargets.clear();
         found1s.clear();
         found2s.clear();
