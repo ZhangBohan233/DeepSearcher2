@@ -18,6 +18,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The core of searching.
+ * <p>
+ * This class mainly does the file system traversal and allocate proper content searcher.
+ */
 public class Searcher {
     private static final Map<String, Class<? extends ContentSearcher>> FORMAT_MAP = Map.of(
             "pdf", PdfSearcher.class,
@@ -44,15 +49,28 @@ public class Searcher {
     private final MatcherFactory contentMatcherFactory;
     private boolean searching = true;
 
-    public Searcher(PrefSet prefSet, ObservableList<ResultItem> tableList, ResourceBundle bundle,
-                    ResourceBundle fileTypeBundle, Map<String, String> customFormats) {
+    /**
+     * Constructor.
+     *
+     * @param prefSet        the pref set, recording all search preferences and is immutable.
+     * @param tableList      the javafx list of the result {@code TableView}
+     * @param bundle         language bundle
+     * @param fileTypeBundle type bundle
+     * @param customFormats  all custom formats, immutable after
+     */
+    public Searcher(PrefSet prefSet,
+                    ObservableList<ResultItem> tableList,
+                    ResourceBundle bundle,
+                    ResourceBundle fileTypeBundle,
+                    Map<String, String> customFormats) {
         this.prefSet = prefSet;
         this.tableList = tableList;
         this.bundle = bundle;
         this.fileTypeBundle = fileTypeBundle;
         this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
         this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
-        this.customFormats = customFormats;
+        // This is wrapped by a new map to avoid situations that the user modifies custom formats while searching
+        this.customFormats = new HashMap<>(customFormats);
 
         contentService = Executors.newFixedThreadPool(Configs.getConfigs().getCurrentCpuThreads());
     }
@@ -274,6 +292,11 @@ public class Searcher {
         DepthFile(File file, int depth) {
             this.file = file;
             this.depth = depth;
+        }
+
+        @Override
+        public String toString() {
+            return "DepthFile{" + file.getAbsolutePath() + " at depth " + depth + '}';
         }
     }
 

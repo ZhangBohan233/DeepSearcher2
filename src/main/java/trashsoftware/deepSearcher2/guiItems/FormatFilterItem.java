@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A categorical item of the filter combobox.
+ */
 public class FormatFilterItem {
 
     private final FormatTable parent;

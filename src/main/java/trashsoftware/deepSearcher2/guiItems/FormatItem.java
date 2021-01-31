@@ -9,6 +9,12 @@ public class FormatItem implements Comparable<FormatItem> {
     private final String description;
     private final CheckBox checkBox = new CheckBox();
 
+    /**
+     * Constructor.
+     *
+     * @param extension   the file extension without dot
+     * @param description the description of this format
+     */
     public FormatItem(String extension, String description) {
         this.extension = extension;
         this.description = description;

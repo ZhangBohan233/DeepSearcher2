@@ -46,6 +46,7 @@ public class HistoryListController implements Initializable {
     private void setTableFactory() {
         historyTable.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("pattern"));
         historyTable.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("dirSearched"));
+        historyTable.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("dateTime"));
     }
 
     private void addTableListener() {
@@ -73,7 +74,7 @@ public class HistoryListController implements Initializable {
 
         pattern.setText(historyItem.getPatternLines());
         dirSearched.setText(historyItem.getDirSearchedLines());
-        searchedTime.setText(historyItem.getTime());
+        searchedTime.setText(historyItem.getDateTime());
     }
 
     private void showRightPane() {

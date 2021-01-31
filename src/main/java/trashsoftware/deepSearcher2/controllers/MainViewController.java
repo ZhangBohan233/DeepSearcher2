@@ -168,7 +168,7 @@ public class MainViewController implements Initializable, CacheObservable {
     void addSearchItem() {
         TextField textField = new TextField();
         textField.setPromptText(bundle.getString("searchPrompt"));
-        textField.setOnAction(e -> {
+        textField.setOnAction(e -> {  // the action of pressing 'Enter' in text field
             if (!isSearching) startSearching();
         });
         searchItemsList.getTextFields().add(textField);
@@ -537,11 +537,13 @@ public class MainViewController implements Initializable, CacheObservable {
     }
 
     public void refreshFormatTable() {
-        formatTable.clearItems();
+        Set<String> selected = formatTable.getSelectedFormats();
+        formatTable.initialize();
         fillFormatTable();
-        // manually trigger the filters
+        formatTable.selectFormats(selected);
+        // manually trigger the change listener of filters
         int index = filterBox.getSelectionModel().getSelectedIndex();
-        filterBox.getSelectionModel().select(0);
+        filterBox.getSelectionModel().select(index == 0 ? 1 : 0);
         filterBox.getSelectionModel().select(index);
     }
 
@@ -669,6 +671,7 @@ public class MainViewController implements Initializable, CacheObservable {
                 unbindListeners();
                 searchingFailed();
                 e.getSource().getException().printStackTrace();
+                EventLogger.log(e.getSource().getException());
                 resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
             });
 
@@ -700,6 +703,7 @@ public class MainViewController implements Initializable, CacheObservable {
     }
 
     private void cancelSearching() {
+        searchButton.setDisable(true);
         service.getSearcher().stop();
     }
 
@@ -719,6 +723,7 @@ public class MainViewController implements Initializable, CacheObservable {
     private void setNotInSearchingUi(String statusMsg) {
         isSearching = false;
         searchButton.setText(bundle.getString("search"));
+        searchButton.setDisable(false);
         progressIndicator.setVisible(false);
         progressIndicator.setManaged(false);
         searchingStatusText.setText(statusMsg);
@@ -761,13 +766,7 @@ public class MainViewController implements Initializable, CacheObservable {
      */
     private Set<String> getExtensions() {
         if (searchContentBox.isSelected()) {
-            Set<String> set = new HashSet<>();
-            for (FormatItem formatItem : formatTable.getAllItems()) {
-                if (formatItem.getCheckBox().isSelected()) {
-                    set.add(formatItem.getExtension());
-                }
-            }
-            return set;
+            return formatTable.getSelectedFormats();
         } else
             return null;
     }

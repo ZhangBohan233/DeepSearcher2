@@ -487,6 +487,13 @@ public class Configs {
         excludedFmts.remove(path);
     }
 
+    /**
+     * Returns a set of all excluded formats.
+     * <p>
+     * The returned set must not be muted.
+     *
+     * @return a set of all excluded formats
+     */
     public Set<String> getAllExcludedFormats() {
         return excludedFmts;
     }
@@ -499,8 +506,11 @@ public class Configs {
         customFmts.remove(ext);
     }
 
+    /**
+     * @return a mutable copy of all custom formats
+     */
     public Map<String, String> getAllCustomFormats() {
-        return customFmts;
+        return new HashMap<>(customFmts);
     }
 
     /**
