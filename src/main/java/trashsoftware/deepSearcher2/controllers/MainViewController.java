@@ -29,6 +29,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -301,6 +302,17 @@ public class MainViewController implements Initializable, CacheObservable {
         if (initD != null) dirDialogInitFile = new File(initD);
     }
 
+    /**
+     * Stops the current running searcher, if exists.
+     * <p>
+     * This method is used when the program is closed by user while a searcher is running.
+     */
+    public void stopActiveSearcher() {
+        if (service != null) {
+            service.getSearcher().stop();
+        }
+    }
+
     private void loadFromCache() {
         loadFromCache(Cache.getCache());
     }
@@ -426,6 +438,7 @@ public class MainViewController implements Initializable, CacheObservable {
                                     String tips;
                                     if (res != null && (tips = res.showInfo()) != null) {
                                         Tooltip tp = new Tooltip();
+                                        tp.setShowDuration(new Duration(10000));
                                         tp.setText(tips);
                                         resultTable.setTooltip(tp);
                                         return;
@@ -665,6 +678,7 @@ public class MainViewController implements Initializable, CacheObservable {
                 finishSearching(searcher.isNormalFinish());
                 setTimerTexts(System.currentTimeMillis() - beginTime);
                 resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
+                System.gc();
             });
 
             service.setOnFailed(e -> {
@@ -673,6 +687,7 @@ public class MainViewController implements Initializable, CacheObservable {
                 e.getSource().getException().printStackTrace();
                 EventLogger.log(e.getSource().getException());
                 resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
+                System.gc();
             });
 
             Configs.addHistory(prefSet);
@@ -800,7 +815,9 @@ public class MainViewController implements Initializable, CacheObservable {
                         hoverProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasHovered,
                                                      Boolean isNowHovered) -> {
                             if (isNowHovered && !isEmpty()) {
-                                table.setTooltip(new Tooltip(tooltipText(getTableRow().getItem())));
+                                Tooltip tt = new Tooltip(tooltipText(getTableRow().getItem()));
+                                tt.setShowDuration(new Duration(10000));
+                                table.setTooltip(tt);
                             } else {
                                 table.setTooltip(null);
                             }
@@ -823,21 +840,18 @@ public class MainViewController implements Initializable, CacheObservable {
             return new Task<>() {
                 @Override
                 protected Void call() {
-
                     fileCountListener = (observable, oldValue, newValue) ->
                             Platform.runLater(() ->
                                     resultNumberText.setText(Util.separateInteger(newValue.longValue())));
 
                     searcher.resultCountProperty().addListener(fileCountListener);
-
                     searcher.search();
-
                     return null;
                 }
             };
         }
 
-        Searcher getSearcher() {
+        public Searcher getSearcher() {
             return searcher;
         }
     }

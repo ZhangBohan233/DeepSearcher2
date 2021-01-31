@@ -341,6 +341,14 @@ public class Configs {
         return getInt("fontSize", defaultValue);
     }
 
+    public boolean isWholeContent() {
+        return getBoolean("wholeContent");
+    }
+
+    public boolean isSearchEscapes() {
+        return getBoolean("escapes");
+    }
+
     public boolean isUseCustomFont() {
         return getBoolean("useCustomFont");
     }

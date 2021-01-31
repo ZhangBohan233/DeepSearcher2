@@ -25,8 +25,11 @@ public abstract class TwoKeysSearcher extends ContentSearcher {
     private final List<Integer> found1s = new ArrayList<>();
     private final List<Integer> found2s = new ArrayList<>();
 
-    public TwoKeysSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive,
-                           ContentResult.Category key1, ContentResult.Category key2) {
+    public TwoKeysSearcher(File file,
+                           MatcherFactory matcherFactory,
+                           boolean caseSensitive,
+                           ContentResult.Category key1,
+                           ContentResult.Category key2) {
         super(file, matcherFactory, caseSensitive);
 
         this.key1 = key1;

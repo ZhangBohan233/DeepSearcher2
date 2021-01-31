@@ -8,6 +8,9 @@ import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import java.io.File;
 import java.util.List;
 
+/**
+ * Content searcher of PDF documents.
+ */
 public class PdfSearcher extends TwoKeysSearcher {
 
     public PdfSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
@@ -20,7 +23,7 @@ public class PdfSearcher extends TwoKeysSearcher {
             if (!document.isEncrypted()) {
                 PDFTextStripper stripper = new PDFTextStripper();
                 int endPage = document.getNumberOfPages();
-                for (int i = 1; i < endPage; i++) {
+                for (int i = 1; i <= endPage; i++) {
                     stripper.setStartPage(i);
                     stripper.setEndPage(i + 1);
                     String page = stripper.getText(document);
@@ -31,5 +34,21 @@ public class PdfSearcher extends TwoKeysSearcher {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected String readWholeFile() {
+        try (PDDocument document = PDDocument.load(file)) {
+            if (!document.isEncrypted()) {
+                PDFTextStripper stripper = new PDFTextStripper();
+                int endPage = document.getNumberOfPages();
+                stripper.setStartPage(1);
+                stripper.setEndPage(endPage);
+                return stripper.getText(document);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import trashsoftware.deepSearcher2.searcher.ContentResult;
@@ -26,5 +27,21 @@ public class DocxSearcher extends TwoKeysSearcher {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected String readWholeFile() {
+        try (XWPFDocument docx = new XWPFDocument(new FileInputStream(file))) {
+            StringBuilder builder = new StringBuilder();
+            List<XWPFParagraph> paragraphs = docx.getParagraphs();
+            for (XWPFParagraph paragraph : paragraphs) {
+                String par = paragraph.getText();
+                builder.append(par).append('\n');
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

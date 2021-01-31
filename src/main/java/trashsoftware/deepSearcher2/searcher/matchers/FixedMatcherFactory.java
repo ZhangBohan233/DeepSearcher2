@@ -4,6 +4,9 @@ import trashsoftware.deepSearcher2.searcher.InvalidClassException;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * A matcher factory that uses a fixed algorithm to search.
+ */
 public class FixedMatcherFactory extends MatcherFactory {
 
     private final Class<? extends StringMatcher> matcherClass;

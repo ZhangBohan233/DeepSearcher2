@@ -2,7 +2,11 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.util.Duration;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
 import trashsoftware.deepSearcher2.searcher.Algorithm;
@@ -11,21 +15,24 @@ import trashsoftware.deepSearcher2.util.Configs;
 import java.io.IOException;
 
 public class AdvancedSearchingPage extends SettingsPage {
-
     @FXML
     ComboBox<Algorithm.Regular> algorithmBox;
-
     @FXML
     ComboBox<Algorithm.Word> wordAlgorithmBox;
-
     @FXML
     ComboBox<Algorithm.Regex> regexAlgorithmBox;
-
     @FXML
     ComboBox<Integer> cpuThreadsBox;
-
     @FXML
     ComboBox<TraversalOrder> traversalOrderBox;
+    @FXML
+    CheckBox wholeContentBox;
+    @FXML
+    CheckBox escapeBox;
+    @FXML
+    Label wholeContentHelp;
+    @FXML
+    Label escapeHelp;
 
     public AdvancedSearchingPage(SettingsPanelController controller) throws IOException {
         super(controller);
@@ -37,9 +44,11 @@ public class AdvancedSearchingPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
-        controller.addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox, cpuThreadsBox, traversalOrderBox);
+        controller.addControls(algorithmBox, wordAlgorithmBox, regexAlgorithmBox, cpuThreadsBox, traversalOrderBox,
+                wholeContentBox, escapeBox);
 
         initAlgorithmBoxes();
+        initCheckBoxes();
         initThreadsBox();
         initTraversalOrderBox();
     }
@@ -60,6 +69,14 @@ public class AdvancedSearchingPage extends SettingsPage {
             Configs.getConfigs().writeConfig("regexAlg",
                     regexAlgorithmBox.getSelectionModel().getSelectedItem().name());
             getStatusSaver().store(regexAlgorithmBox);
+        }
+        if (getStatusSaver().hasChanged(wholeContentBox)) {
+            Configs.getConfigs().writeConfig("wholeContent", String.valueOf(wholeContentBox.isSelected()));
+            getStatusSaver().store(wholeContentBox);
+        }
+        if (getStatusSaver().hasChanged(escapeBox)) {
+            Configs.getConfigs().writeConfig("escapes", String.valueOf(escapeBox.isSelected()));
+            getStatusSaver().store(escapeBox);
         }
         if (getStatusSaver().hasChanged(cpuThreadsBox)) {
             Configs.getConfigs().writeConfig("cpuThreads", String.valueOf(cpuThreadsBox.getSelectionModel().getSelectedItem()));
@@ -86,6 +103,27 @@ public class AdvancedSearchingPage extends SettingsPage {
         traversalOrderBox.getItems().addAll(TraversalOrder.DEPTH_FIRST, TraversalOrder.BREADTH_FIRST);
         traversalOrderBox.getSelectionModel().select(Configs.getConfigs().isDepthFirst() ? 0 : 1);
         getStatusSaver().store(traversalOrderBox);
+    }
+
+    private void initCheckBoxes() {
+        wholeContentBox.selectedProperty().addListener(((observable, oldValue, newValue) ->
+                escapeBox.setDisable(!newValue)));
+
+        escapeBox.setSelected(Configs.getConfigs().isSearchEscapes());
+        wholeContentBox.setSelected(Configs.getConfigs().isWholeContent());
+
+        getStatusSaver().store(wholeContentBox);
+        getStatusSaver().store(escapeBox);
+
+        Tooltip wholeTt = new Tooltip(Client.getBundle().getString("contentAsWholeHelp"));
+        wholeTt.setWrapText(true);
+        wholeTt.setShowDuration(new Duration(10000));
+        Tooltip.install(wholeContentHelp, wholeTt);
+
+        Tooltip escapeTt = new Tooltip(Client.getBundle().getString("escapesHelp"));
+        escapeTt.setWrapText(true);
+        escapeTt.setShowDuration(new Duration(10000));
+        Tooltip.install(escapeHelp, escapeTt);
     }
 
     private void initAlgorithmBoxes() {

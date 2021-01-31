@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import javafx.fxml.FXML;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -22,5 +23,10 @@ public class SearcherTest {
         for (File f : ps.getSearchDirs()) {
             System.out.println(f + " " + f.getAbsolutePath());
         }
+    }
+
+    @Test
+    void testEscapes() {
+        System.out.println("aaaxxx\ngggfff".indexOf("\n"));
     }
 }

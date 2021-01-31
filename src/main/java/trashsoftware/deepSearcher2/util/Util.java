@@ -36,9 +36,9 @@ public class Util {
     }
 
     @SafeVarargs
-    public static Set<String> mergeSets(Set<String>... sets) {
-        Set<String> res = new HashSet<>();
-        for (Set<String> set: sets) res.addAll(set);
+    public static <T> Set<T> mergeSets(Set<T>... sets) {
+        Set<T> res = new HashSet<>();
+        for (Set<T> set: sets) res.addAll(set);
         return res;
     }
 

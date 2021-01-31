@@ -16,8 +16,12 @@ import java.util.List;
  */
 abstract class ExcelSearcher extends TwoIntOneStrSearcher {
     public ExcelSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
-        super(file, matcherFactory, caseSensitive,
-                ContentResult.Category.ROW, ContentResult.Category.COLUMN);
+        super(
+                file,
+                matcherFactory,
+                caseSensitive,
+                ContentResult.Category.ROW,
+                ContentResult.Category.COLUMN);
     }
 
     void searchOneSheet(Sheet sheet, List<String> targets) {
@@ -37,5 +41,20 @@ abstract class ExcelSearcher extends TwoIntOneStrSearcher {
                 }
             }
         }
+    }
+
+    String sheetToString(Sheet sheet) {
+        StringBuilder builder = new StringBuilder().append(sheet.getSheetName()).append('\n');
+        int lastRowNum = sheet.getLastRowNum();
+        for (int r = sheet.getFirstRowNum(); r <= lastRowNum; r++) {
+            Row row = sheet.getRow(r);
+            int lastCellNum = row.getLastCellNum();
+            for (int c = row.getFirstCellNum(); c < lastCellNum; c++) {
+                Cell cell = row.getCell(c);
+                builder.append(cell.toString()).append(',');
+            }
+            builder.append('\n');
+        }
+        return builder.toString();
     }
 }

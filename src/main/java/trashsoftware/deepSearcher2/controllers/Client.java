@@ -14,7 +14,6 @@ import trashsoftware.deepSearcher2.util.EventLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class Client extends Application {
@@ -128,6 +127,7 @@ public class Client extends Application {
         Cache.getCache().addObservable(controller);
 
         stage.setOnHidden(e -> {
+            controller.stopActiveSearcher();
             deleteMarkFile();
             Cache.stopCache();
             Configs.stopConfig();

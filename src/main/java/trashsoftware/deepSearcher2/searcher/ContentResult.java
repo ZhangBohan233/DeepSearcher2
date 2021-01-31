@@ -3,6 +3,12 @@ package trashsoftware.deepSearcher2.searcher;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * A result of file content search.
+ * <p>
+ * This may include some keys, for example, pages, lines.
+ * Note that all indexes are counted from 1.
+ */
 public class ContentResult {
     private Category key1;  // null if not specified
     private Category key2;  // null if not specified
@@ -35,6 +41,10 @@ public class ContentResult {
         this.strValues = strValues;
     }
 
+    private static String getFmtStringByKey(ICategory key, ResourceBundle bundle) {
+        return key.display(bundle);
+    }
+
     public Category getKey1() {
         return key1;
     }
@@ -51,6 +61,14 @@ public class ContentResult {
         return values2;
     }
 
+    /**
+     * Returns the showing string of this content result, including all specified keys, e.g. pages, lines.
+     * <p>
+     * If no keys are specified, returns {@code null}
+     *
+     * @param bundle the language bundle
+     * @return the showing content result
+     */
     public String getAsString(ResourceBundle bundle) {
         StringBuilder builder = new StringBuilder();
         if (key1 != null) {
@@ -84,47 +102,13 @@ public class ContentResult {
                             .append('\n');
                 }
             }
-        }
+        } else return null;  // no keys are specified
         return builder.toString();
-    }
-
-    private static String getFmtStringByKey(ICategory key, ResourceBundle bundle) {
-        return key.display(bundle);
-    }
-
-    public static class StringValue {
-        private final ValueCategory category;
-        private final String realStringValue;
-
-        public StringValue(ValueCategory category) {
-            this.category = category;
-            this.realStringValue = null;
-        }
-
-        public StringValue(String realStringValue) {
-            this.category = null;
-            this.realStringValue = realStringValue;
-        }
-
-        private String getShowString(ResourceBundle bundle) {
-            if (category != null) {
-                return getFmtStringByKey(category, bundle);
-            } else {
-                return realStringValue;
-            }
-        }
-    }
-
-    /**
-     * An interface of two types of categories.
-     */
-    private interface ICategory {
-        String display(ResourceBundle resourceBundle);
     }
 
     /**
      * A enum of all secondary keys.
-     *
+     * <p>
      * This is used for displaying details such as "page 2, line 15" in the result table.
      */
     public enum Category implements ICategory {
@@ -165,6 +149,36 @@ public class ContentResult {
         @Override
         public String display(ResourceBundle bundle) {
             return bundle.getString(displayKey);
+        }
+    }
+
+    /**
+     * An interface of two types of categories.
+     */
+    private interface ICategory {
+        String display(ResourceBundle resourceBundle);
+    }
+
+    public static class StringValue {
+        private final ValueCategory category;
+        private final String realStringValue;
+
+        public StringValue(ValueCategory category) {
+            this.category = category;
+            this.realStringValue = null;
+        }
+
+        public StringValue(String realStringValue) {
+            this.category = null;
+            this.realStringValue = realStringValue;
+        }
+
+        private String getShowString(ResourceBundle bundle) {
+            if (category != null) {
+                return getFmtStringByKey(category, bundle);
+            } else {
+                return realStringValue;
+            }
         }
     }
 }

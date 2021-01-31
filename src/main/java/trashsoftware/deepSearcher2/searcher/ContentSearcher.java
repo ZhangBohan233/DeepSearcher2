@@ -1,6 +1,7 @@
 package trashsoftware.deepSearcher2.searcher;
 
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
+import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
 import java.io.File;
 import java.util.List;
@@ -37,5 +38,44 @@ public abstract class ContentSearcher {
      * @return search result if at least one target is found in this file, otherwise return {@code null}.
      */
     public abstract ContentResult searchAny(List<String> targets);
+
+    /**
+     * @return the concatenated file content, or {@code null} if the file is not readable
+     */
+    protected abstract String readWholeFile();
+
+    /**
+     * Search all, reads the whole file as a string.
+     *
+     * @param targets patterns to be searched
+     * @return the content result with no keys
+     */
+    public ContentResult searchAllWhole(List<String> targets) {
+        String content = readWholeFile();
+        if (content == null) return null;
+        if (!caseSensitive) content = content.toLowerCase();
+        StringMatcher matcher = matcherFactory.createMatcher(content);
+        for (String tar : targets) {
+            if (matcher.search(tar) == -1) return null;
+        }
+        return new ContentResult();
+    }
+
+    /**
+     * Search any, reads the whole file as a string.
+     *
+     * @param targets patterns to be searched
+     * @return the content result with no keys
+     */
+    public ContentResult searchAnyWhole(List<String> targets) {
+        String content = readWholeFile();
+        if (content == null) return null;
+        if (!caseSensitive) content = content.toLowerCase();
+        StringMatcher matcher = matcherFactory.createMatcher(content);
+        for (String tar : targets) {
+            if (matcher.search(tar) >= 0) return new ContentResult();
+        }
+        return null;
+    }
 }
 

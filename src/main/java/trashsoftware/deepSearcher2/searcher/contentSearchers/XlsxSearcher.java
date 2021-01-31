@@ -25,4 +25,19 @@ public class XlsxSearcher extends ExcelSearcher {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected String readWholeFile() {
+        try (XSSFWorkbook workbook = new XSSFWorkbook(new FileInputStream(file))) {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                XSSFSheet sheet = workbook.getSheetAt(i);
+                builder.append(sheetToString(sheet)).append("\f");
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

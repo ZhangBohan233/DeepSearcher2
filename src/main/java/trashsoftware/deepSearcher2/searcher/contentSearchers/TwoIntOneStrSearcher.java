@@ -26,8 +26,11 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
     private final List<Integer> found2s = new ArrayList<>();
     private final List<ContentResult.StringValue> strValues = new ArrayList<>();
 
-    public TwoIntOneStrSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive,
-                                ContentResult.Category key1, ContentResult.Category key2) {
+    public TwoIntOneStrSearcher(File file,
+                                MatcherFactory matcherFactory,
+                                boolean caseSensitive,
+                                ContentResult.Category key1,
+                                ContentResult.Category key2) {
         super(file, matcherFactory, caseSensitive);
 
         this.key1 = key1;

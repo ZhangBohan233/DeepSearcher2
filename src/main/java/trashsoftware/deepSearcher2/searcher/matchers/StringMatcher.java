@@ -18,6 +18,8 @@ public abstract class StringMatcher {
 
     /**
      * Returns the first occurrence position of {@code pattern} in {@code this.string}, {@code -1} if not found
+     * <p>
+     * Indexes are counted from 0.
      *
      * @param pattern the target string fragment
      * @return the first occurrence position of {@code pattern} in {@code this.string}, {@code -1} if not found

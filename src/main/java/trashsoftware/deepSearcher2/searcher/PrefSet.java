@@ -11,6 +11,15 @@ import java.util.regex.Pattern;
  * A class that holds the current search preferences set by user.
  */
 public class PrefSet {
+    private static final Map<String, String> ESCAPES = Map.of(
+            "\\0", "\0",
+            "\\b", "\b",
+            "\\n", "\n",
+            "\\r", "\r",
+            "\\f", "\f",
+            "\\t", "\t"
+    );
+
     private boolean matchAll;
     private List<File> searchDirs;
     private List<String> targets;
@@ -29,6 +38,8 @@ public class PrefSet {
     private Set<String> excludedFormats;
     private int maxSearchDepth;
     private boolean limitDepth;
+    private boolean wholeContent;
+    private boolean escapes;
     private int depthFirstIndicator = -1;  // -1 for not read, 0 for breadth first 1, for depth first
 
     /**
@@ -105,6 +116,24 @@ public class PrefSet {
         return limitDepth;
     }
 
+    /**
+     * Whether to search every file's content as a whole string, not line-by-line.
+     *
+     * @return whether to search every file's content as a whole string, not line-by-line
+     */
+    public boolean isWholeContent() {
+        return wholeContent;
+    }
+
+    /**
+     * Whether to search escape characters, e.g. \n, \t, \b, \r
+     *
+     * @return {@code true} if search escape characters
+     */
+    public boolean isEscapes() {
+        return escapes;
+    }
+
     public MatchMode getMatchMode() {
         if (matchWord) return MatchMode.WORD;
         else if (matchRegex) return MatchMode.REGEX;
@@ -147,6 +176,17 @@ public class PrefSet {
     Set<String> getExcludedFormats() {
         if (excludedFormats == null) excludedFormats = Configs.getConfigs().getAllExcludedFormats();
         return excludedFormats;
+    }
+
+    private static List<String> replaceEscapes(List<String> targets) {
+        List<String> result = new ArrayList<>();
+        for (String s : targets) {
+            for (Map.Entry<String, String> entry : ESCAPES.entrySet()) {
+                s = s.replace(entry.getKey(), entry.getValue());
+            }
+            result.add(s);
+        }
+        return result;
     }
 
     public static class PrefSetBuilder {
@@ -262,7 +302,12 @@ public class PrefSet {
             }
             prefSet.showHidden = Configs.getConfigs().isShowHidden();
             prefSet.includePathName = Configs.getConfigs().isIncludePathName();
+            prefSet.wholeContent = Configs.getConfigs().isWholeContent();
+            prefSet.escapes = Configs.getConfigs().isSearchEscapes();
             // depth limits are set in 'addSearchDirs'
+            if (prefSet.escapes) {
+                prefSet.targets = replaceEscapes(prefSet.targets);
+            }
             return prefSet;
         }
 

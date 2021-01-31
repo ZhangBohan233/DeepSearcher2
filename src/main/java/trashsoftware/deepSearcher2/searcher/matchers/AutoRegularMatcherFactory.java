@@ -1,14 +1,16 @@
 package trashsoftware.deepSearcher2.searcher.matchers;
 
-import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.regularMatchers.NativeMatcher;
 import trashsoftware.deepSearcher2.searcher.matchers.regularMatchers.SundayMatcher;
 
+/**
+ * A matcher factory that produces a best algorithms for the given text.
+ */
 public class AutoRegularMatcherFactory extends MatcherFactory {
 
     /**
      * If the given string has length exceeds {@code THRESHOLD}, use a high-level matcher.
-     * Otherwise use the native matcher
+     * Otherwise use the native matcher.
      */
     public static final int THRESHOLD = 1000;
 

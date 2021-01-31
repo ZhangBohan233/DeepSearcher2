@@ -30,4 +30,20 @@ public class PlainTextSearcher extends TwoKeysSearcher {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected String readWholeFile() {
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+            String lf = System.lineSeparator();
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                builder.append(line).append(lf);
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

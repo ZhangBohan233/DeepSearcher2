@@ -27,4 +27,14 @@ public class DocSearcher extends TwoKeysSearcher {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected String readWholeFile() {
+        try (WordExtractor we = new WordExtractor(new FileInputStream(file))) {
+            return we.getTextFromPieces();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

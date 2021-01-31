@@ -2,13 +2,16 @@ package trashsoftware.deepSearcher2.searcher.matchers.wordMatchers;
 
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+/**
+ * A word matcher, implemented with hashing algorithm.
+ */
 public class HashedWordMatcher extends StringMatcher {
-    private final Map<Integer, List<String>> lengthMap = new HashMap<>();
+    private final Map<Integer, Set<String>> lengthMap = new HashMap<>();
 
     public HashedWordMatcher(String string) {
         super(string);
@@ -33,18 +36,14 @@ public class HashedWordMatcher extends StringMatcher {
 
     private void putToMap(String word) {
         int wordLen = word.length();
-        List<String> listOfThisLen = lengthMap.computeIfAbsent(wordLen, k -> new ArrayList<>());
+        Set<String> listOfThisLen = lengthMap.computeIfAbsent(wordLen, k -> new HashSet<>());
         listOfThisLen.add(word);
     }
 
     @Override
     public int search(String pattern) {
-        List<String> listOfThisLen = lengthMap.get(pattern.length());
+        Set<String> listOfThisLen = lengthMap.get(pattern.length());
         if (listOfThisLen == null) return -1;
-        for (String s : listOfThisLen) {
-            if (s.equals(pattern))
-                return 1;
-        }
-        return -1;
+        return listOfThisLen.contains(pattern) ? 1 : -1;
     }
 }

@@ -300,6 +300,9 @@ public class Searcher {
         }
     }
 
+    /**
+     * A class that runs file content searching in background.
+     */
     private class SearchContentTask implements Runnable {
         private final File file;
         private final ContentSearcher searcher;
@@ -312,10 +315,12 @@ public class Searcher {
         @Override
         public void run() {
             ContentResult result;
-            if (prefSet.isMatchAll()) {
-                result = searcher.searchAll(prefSet.getTargets());
+            if (prefSet.isWholeContent()) {
+                if (prefSet.isMatchAll()) result = searcher.searchAllWhole(prefSet.getTargets());
+                else result = searcher.searchAnyWhole(prefSet.getTargets());
             } else {
-                result = searcher.searchAny(prefSet.getTargets());
+                if (prefSet.isMatchAll()) result = searcher.searchAll(prefSet.getTargets());
+                else result = searcher.searchAny(prefSet.getTargets());
             }
             if (result != null) addContentResult(file, result);
         }
