@@ -40,29 +40,29 @@ public class AdvancedSearchingPage extends SettingsPage {
     @Override
     public void saveChanges() {
         if (getStatusSaver().hasChanged(algorithmBox)) {
-            Configs.writeConfig("alg", algorithmBox.getSelectionModel().getSelectedItem().algCode);
+            Configs.getConfigs().writeConfig("alg", algorithmBox.getSelectionModel().getSelectedItem().algCode);
             getStatusSaver().store(algorithmBox);
         }
         if (getStatusSaver().hasChanged(wordAlgorithmBox)) {
-            Configs.writeConfig("wordAlg", wordAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
+            Configs.getConfigs().writeConfig("wordAlg", wordAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
             getStatusSaver().store(wordAlgorithmBox);
         }
         if (getStatusSaver().hasChanged(regexAlgorithmBox)) {
-            Configs.writeConfig("regexAlg", regexAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
+            Configs.getConfigs().writeConfig("regexAlg", regexAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
             getStatusSaver().store(regexAlgorithmBox);
         }
         if (getStatusSaver().hasChanged(cpuThreadsBox)) {
-            Configs.writeConfig("cpuThreads", String.valueOf(cpuThreadsBox.getSelectionModel().getSelectedItem()));
+            Configs.getConfigs().writeConfig("cpuThreads", String.valueOf(cpuThreadsBox.getSelectionModel().getSelectedItem()));
             getStatusSaver().store(cpuThreadsBox);
         }
         if (getStatusSaver().hasChanged(traversalOrderBox)) {
-            Configs.setDepthFirst(traversalOrderBox.getSelectionModel().getSelectedItem() == TraversalOrder.DEPTH_FIRST);
+            Configs.getConfigs().setDepthFirst(traversalOrderBox.getSelectionModel().getSelectedItem() == TraversalOrder.DEPTH_FIRST);
             getStatusSaver().store(traversalOrderBox);
         }
     }
 
     private void initThreadsBox() {
-        int curThreadNum = Configs.getCurrentCpuThreads();
+        int curThreadNum = Configs.getConfigs().getCurrentCpuThreads();
         int maxThreadLimit = Runtime.getRuntime().availableProcessors();
         if (curThreadNum > maxThreadLimit) curThreadNum = maxThreadLimit;
         for (int i = 1; i <= maxThreadLimit; i++) {
@@ -74,12 +74,12 @@ public class AdvancedSearchingPage extends SettingsPage {
 
     private void initTraversalOrderBox() {
         traversalOrderBox.getItems().addAll(TraversalOrder.DEPTH_FIRST, TraversalOrder.BREADTH_FIRST);
-        traversalOrderBox.getSelectionModel().select(Configs.isDepthFirst() ? 0 : 1);
+        traversalOrderBox.getSelectionModel().select(Configs.getConfigs().isDepthFirst() ? 0 : 1);
         getStatusSaver().store(traversalOrderBox);
     }
 
     private void initAlgorithmBoxes() {
-        setAlgorithmBox(algorithmBox, Configs.getCurrentSearchingAlgorithm(),
+        setAlgorithmBox(algorithmBox, Configs.getConfigs().getCurrentSearchingAlgorithm(),
                 new AlgorithmBundle("algAuto"),
                 new AlgorithmBundle("algNative"),
                 new AlgorithmBundle("algNaive"),
@@ -87,12 +87,12 @@ public class AdvancedSearchingPage extends SettingsPage {
                 new AlgorithmBundle("algSunday")
         );
 
-        setAlgorithmBox(wordAlgorithmBox, Configs.getCurrentWordSearchingAlgorithm(),
+        setAlgorithmBox(wordAlgorithmBox, Configs.getConfigs().getCurrentWordSearchingAlgorithm(),
                 new AlgorithmBundle("algNaive"),
                 new AlgorithmBundle("algHash")
         );
 
-        setAlgorithmBox(regexAlgorithmBox, Configs.getCurrentRegexSearchingAlgorithm(),
+        setAlgorithmBox(regexAlgorithmBox, Configs.getConfigs().getCurrentRegexSearchingAlgorithm(),
                 new AlgorithmBundle("algNative")
         );
     }

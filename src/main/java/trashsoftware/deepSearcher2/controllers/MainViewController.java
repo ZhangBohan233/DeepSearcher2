@@ -53,7 +53,7 @@ public class MainViewController implements Initializable, CacheObservable {
 
     private final ResourceBundle fileTypeBundle =
             ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
-                    Configs.getCurrentLocale());
+                    Configs.getConfigs().getCurrentLocale());
     @FXML
     GridPane basePane;
     @FXML
@@ -224,8 +224,8 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.getIcons().add(Client.getIconImage());
 
         Scene scene = new Scene(root);
-        if (Configs.isUseCustomFont()) {
-            Configs.applyCustomFont(scene);
+        if (Configs.getConfigs().isUseCustomFont()) {
+            Configs.getConfigs().applyCustomFont(scene);
         }
         stage.setScene(scene);
 
@@ -323,8 +323,8 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.setTitle(bundle.getString("settings"));
         stage.getIcons().add(Client.getIconImage());
         Scene scene = new Scene(root);
-        if (Configs.isUseCustomFont()) {
-            Configs.applyCustomFont(scene);
+        if (Configs.getConfigs().isUseCustomFont()) {
+            Configs.getConfigs().applyCustomFont(scene);
         }
         stage.setScene(scene);
 
@@ -552,7 +552,7 @@ public class MainViewController implements Initializable, CacheObservable {
             FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
             formatTable.addItem(formatItem);
         }
-        Map<String, String> customFormats = Configs.getAllCustomFormats();
+        Map<String, String> customFormats = Configs.getConfigs().getAllCustomFormats();
         for (Map.Entry<String, String> extDes : customFormats.entrySet()) {
             FormatItem formatItem = new FormatItem(extDes.getKey(), extDes.getValue());
             formatTable.addItem(formatItem);

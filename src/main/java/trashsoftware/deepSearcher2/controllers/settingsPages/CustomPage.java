@@ -52,7 +52,7 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
     void deleteFmt() {
         int index = customFmtTable.getSelectionModel().getSelectedIndex();
         String removedExt = customFmtTable.getItems().remove(index).ext.substring(1);  // also remove the dot
-        Configs.removeCustomFormat(removedExt);
+        Configs.getConfigs().removeCustomFormat(removedExt);
         refreshTable();
         getController().getMainView().refreshFormatTable();
     }
@@ -71,14 +71,14 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
         } else {
             realDes = description;
         }
-        Configs.addCustomFormat(pureExt, realDes);
+        Configs.getConfigs().addCustomFormat(pureExt, realDes);
         refreshTable();
         getController().getMainView().refreshFormatTable();
     }
 
     private void refreshTable() {
         customFmtTable.getItems().clear();
-        Map<String, String> dirs = Configs.getAllCustomFormats();
+        Map<String, String> dirs = Configs.getConfigs().getAllCustomFormats();
         for (Map.Entry<String, String> extDes : dirs.entrySet()) {
             customFmtTable.getItems().add(new FmtItem("." + extDes.getKey(), extDes.getValue()));
         }

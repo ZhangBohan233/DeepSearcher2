@@ -50,7 +50,9 @@ public class HistoryListController implements Initializable {
 
     private void addTableListener() {
         historyTable.getSelectionModel().selectedItemProperty()
-                .addListener(((observableValue, historyItem, t1) -> showItem(t1)));
+                .addListener(((observableValue, historyItem, t1) -> {
+                    if (t1 != null) showItem(t1);
+                }));
     }
 
     @FXML

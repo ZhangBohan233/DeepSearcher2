@@ -54,7 +54,7 @@ public class Searcher {
         this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
         this.customFormats = customFormats;
 
-        contentService = Executors.newFixedThreadPool(Configs.getCurrentCpuThreads());
+        contentService = Executors.newFixedThreadPool(Configs.getConfigs().getCurrentCpuThreads());
     }
 
     /**

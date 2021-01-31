@@ -46,7 +46,7 @@ public class GeneralPage extends SettingsPage {
     public void saveChanges() {
         if (getStatusSaver().hasChanged(languageBox)) {
             NamedLocale selectedLocale = languageBox.getSelectionModel().getSelectedItem();
-            Configs.writeConfig("locale", selectedLocale.getConfigValue());
+            Configs.getConfigs().writeConfig("locale", selectedLocale.getConfigValue());
             getStatusSaver().store(languageBox);
 
             askRestart();
@@ -54,7 +54,7 @@ public class GeneralPage extends SettingsPage {
         if (getStatusSaver().hasChanged(useCustomFontBox) ||
                 getStatusSaver().hasChanged(fontBox) ||
                 getStatusSaver().hasChanged(fontSizeBox)) {
-            Configs.setUseCustomFont(
+            Configs.getConfigs().setUseCustomFont(
                     useCustomFontBox.isSelected(),
                     fontBox.getSelectionModel().getSelectedItem(),
                     fontSizeBox.getSelectionModel().getSelectedItem());
@@ -97,7 +97,7 @@ public class GeneralPage extends SettingsPage {
                 fontSizeBox.setDisable(true);
             }
         }));
-        useCustomFontBox.setSelected(Configs.isUseCustomFont());
+        useCustomFontBox.setSelected(Configs.getConfigs().isUseCustomFont());
         getStatusSaver().store(useCustomFontBox);
     }
 
@@ -105,14 +105,14 @@ public class GeneralPage extends SettingsPage {
         for (String font : Font.getFamilies()) {
             fontBox.getItems().add(font);
         }
-        fontBox.getSelectionModel().select(Configs.getCustomFont());
+        fontBox.getSelectionModel().select(Configs.getConfigs().getCustomFont());
         if (fontBox.getSelectionModel().getSelectedIndex() == -1) {
             fontBox.getSelectionModel().select(Font.getDefault().getFamily());
         }
         getStatusSaver().store(fontBox);
 
         fontSizeBox.getItems().addAll(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36);
-        fontSizeBox.getSelectionModel().select(Integer.valueOf(Configs.getFontSize(12)));
+        fontSizeBox.getSelectionModel().select(Integer.valueOf(Configs.getConfigs().getFontSize(12)));
         getStatusSaver().store(fontSizeBox);
     }
 }

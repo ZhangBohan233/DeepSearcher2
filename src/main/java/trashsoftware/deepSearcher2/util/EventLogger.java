@@ -20,15 +20,12 @@ public class EventLogger {
      */
     public static void log(Throwable throwable) {
         createLogDirIfNone();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
-            String realName = LOG_BASE_NAME + sdf.format(new Date()) + ".log";
-            FileWriter fileWriter = new FileWriter(realName);
-            PrintWriter pw = new PrintWriter(fileWriter);
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
+        String realName = LOG_BASE_NAME + sdf.format(new Date()) + ".log";
+        try (PrintWriter pw = new PrintWriter(new FileWriter(realName))) {
             throwable.printStackTrace(pw);
 
             pw.flush();
-            pw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,14 +38,12 @@ public class EventLogger {
      */
     public static void log(String message) {
         createLogDirIfNone();
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
-            String realName = LOG_BASE_NAME + sdf.format(new Date()) + ".log";
-            FileWriter fileWriter = new FileWriter(realName);
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
+        String realName = LOG_BASE_NAME + sdf.format(new Date()) + ".log";
+        try (FileWriter fileWriter = new FileWriter(realName)) {
             fileWriter.write(message);
 
             fileWriter.flush();
-            fileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

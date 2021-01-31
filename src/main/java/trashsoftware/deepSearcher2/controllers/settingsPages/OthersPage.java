@@ -49,7 +49,7 @@ public class OthersPage extends SettingsPage {
         showConfirm(Client.getBundle().getString("confirmRestoreSettings") +
                         "\n" + Client.getBundle().getString("needRestart"),
                 Client.getBundle().getString("clear"),
-                Configs::clearSettings);
+                Configs.getConfigs()::clearSettings);
     }
 
     @FXML
@@ -57,7 +57,7 @@ public class OthersPage extends SettingsPage {
         showConfirm(Client.getBundle().getString("confirmClearData") +
                         "\n" + Client.getBundle().getString("needRestart"),
                 Client.getBundle().getString("clear"),
-                Configs::clearAllData);
+                Configs.getConfigs()::clearAllData);
     }
 
     @FXML

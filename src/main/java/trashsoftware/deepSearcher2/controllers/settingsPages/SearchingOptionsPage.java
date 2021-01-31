@@ -41,20 +41,20 @@ public class SearchingOptionsPage extends SettingsPage {
     @Override
     public void saveChanges() {
         if (getStatusSaver().hasChanged(includePathNameBox)) {
-            Configs.setIncludePathName(includePathNameBox.isSelected());
+            Configs.getConfigs().setIncludePathName(includePathNameBox.isSelected());
             getStatusSaver().store(includePathNameBox);
         }
         if (getStatusSaver().hasChanged(shownHiddenBox)) {
-            Configs.setShowHidden(shownHiddenBox.isSelected());
+            Configs.getConfigs().setShowHidden(shownHiddenBox.isSelected());
             getStatusSaver().store(shownHiddenBox);
         }
         if (getStatusSaver().hasChanged(limitDepthBox)) {
-            Configs.setLimitDepth(limitDepthBox.isSelected());
+            Configs.getConfigs().setLimitDepth(limitDepthBox.isSelected());
             getStatusSaver().store(limitDepthBox);
         }
         if (limitDepthBox.isSelected()) {
             try {
-                Configs.setMaxSearchDepth(Integer.parseInt(searchDepthField.getText()));
+                Configs.getConfigs().setMaxSearchDepth(Integer.parseInt(searchDepthField.getText()));
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -63,8 +63,8 @@ public class SearchingOptionsPage extends SettingsPage {
     }
 
     private void initCheckBoxes() {
-        includePathNameBox.setSelected(Configs.isIncludePathName());
-        shownHiddenBox.setSelected(Configs.isShowHidden());
+        includePathNameBox.setSelected(Configs.getConfigs().isIncludePathName());
+        shownHiddenBox.setSelected(Configs.getConfigs().isShowHidden());
         getStatusSaver().store(includePathNameBox);
         getStatusSaver().store(shownHiddenBox);
     }
@@ -87,8 +87,8 @@ public class SearchingOptionsPage extends SettingsPage {
                 }
             }
         }));
-        searchDepthField.setText(String.valueOf(Configs.getMaxSearchDepth()));
-        limitDepthBox.setSelected(Configs.isLimitDepth());
+        searchDepthField.setText(String.valueOf(Configs.getConfigs().getMaxSearchDepth()));
+        limitDepthBox.setSelected(Configs.getConfigs().isLimitDepth());
 
         getStatusSaver().store(limitDepthBox);
         getStatusSaver().store(searchDepthField);

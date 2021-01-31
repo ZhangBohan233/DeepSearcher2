@@ -56,8 +56,8 @@ public class ConfirmBox implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(ownerWindow);
             Scene scene = new Scene(root);
-            if (Configs.isUseCustomFont()) {
-                Configs.applyCustomFont(scene);
+            if (Configs.getConfigs().isUseCustomFont()) {
+                Configs.getConfigs().applyCustomFont(scene);
             }
             stage.setScene(scene);
 

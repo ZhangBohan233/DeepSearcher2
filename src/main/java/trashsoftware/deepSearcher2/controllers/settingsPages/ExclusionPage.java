@@ -58,7 +58,7 @@ public class ExclusionPage extends SettingsPage implements FormatInputAble {
     void addExcludedDir() {
         File file = new DirectoryChooser().showDialog(getController().getStage());
         if (file != null) {
-            Configs.addExcludedDir(file.getAbsolutePath());
+            Configs.getConfigs().addExcludedDir(file.getAbsolutePath());
             refreshDirList();
         }
     }
@@ -67,7 +67,7 @@ public class ExclusionPage extends SettingsPage implements FormatInputAble {
     void deleteExcludedDir() {
         int index = excludedDirList.getSelectionModel().getSelectedIndex();
         String removed = excludedDirList.getItems().remove(index);
-        Configs.removeExcludedDir(removed);
+        Configs.getConfigs().removeExcludedDir(removed);
         refreshDirList();
     }
 
@@ -84,7 +84,7 @@ public class ExclusionPage extends SettingsPage implements FormatInputAble {
     void deleteExcludedFormat() {
         int index = excludedFormatList.getSelectionModel().getSelectedIndex();
         String removed = excludedFormatList.getItems().remove(index).substring(1);  // also remove the dot
-        Configs.removeExcludedFormat(removed);
+        Configs.getConfigs().removeExcludedFormat(removed);
         refreshFormatsList();
     }
 
@@ -96,19 +96,19 @@ public class ExclusionPage extends SettingsPage implements FormatInputAble {
         } else {
             pureExt = extension;
         }
-        Configs.addExcludedFormat(pureExt);
+        Configs.getConfigs().addExcludedFormat(pureExt);
         refreshFormatsList();
     }
 
     private void refreshDirList() {
         excludedDirList.getItems().clear();
-        Set<String> dirs = Configs.getAllExcludedDirs();
+        Set<String> dirs = Configs.getConfigs().getAllExcludedDirs();
         excludedDirList.getItems().addAll(dirs);
     }
 
     private void refreshFormatsList() {
         excludedFormatList.getItems().clear();
-        Set<String> formats = Configs.getAllExcludedFormats();
+        Set<String> formats = Configs.getConfigs().getAllExcludedFormats();
         for (String f : formats) {
             excludedFormatList.getItems().add("." + f);
         }

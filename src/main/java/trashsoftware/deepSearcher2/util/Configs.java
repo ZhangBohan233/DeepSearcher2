@@ -3,6 +3,7 @@ package trashsoftware.deepSearcher2.util;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
@@ -13,8 +14,10 @@ import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.zip.CRC32;
 
 public class Configs {
 
@@ -25,10 +28,49 @@ public class Configs {
     private static final String CUSTOM_FORMATS_NAME = USER_DATA_DIR + File.separator + "customFormats.cfg";
     private static final String CUSTOM_CSS = USER_DATA_DIR + File.separator + "style.css";
     private static final String HISTORY_DIR = USER_DATA_DIR + File.separator + "history";
+    /**
+     * Time interval in mills between two save tasks that save changed configs in ram to disk
+     */
+    private static final long AUTO_SAVE_INTERVAL = 5000;
+
+    private static Configs activeConfig;
+    private final Timer autoSave;
+    private Map<String, String> configMap;
+    private Set<String> excludedDirs;
+    private Set<String> excludedFmts;
+    private Map<String, String> customFmts;
+    private long excludedDirsChecksum;
+    private long excludedFmtsChecksum;
+    private long customFmtsChecksum;
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
 
-    public static Locale getCurrentLocale() {
+    private Configs() {
+        loadAll();
+
+        autoSave = new Timer();
+        autoSave.schedule(new AutoSaveTask(), AUTO_SAVE_INTERVAL, AUTO_SAVE_INTERVAL);
+    }
+
+    public static void startConfig() {
+        if (activeConfig != null) {
+            activeConfig.stop();
+        }
+        activeConfig = new Configs();
+    }
+
+    public static void stopConfig() {
+        if (activeConfig != null) {
+            activeConfig.stop();
+            activeConfig = null;
+        }
+    }
+
+    public static Configs getConfigs() {
+        return activeConfig;
+    }
+
+    public Locale getCurrentLocale() {
         String localeName = getConfig("locale");
         if (localeName == null) {
             return new Locale("zh", "CN");
@@ -38,7 +80,12 @@ public class Configs {
         }
     }
 
-    public static void applyCustomFont(Scene scene) {
+    public void stop() {
+        autoSave.cancel();
+        saveToDisk();
+    }
+
+    public void applyCustomFont(Scene scene) {
         String fontFamily = getCustomFont();
         if (fontFamily == null) fontFamily = Font.getDefault().getFamily();
         int fontSize = getFontSize(12);
@@ -61,19 +108,19 @@ public class Configs {
         }
     }
 
-    public static String getCustomFont() {
+    public String getCustomFont() {
         return getConfig("font");
     }
 
-    public static int getFontSize(int defaultValue) {
+    public int getFontSize(int defaultValue) {
         return getInt("fontSize", defaultValue);
     }
 
-    public static boolean isUseCustomFont() {
+    public boolean isUseCustomFont() {
         return getBoolean("useCustomFont");
     }
 
-    public static void setUseCustomFont(boolean value, String customFont, int fontSize) {
+    public void setUseCustomFont(boolean value, String customFont, int fontSize) {
         writeConfigs(
                 "useCustomFont", String.valueOf(value),
                 "font", customFont,
@@ -85,74 +132,69 @@ public class Configs {
      *
      * @param limitDepth whether to limit search depth
      */
-    public static void setLimitDepth(boolean limitDepth) {
+    public void setLimitDepth(boolean limitDepth) {
         writeConfig("limitDepth", String.valueOf(limitDepth));
     }
 
-    public static boolean isLimitDepth() {
+    public boolean isLimitDepth() {
         return getBoolean("limitDepth");
     }
 
     /**
      * @return the max traversal depth
      */
-    public static int getMaxSearchDepth() {
+    public int getMaxSearchDepth() {
         return getInt("maxDepth", 5);
     }
 
     /**
      * @param searchDepth max traversal depth
      */
-    public static void setMaxSearchDepth(int searchDepth) {
+    public void setMaxSearchDepth(int searchDepth) {
         writeConfig("maxDepth", String.valueOf(searchDepth));
     }
 
-    public static boolean isIncludePathName() {
+    public boolean isIncludePathName() {
         return getBoolean("includePathName");
     }
 
-    public static void setIncludePathName(boolean value) {
+    public void setIncludePathName(boolean value) {
         writeConfig("includePathName", String.valueOf(value));
     }
 
-    public static boolean isShowHidden() {
+    public boolean isShowHidden() {
         return getBoolean("showHidden");
     }
 
-    public static void setShowHidden(boolean value) {
+    public void setShowHidden(boolean value) {
         writeConfig("showHidden", String.valueOf(value));
     }
 
-    public static boolean isDepthFirst() {
+    public boolean isDepthFirst() {
         return getBoolean("depthFirst");
     }
 
-    public static void setDepthFirst(boolean value) {
+    public void setDepthFirst(boolean value) {
         writeConfig("depthFirst", String.valueOf(value));
     }
 
-    public static String getCurrentSearchingAlgorithm() {
-        String savedAlg = Configs.getConfig("alg");
+    public String getCurrentSearchingAlgorithm() {
+        String savedAlg = getConfig("alg");
         return Objects.requireNonNullElse(savedAlg, "algNative");
     }
 
-    public static String getCurrentWordSearchingAlgorithm() {
-        String savedAlg = Configs.getConfig("wordAlg");
+    public String getCurrentWordSearchingAlgorithm() {
+        String savedAlg = getConfig("wordAlg");
         return Objects.requireNonNullElse(savedAlg, "algNative");
     }
 
-    public static String getCurrentRegexSearchingAlgorithm() {
-        String savedAlg = Configs.getConfig("regexAlg");
+    public String getCurrentRegexSearchingAlgorithm() {
+        String savedAlg = getConfig("regexAlg");
         return Objects.requireNonNullElse(savedAlg, "algNative");
     }
 
-    public static int getCurrentCpuThreads() {
-        String threadLimit = Configs.getConfig("cpuThreads");
-        try {
-            return Integer.parseInt(threadLimit);
-        } catch (NumberFormatException e) {
-            return 4;
-        }
+    public int getCurrentCpuThreads() {
+        return getInt("cpuThreads", 4);
     }
 
     public static List<NamedLocale> getAllLocales() {
@@ -168,7 +210,7 @@ public class Configs {
         return locales;
     }
 
-    private static int getInt(String key, int defaultValue) {
+    private int getInt(String key, int defaultValue) {
         try {
             return Integer.parseInt(getConfig(key));
         } catch (NumberFormatException e) {
@@ -176,13 +218,12 @@ public class Configs {
         }
     }
 
-    private static boolean getBoolean(String key) {
+    private boolean getBoolean(String key) {
         return Boolean.parseBoolean(getConfig(key));
     }
 
-    private static String getConfig(String key) {
-        Map<String, String> configs = readConfigFile();
-        return configs.get(key);
+    private String getConfig(String key) {
+        return configMap.get(key);
     }
 
     /**
@@ -192,66 +233,50 @@ public class Configs {
      *
      * @param keyValues key-value pairs
      */
-    public static void writeConfigs(String... keyValues) {
-        Map<String, String> configs = readConfigFile();
+    public void writeConfigs(String... keyValues) {
         for (int i = 0; i < keyValues.length; i += 2) {
-            configs.put(keyValues[i], keyValues[i + 1]);
+            configMap.put(keyValues[i], keyValues[i + 1]);
         }
-        writeConfigFile(configs);
     }
 
-    public static void writeConfig(String key, String value) {
-        Map<String, String> configs = readConfigFile();
-        configs.put(key, value);
-        writeConfigFile(configs);
+    public void writeConfig(String key, String value) {
+        configMap.put(key, value);
     }
 
-    public static void addExcludedDir(String path) {
-        Set<String> set = readListFile(EXCLUDED_DIRS_NAME);
-        set.add(path);
-        writeListFile(EXCLUDED_DIRS_NAME, set);
+    public void addExcludedDir(String path) {
+        excludedDirs.add(path);
     }
 
-    public static void removeExcludedDir(String path) {
-        Set<String> set = readListFile(EXCLUDED_DIRS_NAME);
-        set.remove(path);
-        writeListFile(EXCLUDED_DIRS_NAME, set);
+    public void removeExcludedDir(String path) {
+        excludedDirs.remove(path);
     }
 
-    public static Set<String> getAllExcludedDirs() {
-        return readListFile(EXCLUDED_DIRS_NAME);
+    public Set<String> getAllExcludedDirs() {
+        return excludedDirs;
     }
 
-    public static void addExcludedFormat(String path) {
-        Set<String> set = readListFile(EXCLUDED_FORMATS_NAME);
-        set.add(path);
-        writeListFile(EXCLUDED_FORMATS_NAME, set);
+    public void addExcludedFormat(String path) {
+        excludedFmts.add(path);
     }
 
-    public static void removeExcludedFormat(String path) {
-        Set<String> set = readListFile(EXCLUDED_FORMATS_NAME);
-        set.remove(path);
-        writeListFile(EXCLUDED_FORMATS_NAME, set);
+    public void removeExcludedFormat(String path) {
+        excludedFmts.remove(path);
     }
 
-    public static Set<String> getAllExcludedFormats() {
-        return readListFile(EXCLUDED_FORMATS_NAME);
+    public Set<String> getAllExcludedFormats() {
+        return excludedFmts;
     }
 
-    public static void addCustomFormat(String ext, String description) {
-        Map<String, String> map = readMapFile(CUSTOM_FORMATS_NAME);
-        map.put(ext, description);
-        writeMapFile(CUSTOM_FORMATS_NAME, map);
+    public void addCustomFormat(String ext, String description) {
+        customFmts.put(ext, description);
     }
 
-    public static void removeCustomFormat(String ext) {
-        Map<String, String> map = readMapFile(CUSTOM_FORMATS_NAME);
-        map.remove(ext);
-        writeMapFile(CUSTOM_FORMATS_NAME, map);
+    public void removeCustomFormat(String ext) {
+        customFmts.remove(ext);
     }
 
-    public static Map<String, String> getAllCustomFormats() {
-        return readMapFile(CUSTOM_FORMATS_NAME);
+    public Map<String, String> getAllCustomFormats() {
+        return customFmts;
     }
 
     /**
@@ -264,9 +289,7 @@ public class Configs {
         createDirsIfNotExist();
         File historyDir = new File(HISTORY_DIR);
         for (File his : Objects.requireNonNull(historyDir.listFiles())) {
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(his));
+            try (BufferedReader reader = new BufferedReader(new FileReader(his))) {
                 StringBuilder builder = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -274,21 +297,15 @@ public class Configs {
                 }
                 Date date = DATE_FORMAT.parse(his.getName());
                 JSONObject jsonObject = new JSONObject(builder.toString());
-                PrefSet prefSet = toPrefSet(jsonObject);
+                PrefSet prefSet = toPrefSet(jsonObject, his.getName());
+                if (prefSet == null) continue;
                 HistoryItem historyItem = new HistoryItem(prefSet, date);
                 list.add(historyItem);
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (Exception e) {
+                EventLogger.log(e);
+            } catch (JSONException | ParseException e) {
                 //
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }
         Collections.reverse(list);
@@ -300,15 +317,17 @@ public class Configs {
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             if (!file.delete()) {
                 System.err.println("Failed to delete " + file.getAbsolutePath());
+                EventLogger.log("Failed to delete " + file.getAbsolutePath());
             }
         }
     }
 
-    public static void clearSettings() {
+    public void clearSettings() {
+        configMap.clear();
         deleteFileByName(CONFIG_FILE_NAME);
     }
 
-    public static void clearAllData() {
+    public void clearAllData() {
         Cache.clearCache();
         clearSettings();
         clearAllHistory();
@@ -321,6 +340,7 @@ public class Configs {
         File file = new File(path);
         if (!file.delete()) {
             System.err.println("Failed to delete '" + path + "'!");
+            EventLogger.log("Failed to delete '" + path + "'!");
         }
     }
 
@@ -328,13 +348,12 @@ public class Configs {
         JSONObject object = toJsonObject(historyItem);
 
         String fileName = HISTORY_DIR + File.separator + DATE_FORMAT.format(new Date()) + ".json";
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName));
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(fileName))) {
             bufferedWriter.write(object.toString(2));
             bufferedWriter.flush();
-            bufferedWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
+            EventLogger.log(e);
         }
     }
 
@@ -356,7 +375,7 @@ public class Configs {
         return root;
     }
 
-    private static PrefSet toPrefSet(JSONObject root) {
+    private static PrefSet toPrefSet(JSONObject root, String fileName) {
         List<File> dirs = new ArrayList<>();
         for (Object s : root.getJSONArray("dirs")) dirs.add(new File((String) s));
         List<String> patterns = new ArrayList<>();
@@ -376,19 +395,12 @@ public class Configs {
                     .build();
         } catch (SearchTargetNotSetException | SearchDirNotSetException | SearchPrefNotSetException e) {
             // This would never happen
-            throw new RuntimeException("History item cannot be converted");
+            System.err.println("Failed to load " + fileName);
+            return null;
         }
     }
 
-    private static Map<String, String> readConfigFile() {
-        return readMapFile(CONFIG_FILE_NAME);
-    }
-
-    private static void writeConfigFile(Map<String, String> map) {
-        writeMapFile(CONFIG_FILE_NAME, map);
-    }
-
-    private synchronized static Map<String, String> readMapFile(String fileName) {
+    private static Map<String, String> readMapFile(String fileName) {
         Map<String, String> map = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -404,11 +416,12 @@ public class Configs {
             writeMapFile(fileName, map);
         } catch (IOException e) {
             e.printStackTrace();
+            EventLogger.log(e);
         }
         return map;
     }
 
-    private synchronized static void writeMapFile(String fileName, Map<String, String> map) {
+    private static void writeMapFile(String fileName, Map<String, String> map) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             createDirsIfNotExist();
             for (Map.Entry<String, String> entry : map.entrySet()) {
@@ -418,38 +431,37 @@ public class Configs {
             bw.flush();
         } catch (IOException e) {
             e.printStackTrace();
+            EventLogger.log(e);
         }
     }
 
-    private synchronized static Set<String> readListFile(String fileName) {
+    private static Set<String> readListFile(String fileName) {
         Set<String> set = new HashSet<>();
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 set.add(line);
             }
-            br.close();
         } catch (FileNotFoundException e) {
             writeListFile(fileName, set);
         } catch (IOException e) {
             e.printStackTrace();
+            EventLogger.log(e);
         }
         return set;
     }
 
-    private synchronized static void writeListFile(String fileName, Set<String> set) {
-        try {
-            createDirsIfNotExist();
-            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
+    private static void writeListFile(String fileName, Collection<String> set) {
+        createDirsIfNotExist();
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
             for (String s : set) {
                 bw.write(s);
                 bw.write('\n');
             }
             bw.flush();
-            bw.close();
         } catch (IOException e) {
             e.printStackTrace();
+            EventLogger.log(e);
         }
     }
 
@@ -458,19 +470,71 @@ public class Configs {
         if (!cache.exists()) {
             if (!cache.mkdirs()) {
                 System.err.println("Cannot create directory 'cache'");
+                EventLogger.log("Cannot create directory 'cache'");
             }
         }
         File userData = new File(USER_DATA_DIR);
         if (!userData.exists()) {
             if (!userData.mkdirs()) {
                 System.err.println("Cannot create directory 'userData'");
+                EventLogger.log("Cannot create directory 'userData'");
             }
         }
         File history = new File(HISTORY_DIR);
         if (!history.exists()) {
             if (!history.mkdirs()) {
                 System.err.println("Cannot create directory 'userData/history'");
+                EventLogger.log("Cannot create directory 'userData'");
             }
+        }
+    }
+
+    private long computeChecksum(Collection<String> list) {
+        List<String> sorted = new ArrayList<>(list);
+        Collections.sort(sorted);
+        CRC32 crc32 = new CRC32();
+        for (String s : sorted) {
+            crc32.update(s.getBytes());
+        }
+        return crc32.getValue();
+    }
+
+    private void loadAll() {
+        configMap = readMapFile(CONFIG_FILE_NAME);
+        excludedDirs = readListFile(EXCLUDED_DIRS_NAME);
+        excludedFmts = readListFile(EXCLUDED_FORMATS_NAME);
+        customFmts = readMapFile(CUSTOM_FORMATS_NAME);
+        excludedDirsChecksum = computeChecksum(excludedDirs);
+        excludedFmtsChecksum = computeChecksum(excludedFmts);
+        customFmtsChecksum = computeChecksum(customFmts.keySet());
+    }
+
+    private void saveToDisk() {
+        long excDirsCs = computeChecksum(excludedDirs);
+        long excFmtsCs = computeChecksum(excludedFmts);
+        long cusFmtsCs = computeChecksum(customFmts.keySet());
+
+        writeMapFile(CONFIG_FILE_NAME, configMap);
+
+        if (excDirsCs != excludedDirsChecksum) {
+            excludedDirsChecksum = excDirsCs;
+            writeListFile(EXCLUDED_DIRS_NAME, excludedDirs);
+        }
+        if (excFmtsCs != excludedFmtsChecksum) {
+            excludedFmtsChecksum = excFmtsCs;
+            writeListFile(EXCLUDED_FORMATS_NAME, excludedFmts);
+        }
+        if (cusFmtsCs != customFmtsChecksum) {
+            customFmtsChecksum = cusFmtsCs;
+            writeMapFile(CUSTOM_FORMATS_NAME, customFmts);
+        }
+    }
+
+    private class AutoSaveTask extends TimerTask {
+
+        @Override
+        public void run() {
+            saveToDisk();
         }
     }
 }

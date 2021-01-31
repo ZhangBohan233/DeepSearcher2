@@ -87,10 +87,13 @@ public class Client extends Application {
     }
 
     private void showMainUi(Stage stage) throws Exception {
+        Configs.startConfig();
+
         bundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.LangBundle",
-                Configs.getCurrentLocale());
+                Configs.getConfigs().getCurrentLocale());
 
         if (isRunning()) {
+            Configs.stopConfig();
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(bundle.getString("appName"));
             alert.setHeaderText(bundle.getString("warning"));
@@ -99,7 +102,7 @@ public class Client extends Application {
             return;
         }
 
-        Cache.startCache(List.of());
+        Cache.startCache();
 
         currentStage = stage;
         FXMLLoader loader =
@@ -113,9 +116,9 @@ public class Client extends Application {
         Scene rootScene = new Scene(root);
         rootScene.getStylesheets().add(
                 getClass().getResource("/trashsoftware/deepSearcher2/css/defaultTheme.css").toExternalForm());
-        if (Configs.isUseCustomFont()) {
-            Configs.applyCustomFont(rootScene);
-            controller.rescaleUi(Configs.getFontSize(12));
+        if (Configs.getConfigs().isUseCustomFont()) {
+            Configs.getConfigs().applyCustomFont(rootScene);
+            controller.rescaleUi(Configs.getConfigs().getFontSize(12));
         }
         stage.setTitle(bundle.getString("appName"));
         stage.getIcons().add(iconImage);
@@ -127,6 +130,7 @@ public class Client extends Application {
         stage.setOnHidden(e -> {
             deleteMarkFile();
             Cache.stopCache();
+            Configs.stopConfig();
         });
         createRunningMarkFile();
 

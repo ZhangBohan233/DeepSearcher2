@@ -113,39 +113,39 @@ public class PrefSet {
 
     public boolean isDepthFirst() {
         if (depthFirstIndicator == -1) {
-            depthFirstIndicator = Configs.isDepthFirst() ? 1 : 0;
+            depthFirstIndicator = Configs.getConfigs().isDepthFirst() ? 1 : 0;
         }
         return depthFirstIndicator == 1;
     }
 
     public String getMatchingAlgorithm() {
         if (matchingAlg == null) {
-            matchingAlg = Configs.getCurrentSearchingAlgorithm();
+            matchingAlg = Configs.getConfigs().getCurrentSearchingAlgorithm();
         }
         return matchingAlg;
     }
 
     public String getWordMatchingAlgorithm() {
         if (wordMatchingAlg == null) {
-            wordMatchingAlg = Configs.getCurrentWordSearchingAlgorithm();
+            wordMatchingAlg = Configs.getConfigs().getCurrentWordSearchingAlgorithm();
         }
         return wordMatchingAlg;
     }
 
     public String getRegexAlgorithm() {
         if (regexMatchingAlg == null) {
-            regexMatchingAlg = Configs.getCurrentRegexSearchingAlgorithm();
+            regexMatchingAlg = Configs.getConfigs().getCurrentRegexSearchingAlgorithm();
         }
         return regexMatchingAlg;
     }
 
     Set<String> getExcludedDirs() {
-        if (excludedDirs == null) excludedDirs = Configs.getAllExcludedDirs();
+        if (excludedDirs == null) excludedDirs = Configs.getConfigs().getAllExcludedDirs();
         return excludedDirs;
     }
 
     Set<String> getExcludedFormats() {
-        if (excludedFormats == null) excludedFormats = Configs.getAllExcludedFormats();
+        if (excludedFormats == null) excludedFormats = Configs.getConfigs().getAllExcludedFormats();
         return excludedFormats;
     }
 
@@ -214,8 +214,8 @@ public class PrefSet {
          * @return this builder
          */
         public PrefSetBuilder setSearchDirs(List<File> searchDirs) {
-            prefSet.limitDepth = Configs.isLimitDepth();
-            prefSet.maxSearchDepth = Configs.getMaxSearchDepth();
+            prefSet.limitDepth = Configs.getConfigs().isLimitDepth();
+            prefSet.maxSearchDepth = Configs.getConfigs().getMaxSearchDepth();
             if (prefSet.limitDepth) {
                 prefSet.searchDirs = new ArrayList<>(searchDirs);
                 return this;
@@ -260,8 +260,8 @@ public class PrefSet {
                     prefSet.targets.set(i, prefSet.targets.get(i).toLowerCase());
                 }
             }
-            prefSet.showHidden = Configs.isShowHidden();
-            prefSet.includePathName = Configs.isIncludePathName();
+            prefSet.showHidden = Configs.getConfigs().isShowHidden();
+            prefSet.includePathName = Configs.getConfigs().isIncludePathName();
             // depth limits are set in 'addSearchDirs'
             return prefSet;
         }
