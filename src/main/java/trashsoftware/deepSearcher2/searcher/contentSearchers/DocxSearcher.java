@@ -2,7 +2,7 @@ package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 
 import java.io.File;
@@ -12,12 +12,7 @@ import java.util.List;
 public class DocxSearcher extends TwoKeysSearcher {
 
     public DocxSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
-        super(
-                file,
-                matcherFactory,
-                caseSensitive,
-                ContentSearchingResult.PARAGRAPHS_KEY,
-                ContentSearchingResult.CHARS_KEY);
+        super(file, matcherFactory, caseSensitive, ContentResult.Category.PARAGRAPH, ContentResult.Category.CHAR);
     }
 
     @Override

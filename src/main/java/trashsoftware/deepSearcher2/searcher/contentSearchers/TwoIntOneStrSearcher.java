@@ -1,7 +1,7 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.searcher.ContentSearcher;
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 
@@ -18,16 +18,16 @@ import java.util.Set;
  */
 public abstract class TwoIntOneStrSearcher extends ContentSearcher {
 
-    private final int key1;
-    private final int key2;
+    private final ContentResult.Category key1;
+    private final ContentResult.Category key2;
 
     private final Set<String> foundTargets = new HashSet<>();
     private final List<Integer> found1s = new ArrayList<>();
     private final List<Integer> found2s = new ArrayList<>();
-    private final List<ContentSearchingResult.StringValue> strValues = new ArrayList<>();
+    private final List<ContentResult.StringValue> strValues = new ArrayList<>();
 
     public TwoIntOneStrSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive,
-                                int key1, int key2) {
+                                ContentResult.Category key1, ContentResult.Category key2) {
         super(file, matcherFactory, caseSensitive);
 
         this.key1 = key1;
@@ -35,7 +35,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
     }
 
     @Override
-    public ContentSearchingResult searchAll(List<String> targets) {
+    public ContentResult searchAll(List<String> targets) {
 
         foundTargets.clear();
         found1s.clear();
@@ -44,7 +44,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
         searchFile(targets);
 
         if (foundTargets.size() == targets.size()) {  // all matched
-            return new ContentSearchingResult(key1, found1s,
+            return new ContentResult(key1, found1s,
                     key2, found2s, strValues);
         }
 
@@ -52,7 +52,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
     }
 
     @Override
-    public ContentSearchingResult searchAny(List<String> targets) {
+    public ContentResult searchAny(List<String> targets) {
         foundTargets.clear();
         found1s.clear();
         found2s.clear();
@@ -60,18 +60,25 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
         searchFile(targets);
 
         if (foundTargets.size() > 0) {  // at least one matched
-            return new ContentSearchingResult(key1, found1s,
+            return new ContentResult(key1, found1s,
                     key2, found2s, strValues);
         }
 
         return null;
     }
 
-    protected void searchInString(String string, List<String> targets, int value1, int strValue) {
-        searchInString(string, targets, value1, 0, strValue);
+    protected void searchInString(String string,
+                                  List<String> targets,
+                                  int value1,
+                                  ContentResult.ValueCategory strCategory) {
+        searchInString(string, targets, value1, 0, strCategory);
     }
 
-    protected void searchInString(String string, List<String> targets, int value1, int value2Base, int strCategory) {
+    protected void searchInString(String string,
+                                  List<String> targets,
+                                  int value1,
+                                  int value2Base,
+                                  ContentResult.ValueCategory strCategory) {
         if (!caseSensitive) string = string.toLowerCase();
         StringMatcher matcher = matcherFactory.createMatcher(string);
         for (String tar : targets) {
@@ -80,7 +87,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
                 foundTargets.add(tar);
                 found1s.add(value1);
                 found2s.add(pos + value2Base + 1);  // add one because index 0 means first (1st) element
-                strValues.add(new ContentSearchingResult.StringValue(strCategory));
+                strValues.add(new ContentResult.StringValue(strCategory));
             }
         }
     }
@@ -95,7 +102,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
                 foundTargets.add(tar);
                 found1s.add(value1);
                 found2s.add(value2);
-                strValues.add(new ContentSearchingResult.StringValue(strValue));
+                strValues.add(new ContentResult.StringValue(strValue));
             }
         }
     }

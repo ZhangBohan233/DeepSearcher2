@@ -1,7 +1,7 @@
 package trashsoftware.deepSearcher2.guiItems;
 
 import javafx.fxml.FXML;
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
@@ -16,14 +16,14 @@ public class ResultItem {
     private final ResourceBundle bundle;
     private final ResourceBundle fileTypeBundle;
     private final Map<String, String> customFormats;
-    private ContentSearchingResult contentRes;
+    private ContentResult contentRes;
 
     private ResultItem(File file,
                        boolean matchName,
                        boolean matchContent,
                        ResourceBundle bundle,
                        ResourceBundle fileTypeBundle,
-                       ContentSearchingResult contentRes,
+                       ContentResult contentRes,
                        Map<String, String> customFormats) {
         this.file = file;
         this.matchModes = new boolean[]{matchName, matchContent};
@@ -45,13 +45,13 @@ public class ResultItem {
     public static ResultItem createContentMatch(File file,
                                                 ResourceBundle bundle,
                                                 ResourceBundle fileTypeBundle,
-                                                ContentSearchingResult contentRes,
+                                                ContentResult contentRes,
                                                 Map<String, String> customFormats) {
         return new ResultItem(
                 file, false, true, bundle, fileTypeBundle, contentRes, customFormats);
     }
 
-    public void setContentRes(ContentSearchingResult contentRes) {
+    public void setContentRes(ContentResult contentRes) {
         this.contentRes = contentRes;
         this.matchModes[1] = true;
     }

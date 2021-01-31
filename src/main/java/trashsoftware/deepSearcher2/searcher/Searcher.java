@@ -234,7 +234,7 @@ public class Searcher {
         resultCountWrapper.setValue(tableList.size());
     }
 
-    private synchronized void addContentResult(File file, ContentSearchingResult csr) {
+    private synchronized void addContentResult(File file, ContentResult csr) {
         // check if previous some result is already added
         // This situation occurs when this file is already matched by name successfully
         ResultItem item = resultFilesMap.get(file);
@@ -288,7 +288,7 @@ public class Searcher {
 
         @Override
         public void run() {
-            ContentSearchingResult result;
+            ContentResult result;
             if (prefSet.isMatchAll()) {
                 result = searcher.searchAll(prefSet.getTargets());
             } else {

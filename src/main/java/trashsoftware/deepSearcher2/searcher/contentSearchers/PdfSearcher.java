@@ -2,7 +2,7 @@ package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.List;
 public class PdfSearcher extends TwoKeysSearcher {
 
     public PdfSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
-        super(file, matcherFactory, caseSensitive, ContentSearchingResult.PAGES_KEY, ContentSearchingResult.CHARS_KEY);
+        super(file, matcherFactory, caseSensitive, ContentResult.Category.PAGE, ContentResult.Category.CHAR);
     }
 
     @Override

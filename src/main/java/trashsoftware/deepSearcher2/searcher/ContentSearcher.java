@@ -30,12 +30,12 @@ public abstract class ContentSearcher {
      * @param targets patterns to be searched
      * @return search result if all targets are found in this file, otherwise return {@code null}.
      */
-    public abstract ContentSearchingResult searchAll(List<String> targets);
+    public abstract ContentResult searchAll(List<String> targets);
 
     /**
      * @param targets patterns to be searched
      * @return search result if at least one target is found in this file, otherwise return {@code null}.
      */
-    public abstract ContentSearchingResult searchAny(List<String> targets);
+    public abstract ContentResult searchAny(List<String> targets);
 }
 

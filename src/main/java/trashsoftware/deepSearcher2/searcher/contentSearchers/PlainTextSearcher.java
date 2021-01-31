@@ -1,6 +1,6 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 
 import java.io.BufferedReader;
@@ -14,7 +14,7 @@ import java.util.List;
 public class PlainTextSearcher extends TwoKeysSearcher {
 
     public PlainTextSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
-        super(file, matcherFactory, caseSensitive, ContentSearchingResult.LINES_KEY, ContentSearchingResult.CHARS_KEY);
+        super(file, matcherFactory, caseSensitive, ContentResult.Category.LINE, ContentResult.Category.CHAR);
     }
 
     @Override

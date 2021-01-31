@@ -1,7 +1,7 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import org.apache.poi.hwpf.extractor.WordExtractor;
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.List;
 public class DocSearcher extends TwoKeysSearcher {
 
     public DocSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
-        super(file, matcherFactory, caseSensitive, ContentSearchingResult.PARAGRAPHS_KEY, ContentSearchingResult.CHARS_KEY);
+        super(file, matcherFactory, caseSensitive, ContentResult.Category.PARAGRAPH, ContentResult.Category.CHAR);
     }
 
     @Override

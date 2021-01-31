@@ -1,7 +1,7 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
 import org.apache.poi.hslf.usermodel.*;
-import trashsoftware.deepSearcher2.searcher.ContentSearchingResult;
+import trashsoftware.deepSearcher2.searcher.ContentResult;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 
 import java.io.File;
@@ -11,7 +11,7 @@ import java.util.List;
 public class PptSearcher extends TwoIntOneStrSearcher {
 
     public PptSearcher(File file, MatcherFactory matcherFactory, boolean caseSensitive) {
-        super(file, matcherFactory, caseSensitive, ContentSearchingResult.PAGES_KEY, ContentSearchingResult.CHARS_KEY);
+        super(file, matcherFactory, caseSensitive, ContentResult.Category.PAGE, ContentResult.Category.CHAR);
     }
 
     @Override
@@ -22,7 +22,7 @@ public class PptSearcher extends TwoIntOneStrSearcher {
                 List<HSLFShape> shapes = slide.getShapes();
 
                 String title = slide.getTitle();
-                if (title != null) searchInString(title, targets, page, ContentSearchingResult.TITLE_VALUE);
+                if (title != null) searchInString(title, targets, page, ContentResult.ValueCategory.TITLE);
 
                 int pageTextCount = 0;
                 for (int j = 0; j < shapes.size(); j++) {
@@ -33,7 +33,7 @@ public class PptSearcher extends TwoIntOneStrSearcher {
                             continue;  // first shape (title) already checked, if not null
                         }
                         searchInString(text,
-                                targets, page, pageTextCount, ContentSearchingResult.TEXT_VALUE);
+                                targets, page, pageTextCount, ContentResult.ValueCategory.TEXT);
                         pageTextCount += text.length();
                     } else if (shape instanceof HSLFTable) {
                         HSLFTable table = (HSLFTable) shape;
@@ -41,7 +41,7 @@ public class PptSearcher extends TwoIntOneStrSearcher {
                             for (int c = 0; c < table.getNumberOfColumns(); c++) {
                                 HSLFTableCell cell = table.getCell(r, c);
                                 if (cell != null) {
-                                    searchInString(cell.getText(), targets, page, ContentSearchingResult.TABLE_VALUE);
+                                    searchInString(cell.getText(), targets, page, ContentResult.ValueCategory.TABLE);
                                 }
                             }
                         }
