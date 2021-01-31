@@ -3,13 +3,17 @@
 .idea/
 *.iml
 out/
-product/
-logs/
 
 # User data and cache
 cache/
 userData/
 .running
+product/
+logs/
+*.zip
+*.7z
+*.rar
+*.pz
 
 target/
 pom.xml.tag
