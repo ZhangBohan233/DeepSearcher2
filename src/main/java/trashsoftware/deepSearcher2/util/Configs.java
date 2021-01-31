@@ -6,10 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
-import trashsoftware.deepSearcher2.searcher.PrefSet;
-import trashsoftware.deepSearcher2.searcher.SearchDirNotSetException;
-import trashsoftware.deepSearcher2.searcher.SearchPrefNotSetException;
-import trashsoftware.deepSearcher2.searcher.SearchTargetNotSetException;
+import trashsoftware.deepSearcher2.searcher.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
 import java.io.*;
@@ -32,7 +29,7 @@ public class Configs {
      * Time interval in mills between two save tasks that save changed configs in ram to disk
      */
     private static final long AUTO_SAVE_INTERVAL = 5000;
-
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
     private static Configs activeConfig;
     private final Timer autoSave;
     private Map<String, String> configMap;
@@ -43,8 +40,6 @@ public class Configs {
     private long excludedFmtsChecksum;
     private long customFmtsChecksum;
 
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
-
     private Configs() {
         loadAll();
 
@@ -52,6 +47,9 @@ public class Configs {
         autoSave.schedule(new AutoSaveTask(), AUTO_SAVE_INTERVAL, AUTO_SAVE_INTERVAL);
     }
 
+    /**
+     * Starts running a config loader and terminate the previous one, if existed.
+     */
     public static void startConfig() {
         if (activeConfig != null) {
             activeConfig.stop();
@@ -59,6 +57,11 @@ public class Configs {
         activeConfig = new Configs();
     }
 
+    /**
+     * Terminates the current running config loader.
+     * <p>
+     * This static method should be called before the program exits. Otherwise, a background saver might keep running.
+     */
     public static void stopConfig() {
         if (activeConfig != null) {
             activeConfig.stop();
@@ -66,137 +69,18 @@ public class Configs {
         }
     }
 
+    /**
+     * @return the current running config loader
+     */
     public static Configs getConfigs() {
         return activeConfig;
     }
 
-    public Locale getCurrentLocale() {
-        String localeName = getConfig("locale");
-        if (localeName == null) {
-            return new Locale("zh", "CN");
-        } else {
-            String[] lanCountry = localeName.split("_");
-            return new Locale(lanCountry[0], lanCountry[1]);
-        }
-    }
-
-    public void stop() {
-        autoSave.cancel();
-        saveToDisk();
-    }
-
-    public void applyCustomFont(Scene scene) {
-        String fontFamily = getCustomFont();
-        if (fontFamily == null) fontFamily = Font.getDefault().getFamily();
-        int fontSize = getFontSize(12);
-        String content = String.format(
-                ".root {\n    -fx-font-family: %s;\n    -fx-font-size: %dpx;\n}",
-                fontFamily,
-                fontSize);
-        try (FileWriter fw = new FileWriter(CUSTOM_CSS)) {
-            fw.write(content);
-            fw.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            EventLogger.log(e);
-        }
-        try {
-            scene.getStylesheets().add(new File(CUSTOM_CSS).toURI().toURL().toExternalForm());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            EventLogger.log(e);
-        }
-    }
-
-    public String getCustomFont() {
-        return getConfig("font");
-    }
-
-    public int getFontSize(int defaultValue) {
-        return getInt("fontSize", defaultValue);
-    }
-
-    public boolean isUseCustomFont() {
-        return getBoolean("useCustomFont");
-    }
-
-    public void setUseCustomFont(boolean value, String customFont, int fontSize) {
-        writeConfigs(
-                "useCustomFont", String.valueOf(value),
-                "font", customFont,
-                "fontSize", String.valueOf(fontSize));
-    }
-
     /**
-     * Sets whether to limit search depth.
+     * Returns a list containing all supported locales.
      *
-     * @param limitDepth whether to limit search depth
+     * @return a list containing all supported locales
      */
-    public void setLimitDepth(boolean limitDepth) {
-        writeConfig("limitDepth", String.valueOf(limitDepth));
-    }
-
-    public boolean isLimitDepth() {
-        return getBoolean("limitDepth");
-    }
-
-    /**
-     * @return the max traversal depth
-     */
-    public int getMaxSearchDepth() {
-        return getInt("maxDepth", 5);
-    }
-
-    /**
-     * @param searchDepth max traversal depth
-     */
-    public void setMaxSearchDepth(int searchDepth) {
-        writeConfig("maxDepth", String.valueOf(searchDepth));
-    }
-
-    public boolean isIncludePathName() {
-        return getBoolean("includePathName");
-    }
-
-    public void setIncludePathName(boolean value) {
-        writeConfig("includePathName", String.valueOf(value));
-    }
-
-    public boolean isShowHidden() {
-        return getBoolean("showHidden");
-    }
-
-    public void setShowHidden(boolean value) {
-        writeConfig("showHidden", String.valueOf(value));
-    }
-
-    public boolean isDepthFirst() {
-        return getBoolean("depthFirst");
-    }
-
-    public void setDepthFirst(boolean value) {
-        writeConfig("depthFirst", String.valueOf(value));
-    }
-
-    public String getCurrentSearchingAlgorithm() {
-        String savedAlg = getConfig("alg");
-        return Objects.requireNonNullElse(savedAlg, "algNative");
-    }
-
-    public String getCurrentWordSearchingAlgorithm() {
-        String savedAlg = getConfig("wordAlg");
-        return Objects.requireNonNullElse(savedAlg, "algNative");
-    }
-
-    public String getCurrentRegexSearchingAlgorithm() {
-        String savedAlg = getConfig("regexAlg");
-        return Objects.requireNonNullElse(savedAlg, "algNative");
-    }
-
-    public int getCurrentCpuThreads() {
-        return getInt("cpuThreads", 4);
-    }
-
     public static List<NamedLocale> getAllLocales() {
         List<NamedLocale> locales = new ArrayList<>();
         ResourceBundle resourceBundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.Languages");
@@ -208,75 +92,6 @@ public class Configs {
             locales.add(namedLocale);
         }
         return locales;
-    }
-
-    private int getInt(String key, int defaultValue) {
-        try {
-            return Integer.parseInt(getConfig(key));
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    private boolean getBoolean(String key) {
-        return Boolean.parseBoolean(getConfig(key));
-    }
-
-    private String getConfig(String key) {
-        return configMap.get(key);
-    }
-
-    /**
-     * Write multiple key-value pairs in one time.
-     * <p>
-     * Length of {@code keyValues} must be even.
-     *
-     * @param keyValues key-value pairs
-     */
-    public void writeConfigs(String... keyValues) {
-        for (int i = 0; i < keyValues.length; i += 2) {
-            configMap.put(keyValues[i], keyValues[i + 1]);
-        }
-    }
-
-    public void writeConfig(String key, String value) {
-        configMap.put(key, value);
-    }
-
-    public void addExcludedDir(String path) {
-        excludedDirs.add(path);
-    }
-
-    public void removeExcludedDir(String path) {
-        excludedDirs.remove(path);
-    }
-
-    public Set<String> getAllExcludedDirs() {
-        return excludedDirs;
-    }
-
-    public void addExcludedFormat(String path) {
-        excludedFmts.add(path);
-    }
-
-    public void removeExcludedFormat(String path) {
-        excludedFmts.remove(path);
-    }
-
-    public Set<String> getAllExcludedFormats() {
-        return excludedFmts;
-    }
-
-    public void addCustomFormat(String ext, String description) {
-        customFmts.put(ext, description);
-    }
-
-    public void removeCustomFormat(String ext) {
-        customFmts.remove(ext);
-    }
-
-    public Map<String, String> getAllCustomFormats() {
-        return customFmts;
     }
 
     /**
@@ -320,20 +135,6 @@ public class Configs {
                 EventLogger.log("Failed to delete " + file.getAbsolutePath());
             }
         }
-    }
-
-    public void clearSettings() {
-        configMap.clear();
-        deleteFileByName(CONFIG_FILE_NAME);
-    }
-
-    public void clearAllData() {
-        Cache.clearCache();
-        clearSettings();
-        clearAllHistory();
-        deleteFileByName(EXCLUDED_DIRS_NAME);
-        deleteFileByName(EXCLUDED_FORMATS_NAME);
-        deleteFileByName(CUSTOM_FORMATS_NAME);
     }
 
     static void deleteFileByName(String path) {
@@ -489,8 +290,249 @@ public class Configs {
         }
     }
 
-    private long computeChecksum(Collection<String> list) {
-        List<String> sorted = new ArrayList<>(list);
+    /**
+     * Returns the current using locale.
+     *
+     * @return the current using locale
+     */
+    public Locale getCurrentLocale() {
+        String localeName = getConfig("locale");
+        if (localeName == null) {
+            return new Locale("zh", "CN");
+        } else {
+            String[] lanCountry = localeName.split("_");
+            return new Locale(lanCountry[0], lanCountry[1]);
+        }
+    }
+
+    public void stop() {
+        autoSave.cancel();
+        saveToDisk();
+    }
+
+    public void applyCustomFont(Scene scene) {
+        String fontFamily = getCustomFont();
+        if (fontFamily == null) fontFamily = Font.getDefault().getFamily();
+        int fontSize = getFontSize(12);
+        String content = String.format(
+                ".root {\n    -fx-font-family: %s;\n    -fx-font-size: %dpx;\n}",
+                fontFamily,
+                fontSize);
+        try (FileWriter fw = new FileWriter(CUSTOM_CSS)) {
+            fw.write(content);
+            fw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            EventLogger.log(e);
+        }
+        try {
+            scene.getStylesheets().add(new File(CUSTOM_CSS).toURI().toURL().toExternalForm());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            EventLogger.log(e);
+        }
+    }
+
+    public String getCustomFont() {
+        return getConfig("font");
+    }
+
+    public int getFontSize(int defaultValue) {
+        return getInt("fontSize", defaultValue);
+    }
+
+    public boolean isUseCustomFont() {
+        return getBoolean("useCustomFont");
+    }
+
+    public void setUseCustomFont(boolean value, String customFont, int fontSize) {
+        writeConfigs(
+                "useCustomFont", String.valueOf(value),
+                "font", customFont,
+                "fontSize", String.valueOf(fontSize));
+    }
+
+    public boolean isLimitDepth() {
+        return getBoolean("limitDepth");
+    }
+
+    /**
+     * Sets whether to limit search depth.
+     *
+     * @param limitDepth whether to limit search depth
+     */
+    public void setLimitDepth(boolean limitDepth) {
+        writeConfig("limitDepth", String.valueOf(limitDepth));
+    }
+
+    /**
+     * @return the max traversal depth
+     */
+    public int getMaxSearchDepth() {
+        return getInt("maxDepth", 5);
+    }
+
+    /**
+     * @param searchDepth max traversal depth
+     */
+    public void setMaxSearchDepth(int searchDepth) {
+        writeConfig("maxDepth", String.valueOf(searchDepth));
+    }
+
+    public boolean isIncludePathName() {
+        return getBoolean("includePathName");
+    }
+
+    public void setIncludePathName(boolean value) {
+        writeConfig("includePathName", String.valueOf(value));
+    }
+
+    public boolean isShowHidden() {
+        return getBoolean("showHidden");
+    }
+
+    public void setShowHidden(boolean value) {
+        writeConfig("showHidden", String.valueOf(value));
+    }
+
+    public boolean isDepthFirst() {
+        return getBoolean("depthFirst");
+    }
+
+    public void setDepthFirst(boolean value) {
+        writeConfig("depthFirst", String.valueOf(value));
+    }
+
+    public Algorithm.Regular getCurrentSearchingAlgorithm() {
+        String savedAlg = getConfig("alg");
+        try {
+            return Algorithm.Regular.valueOf(savedAlg);
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return Algorithm.Regular.AUTO;
+        }
+    }
+
+    public Algorithm.Word getCurrentWordSearchingAlgorithm() {
+        String savedAlg = getConfig("wordAlg");
+        try {
+            return Algorithm.Word.valueOf(savedAlg);
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return Algorithm.Word.NAIVE;
+        }
+    }
+
+    public Algorithm.Regex getCurrentRegexSearchingAlgorithm() {
+        String savedAlg = getConfig("regexAlg");
+        try {
+            return Algorithm.Regex.valueOf(savedAlg);
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return Algorithm.Regex.NATIVE;
+        }
+    }
+
+    public int getCurrentCpuThreads() {
+        return getInt("cpuThreads", 4);
+    }
+
+    private int getInt(String key, int defaultValue) {
+        try {
+            return Integer.parseInt(getConfig(key));
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    private boolean getBoolean(String key) {
+        return Boolean.parseBoolean(getConfig(key));
+    }
+
+    private String getConfig(String key) {
+        return configMap.get(key);
+    }
+
+    /**
+     * Write multiple key-value pairs in one time.
+     * <p>
+     * Length of {@code keyValues} must be even.
+     *
+     * @param keyValues key-value pairs
+     */
+    public void writeConfigs(String... keyValues) {
+        for (int i = 0; i < keyValues.length; i += 2) {
+            configMap.put(keyValues[i], keyValues[i + 1]);
+        }
+    }
+
+    public void writeConfig(String key, String value) {
+        configMap.put(key, value);
+    }
+
+    public void addExcludedDir(String path) {
+        excludedDirs.add(path);
+    }
+
+    public void removeExcludedDir(String path) {
+        excludedDirs.remove(path);
+    }
+
+    public Set<String> getAllExcludedDirs() {
+        return excludedDirs;
+    }
+
+    public void addExcludedFormat(String path) {
+        excludedFmts.add(path);
+    }
+
+    public void removeExcludedFormat(String path) {
+        excludedFmts.remove(path);
+    }
+
+    public Set<String> getAllExcludedFormats() {
+        return excludedFmts;
+    }
+
+    public void addCustomFormat(String ext, String description) {
+        customFmts.put(ext, description);
+    }
+
+    public void removeCustomFormat(String ext) {
+        customFmts.remove(ext);
+    }
+
+    public Map<String, String> getAllCustomFormats() {
+        return customFmts;
+    }
+
+    /**
+     * Clears all user settings, but does not delete data.
+     */
+    public void clearSettings() {
+        configMap.clear();
+        deleteFileByName(CONFIG_FILE_NAME);
+    }
+
+    /**
+     * Clears all user settings and data.
+     */
+    public void clearAllData() {
+        Cache.clearCache();
+        clearSettings();
+        clearAllHistory();
+        deleteFileByName(EXCLUDED_DIRS_NAME);
+        deleteFileByName(EXCLUDED_FORMATS_NAME);
+        deleteFileByName(CUSTOM_FORMATS_NAME);
+    }
+
+    /**
+     * Computes the crc32 checksum of a collection of strings.
+     * <p>
+     * This method returns the same result regardless the order in collection.
+     *
+     * @param collection the collection of strings to be compute
+     * @return the crc32 checksum
+     */
+    private long computeChecksum(Collection<String> collection) {
+        List<String> sorted = new ArrayList<>(collection);
         Collections.sort(sorted);
         CRC32 crc32 = new CRC32();
         for (String s : sorted) {

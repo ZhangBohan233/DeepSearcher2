@@ -22,9 +22,9 @@ public class PrefSet {
     private boolean matchRegex;
     private boolean matchWord;
     private Set<String> extensions;  // null if not searching content
-    private String matchingAlg;
-    private String wordMatchingAlg;
-    private String regexMatchingAlg;
+    private Algorithm.Regular matchingAlg;
+    private Algorithm.Word wordMatchingAlg;
+    private Algorithm.Regex regexMatchingAlg;
     private Set<String> excludedDirs;
     private Set<String> excludedFormats;
     private int maxSearchDepth;
@@ -118,21 +118,21 @@ public class PrefSet {
         return depthFirstIndicator == 1;
     }
 
-    public String getMatchingAlgorithm() {
+    public Algorithm.Regular getMatchingAlgorithm() {
         if (matchingAlg == null) {
             matchingAlg = Configs.getConfigs().getCurrentSearchingAlgorithm();
         }
         return matchingAlg;
     }
 
-    public String getWordMatchingAlgorithm() {
+    public Algorithm.Word getWordMatchingAlgorithm() {
         if (wordMatchingAlg == null) {
             wordMatchingAlg = Configs.getConfigs().getCurrentWordSearchingAlgorithm();
         }
         return wordMatchingAlg;
     }
 
-    public String getRegexAlgorithm() {
+    public Algorithm.Regex getRegexAlgorithm() {
         if (regexMatchingAlg == null) {
             regexMatchingAlg = Configs.getConfigs().getCurrentRegexSearchingAlgorithm();
         }

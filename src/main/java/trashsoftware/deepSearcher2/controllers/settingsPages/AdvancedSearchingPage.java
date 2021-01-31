@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.searcher.Algorithm;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
@@ -12,7 +13,13 @@ import java.io.IOException;
 public class AdvancedSearchingPage extends SettingsPage {
 
     @FXML
-    ComboBox<AlgorithmBundle> algorithmBox, wordAlgorithmBox, regexAlgorithmBox;
+    ComboBox<Algorithm.Regular> algorithmBox;
+
+    @FXML
+    ComboBox<Algorithm.Word> wordAlgorithmBox;
+
+    @FXML
+    ComboBox<Algorithm.Regex> regexAlgorithmBox;
 
     @FXML
     ComboBox<Integer> cpuThreadsBox;
@@ -40,15 +47,18 @@ public class AdvancedSearchingPage extends SettingsPage {
     @Override
     public void saveChanges() {
         if (getStatusSaver().hasChanged(algorithmBox)) {
-            Configs.getConfigs().writeConfig("alg", algorithmBox.getSelectionModel().getSelectedItem().algCode);
+            Configs.getConfigs().writeConfig("alg",
+                    algorithmBox.getSelectionModel().getSelectedItem().name());
             getStatusSaver().store(algorithmBox);
         }
         if (getStatusSaver().hasChanged(wordAlgorithmBox)) {
-            Configs.getConfigs().writeConfig("wordAlg", wordAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
+            Configs.getConfigs().writeConfig("wordAlg",
+                    wordAlgorithmBox.getSelectionModel().getSelectedItem().name());
             getStatusSaver().store(wordAlgorithmBox);
         }
         if (getStatusSaver().hasChanged(regexAlgorithmBox)) {
-            Configs.getConfigs().writeConfig("regexAlg", regexAlgorithmBox.getSelectionModel().getSelectedItem().algCode);
+            Configs.getConfigs().writeConfig("regexAlg",
+                    regexAlgorithmBox.getSelectionModel().getSelectedItem().name());
             getStatusSaver().store(regexAlgorithmBox);
         }
         if (getStatusSaver().hasChanged(cpuThreadsBox)) {
@@ -80,49 +90,30 @@ public class AdvancedSearchingPage extends SettingsPage {
 
     private void initAlgorithmBoxes() {
         setAlgorithmBox(algorithmBox, Configs.getConfigs().getCurrentSearchingAlgorithm(),
-                new AlgorithmBundle("algAuto"),
-                new AlgorithmBundle("algNative"),
-                new AlgorithmBundle("algNaive"),
-                new AlgorithmBundle("algKmp"),
-                new AlgorithmBundle("algSunday")
+                Algorithm.Regular.AUTO,
+                Algorithm.Regular.NATIVE,
+                Algorithm.Regular.NAIVE,
+                Algorithm.Regular.KMP,
+                Algorithm.Regular.SUNDAY
         );
 
         setAlgorithmBox(wordAlgorithmBox, Configs.getConfigs().getCurrentWordSearchingAlgorithm(),
-                new AlgorithmBundle("algNaive"),
-                new AlgorithmBundle("algHash")
+                Algorithm.Word.NAIVE,
+                Algorithm.Word.HASH
         );
 
         setAlgorithmBox(regexAlgorithmBox, Configs.getConfigs().getCurrentRegexSearchingAlgorithm(),
-                new AlgorithmBundle("algNative")
+                Algorithm.Regex.NATIVE
         );
     }
 
-    private void setAlgorithmBox(ComboBox<AlgorithmBundle> algorithmBox, String currentAlg,
-                                 AlgorithmBundle... algorithmBundles) {
-        algorithmBox.getItems().addAll(algorithmBundles);
-        algorithmBox.getSelectionModel().select(
-                new AlgorithmBundle(currentAlg));
+    @SafeVarargs
+    private <T extends Algorithm> void setAlgorithmBox(ComboBox<T> algorithmBox,
+                                                       T currentAlg,
+                                                       T... algorithms) {
+        algorithmBox.getItems().addAll(algorithms);
+        algorithmBox.getSelectionModel().select(currentAlg);
         getStatusSaver().store(algorithmBox);
-    }
-
-    private static class AlgorithmBundle {
-        private final String algCode;
-        private final String showingName;
-
-        AlgorithmBundle(String algCode) {
-            this.algCode = algCode;
-            this.showingName = Client.getBundle().getString(algCode);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof AlgorithmBundle && ((AlgorithmBundle) obj).algCode.equals(algCode);
-        }
-
-        @Override
-        public String toString() {
-            return showingName;
-        }
     }
 
     private enum TraversalOrder {
