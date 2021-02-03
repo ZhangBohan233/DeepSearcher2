@@ -223,8 +223,8 @@ public class Configs {
     }
 
     private static void writeMapFile(String fileName, Map<String, String> map) {
+        createDirsIfNotExist();
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            createDirsIfNotExist();
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 String line = entry.getKey() + "=" + entry.getValue() + '\n';
                 bw.write(line);

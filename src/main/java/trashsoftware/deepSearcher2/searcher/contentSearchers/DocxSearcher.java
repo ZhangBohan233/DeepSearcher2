@@ -1,6 +1,5 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
-import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import trashsoftware.deepSearcher2.searcher.ContentResult;
