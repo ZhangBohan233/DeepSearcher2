@@ -23,6 +23,7 @@ public class Configs {
     private static final String EXCLUDED_DIRS_NAME = USER_DATA_DIR + File.separator + "excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = USER_DATA_DIR + File.separator + "excludedFormats.cfg";
     private static final String CUSTOM_FORMATS_NAME = USER_DATA_DIR + File.separator + "customFormats.cfg";
+    private static final String CMP_FORMATS_NAME = USER_DATA_DIR + File.separator + "cmpFormats.cfg";
     private static final String CUSTOM_CSS = USER_DATA_DIR + File.separator + "style.css";
     private static final String HISTORY_DIR = USER_DATA_DIR + File.separator + "history";
     /**
@@ -35,9 +36,11 @@ public class Configs {
     private Map<String, String> configMap;
     private Set<String> excludedDirs;
     private Set<String> excludedFmts;
+    private Set<String> cmpFmts;
     private Map<String, String> customFmts;
     private long excludedDirsChecksum;
     private long excludedFmtsChecksum;
+    private long cmpFmtsChecksum;
     private long customFmtsChecksum;
 
     private Configs() {
@@ -349,6 +352,14 @@ public class Configs {
         return getBoolean("escapes");
     }
 
+    public boolean isSearchCmpFiles() {
+        return getBoolean("searchCmpFiles");
+    }
+
+    public void setSearchCmpFiles(boolean newValue) {
+        writeConfig("searchCmpFiles", String.valueOf(newValue));
+    }
+
     public boolean isUseCustomFont() {
         return getBoolean("useCustomFont");
     }
@@ -475,6 +486,17 @@ public class Configs {
         configMap.put(key, value);
     }
 
+    /**
+     * @return a set containing all extension of selected compressed file formats
+     */
+    public Set<String> getCmpFormats() {
+        return cmpFmts;
+    }
+
+    public void setCmpFmts(Set<String> cmpFmts) {
+        this.cmpFmts = cmpFmts;
+    }
+
     public void addExcludedDir(String path) {
         excludedDirs.add(path);
     }
@@ -563,6 +585,7 @@ public class Configs {
         configMap = readMapFile(CONFIG_FILE_NAME);
         excludedDirs = readListFile(EXCLUDED_DIRS_NAME);
         excludedFmts = readListFile(EXCLUDED_FORMATS_NAME);
+        cmpFmts = readListFile(CMP_FORMATS_NAME);
         customFmts = readMapFile(CUSTOM_FORMATS_NAME);
         excludedDirsChecksum = computeChecksum(excludedDirs);
         excludedFmtsChecksum = computeChecksum(excludedFmts);
@@ -572,6 +595,7 @@ public class Configs {
     private void saveToDisk() {
         long excDirsCs = computeChecksum(excludedDirs);
         long excFmtsCs = computeChecksum(excludedFmts);
+        long cmpFmtsCs = computeChecksum(cmpFmts);
         long cusFmtsCs = computeChecksum(customFmts.keySet());
 
         writeMapFile(CONFIG_FILE_NAME, configMap);
@@ -583,6 +607,10 @@ public class Configs {
         if (excFmtsCs != excludedFmtsChecksum) {
             excludedFmtsChecksum = excFmtsCs;
             writeListFile(EXCLUDED_FORMATS_NAME, excludedFmts);
+        }
+        if (cmpFmtsCs != cmpFmtsChecksum) {
+            cmpFmtsChecksum = cmpFmtsCs;
+            writeListFile(CMP_FORMATS_NAME, cmpFmts);
         }
         if (cusFmtsCs != customFmtsChecksum) {
             customFmtsChecksum = cusFmtsCs;

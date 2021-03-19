@@ -152,6 +152,11 @@ public class SettingsPanelController implements Initializable {
                     new SettingsItem(bundle.getString("searchingOptions"), searchingOptionsPage)
             ));
 
+            CmpFileSearchPage cmpFileSearchPage = new CmpFileSearchPage(this);
+            searchingRoot.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("cmpFile"), cmpFileSearchPage)
+            ));
+
             ExclusionPage exclusionPage = new ExclusionPage(this);
             searchingRoot.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("exclusions"), exclusionPage)

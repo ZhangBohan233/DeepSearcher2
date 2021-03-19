@@ -117,12 +117,12 @@ public class AdvancedSearchingPage extends SettingsPage {
 
         Tooltip wholeTt = new Tooltip(Client.getBundle().getString("contentAsWholeHelp"));
         wholeTt.setWrapText(true);
-        wholeTt.setShowDuration(new Duration(10000));
+        wholeTt.setShowDuration(Duration.seconds(10));
         Tooltip.install(wholeContentHelp, wholeTt);
 
         Tooltip escapeTt = new Tooltip(Client.getBundle().getString("escapesHelp"));
         escapeTt.setWrapText(true);
-        escapeTt.setShowDuration(new Duration(10000));
+        escapeTt.setShowDuration(Duration.seconds(10));
         Tooltip.install(escapeHelp, escapeTt);
     }
 
