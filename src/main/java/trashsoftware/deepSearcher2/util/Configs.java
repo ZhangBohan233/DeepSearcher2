@@ -140,7 +140,7 @@ public class Configs {
         }
     }
 
-    static void deleteFileByName(String path) {
+    public static void deleteFileByName(String path) {
         File file = new File(path);
         if (!file.delete()) {
             System.err.println("Failed to delete '" + path + "'!");

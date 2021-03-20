@@ -25,6 +25,7 @@ public class DocxSearcher extends TwoKeysSearcher {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.err.println(file);
         }
     }
 

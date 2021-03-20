@@ -17,7 +17,7 @@ public class Cache {
 
     public static final String FORMATS_KEY = "formats";
     public static final String OPENED_DIRS_KEY = "openedDirs";
-    static final String CACHE_DIR = "cache";
+    public static final String CACHE_DIR = "cache";
     private static final String COMMON_CACHE_NAME = CACHE_DIR + File.separator + "cache.json";
     /**
      * Time interval in mills between two save tasks that save cache in ram to disk

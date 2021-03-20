@@ -28,8 +28,9 @@ public class Client extends Application {
     private static final String RUNNING_MARK = ".running";
 
     private static ResourceBundle bundle;
-    private static Image iconImage;
+    private static ResourceBundle fileTypeBundle;
 
+    private static Image iconImage;
     private static Stage currentStage;
 
     public static void startClient() {
@@ -50,6 +51,10 @@ public class Client extends Application {
 
     public static ResourceBundle getBundle() {
         return bundle;
+    }
+
+    public static ResourceBundle getFileTypeBundle() {
+        return fileTypeBundle;
     }
 
     public static Image getIconImage() {
@@ -89,6 +94,8 @@ public class Client extends Application {
         Configs.startConfig();
 
         bundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.LangBundle",
+                Configs.getConfigs().getCurrentLocale());
+        fileTypeBundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
                 Configs.getConfigs().getCurrentLocale());
 
         if (isRunning()) {

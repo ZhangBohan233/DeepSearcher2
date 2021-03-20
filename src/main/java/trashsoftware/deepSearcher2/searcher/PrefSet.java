@@ -30,12 +30,14 @@ public class PrefSet {
     private boolean showHidden;
     private boolean matchRegex;
     private boolean matchWord;
+    private boolean searchCmpFile;
     private Set<String> extensions;  // null if not searching content
     private Algorithm.Regular matchingAlg;
     private Algorithm.Word wordMatchingAlg;
     private Algorithm.Regex regexMatchingAlg;
     private Set<String> excludedDirs;
     private Set<String> excludedFormats;
+    private Set<String> cmpFileFormats;
     private int maxSearchDepth;
     private boolean limitDepth;
     private boolean wholeContent;
@@ -50,10 +52,25 @@ public class PrefSet {
     private PrefSet() {
     }
 
+    private static List<String> replaceEscapes(List<String> targets) {
+        List<String> result = new ArrayList<>();
+        for (String s : targets) {
+            for (Map.Entry<String, String> entry : ESCAPES.entrySet()) {
+                s = s.replace(entry.getKey(), entry.getValue());
+            }
+            result.add(s);
+        }
+        return result;
+    }
+
     public List<File> getSearchDirs() {
         return searchDirs;
     }
 
+    /**
+     * @return a set consists of file extensions of which contents are to be searched,
+     * or {@code null} if does not search file's content.
+     */
     public Set<String> getExtensions() {
         return extensions;
     }
@@ -127,11 +144,32 @@ public class PrefSet {
 
     /**
      * Whether to search escape characters, e.g. \n, \t, \b, \r
+     * <p>
+     * This getter is redundant, because all escapes in targets are already replaced in
+     * {@code PrefSetBuilder.build()}
      *
      * @return {@code true} if search escape characters
      */
     public boolean isEscapes() {
         return escapes;
+    }
+
+    /**
+     * Returns whether to search files inside compressed filed.
+     *
+     * @return {@code true} iff searching files inside compressed filed
+     */
+    public boolean isSearchCmpFile() {
+        return searchCmpFile;
+    }
+
+    /**
+     * Returns a set containing all extensions of compressed file formats to be searched.
+     *
+     * @return a set containing all extensions of compressed file formats to be searched
+     */
+    public Set<String> getCmpFileFormats() {
+        return cmpFileFormats;
     }
 
     public MatchMode getMatchMode() {
@@ -168,25 +206,14 @@ public class PrefSet {
         return regexMatchingAlg;
     }
 
-    Set<String> getExcludedDirs() {
+    public Set<String> getExcludedDirs() {
         if (excludedDirs == null) excludedDirs = Configs.getConfigs().getAllExcludedDirs();
         return excludedDirs;
     }
 
-    Set<String> getExcludedFormats() {
+    public Set<String> getExcludedFormats() {
         if (excludedFormats == null) excludedFormats = Configs.getConfigs().getAllExcludedFormats();
         return excludedFormats;
-    }
-
-    private static List<String> replaceEscapes(List<String> targets) {
-        List<String> result = new ArrayList<>();
-        for (String s : targets) {
-            for (Map.Entry<String, String> entry : ESCAPES.entrySet()) {
-                s = s.replace(entry.getKey(), entry.getValue());
-            }
-            result.add(s);
-        }
-        return result;
     }
 
     public static class PrefSetBuilder {
@@ -308,6 +335,9 @@ public class PrefSet {
             if (prefSet.escapes) {
                 prefSet.targets = replaceEscapes(prefSet.targets);
             }
+            prefSet.searchCmpFile = Configs.getConfigs().isSearchCmpFiles();
+            // wrap by a new instance to avoid unexpected mutation
+            prefSet.cmpFileFormats = new HashSet<>(Configs.getConfigs().getCmpFormats());
             return prefSet;
         }
 

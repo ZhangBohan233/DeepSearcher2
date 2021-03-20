@@ -3,7 +3,11 @@ package trashsoftware.deepSearcher2.searcher;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableView;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
+import trashsoftware.deepSearcher2.searcher.archiveSearchers.ArchiveSearcher;
+import trashsoftware.deepSearcher2.searcher.archiveSearchers.FileInArchive;
+import trashsoftware.deepSearcher2.searcher.archiveSearchers.ZipSearcher;
 import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
@@ -39,12 +43,10 @@ public class Searcher {
 
     private final ReadOnlyIntegerWrapper resultCountWrapper = new ReadOnlyIntegerWrapper();
 
-    private final ObservableList<ResultItem> tableList;
+    private final TableView<ResultItem> table;
 
     private final Map<File, ResultItem> resultFilesMap = new HashMap<>();
 
-    private final ResourceBundle bundle;
-    private final ResourceBundle fileTypeBundle;
     private final MatcherFactory nameMatcherFactory;
     private final MatcherFactory contentMatcherFactory;
     private boolean searching = true;
@@ -53,20 +55,14 @@ public class Searcher {
      * Constructor.
      *
      * @param prefSet        the pref set, recording all search preferences and is immutable.
-     * @param tableList      the javafx list of the result {@code TableView}
-     * @param bundle         language bundle
-     * @param fileTypeBundle type bundle
+     * @param table          the javafx table of the result {@code TableView}
      * @param customFormats  all custom formats, immutable after
      */
     public Searcher(PrefSet prefSet,
-                    ObservableList<ResultItem> tableList,
-                    ResourceBundle bundle,
-                    ResourceBundle fileTypeBundle,
+                    TableView<ResultItem> table,
                     Map<String, String> customFormats) {
         this.prefSet = prefSet;
-        this.tableList = tableList;
-        this.bundle = bundle;
-        this.fileTypeBundle = fileTypeBundle;
+        this.table = table;
         this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
         this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
         // This is wrapped by a new map to avoid situations that the user modifies custom formats while searching
@@ -92,11 +88,18 @@ public class Searcher {
         contentService.shutdown();
         try {
             if (!contentService.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS)) {
-                EventLogger.log("292,471,208 years have passed! The sun has brightened another 3%!");
+                // error
+                // Note: a G-class main sequence star keeps brightening in its life
+                // The Sun has brightened about 30% comparing to the time when it was born (5 billion years ago)
+                EventLogger.log("292,471,208 years have passed! Even the Sun has brightened another 3%!");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public PrefSet getPrefSet() {
+        return prefSet;
     }
 
     /**
@@ -186,14 +189,26 @@ public class Searcher {
         if (prefSet.getExtensions() != null) {
             matchFileContent(file);
         }
+        // check search compressed files is selected
+        if (prefSet.isSearchCmpFile()) {
+            ArchiveSearcher archiveSearcher = makeArchiveSearcher(file);
+            if (archiveSearcher != null) {
+                contentService.execute(new SearchArchiveTask(archiveSearcher));
+            }
+        }
     }
 
     private void matchName(File file) {
-        if (prefSet.isMatchAll()) matchNameAll(file);
-        else matchNameAny(file);
+        if (prefSet.isMatchAll()) matchNameAll(file, null);
+        else matchNameAny(file, null);
     }
 
-    private void matchNameAll(File file) {
+    public void matchName(FileInArchive fileInArchive) {
+        if (prefSet.isMatchAll()) matchNameAll(fileInArchive.getFakeFile(), fileInArchive);
+        else matchNameAny(fileInArchive.getFakeFile(), fileInArchive);
+    }
+
+    private void matchNameAll(File file, FileInArchive fileInArchive) {
         String name = getSearchingFileName(file);
 
         StringMatcher matcher = nameMatcherFactory.createMatcher(name);
@@ -201,22 +216,22 @@ public class Searcher {
             if (matcher.search(target) < 0) return;
         }
 
-        addNameResult(file);
+        addNameResult(file, fileInArchive);
     }
 
-    private void matchNameAny(File file) {
+    private void matchNameAny(File file, FileInArchive fileInArchive) {
         String name = getSearchingFileName(file);
 
         StringMatcher matcher = nameMatcherFactory.createMatcher(name);
         for (String target : prefSet.getTargets()) {
             if (matcher.search(target) >= 0) {
-                addNameResult(file);
+                addNameResult(file, fileInArchive);
                 return;
             }
         }
     }
 
-    private void matchFileContent(File file) {
+    private ContentSearcher createContentSearcher(File file) {
         String ext = Util.getFileExtension(file.getName());
         if (prefSet.getExtensions().contains(ext)) {
             ContentSearcher searcher;
@@ -234,7 +249,30 @@ public class Searcher {
             } else {
                 searcher = new PlainTextSearcher(file, contentMatcherFactory, prefSet.isCaseSensitive());
             }
+            return searcher;
+        }
+        return null;
+    }
+
+    private void matchFileContent(File file) {
+        ContentSearcher searcher = createContentSearcher(file);
+        if (searcher != null) {
             contentService.execute(new SearchContentTask(file, searcher));
+        }
+    }
+
+    public void matchFileContent(File uncompressed, FileInArchive fileInArchive) {
+        ContentSearcher searcher = createContentSearcher(uncompressed);
+        if (searcher != null) {
+            ContentResult result;
+            if (prefSet.isWholeContent()) {
+                if (prefSet.isMatchAll()) result = searcher.searchAllWhole(prefSet.getTargets());
+                else result = searcher.searchAnyWhole(prefSet.getTargets());
+            } else {
+                if (prefSet.isMatchAll()) result = searcher.searchAll(prefSet.getTargets());
+                else result = searcher.searchAny(prefSet.getTargets());
+            }
+            if (result != null) addContentResult(fileInArchive.getFakeFile(), fileInArchive, result);
         }
     }
 
@@ -248,30 +286,52 @@ public class Searcher {
         }
     }
 
-    private void updateResultCount() {
-        resultCountWrapper.setValue(tableList.size());
+    private ArchiveSearcher makeArchiveSearcher(File file) {
+        String ext = Util.getFileExtension(file.getName()).toLowerCase();
+        if (prefSet.getCmpFileFormats().contains(ext)) {
+            switch (ext) {
+                case "zip":
+                    return new ZipSearcher(this, file);
+                case "7z":
+                    return null;
+            }
+        }
+        return null;
     }
 
-    private synchronized void addContentResult(File file, ContentResult csr) {
+    private void updateResultCount() {
+        resultCountWrapper.setValue(table.getItems().size());
+    }
+
+    private synchronized void addContentResult(File file, FileInArchive fileInArchive, ContentResult csr) {
         // check if previous some result is already added
         // This situation occurs when this file is already matched by name successfully
         ResultItem item = resultFilesMap.get(file);
         if (item != null) {
             item.setContentRes(csr);
+            table.refresh();
         } else {
-            ResultItem resultItem = ResultItem.createContentMatch(file, bundle, fileTypeBundle, csr, customFormats);
-            tableList.add(resultItem);
+            ResultItem resultItem;
+            if (fileInArchive == null)
+                resultItem = ResultItem.createContentMatch(file, csr, customFormats);
+            else
+                resultItem = ResultItem.createContentMatchInArchive(fileInArchive, csr, customFormats);
+            table.getItems().add(resultItem);
             resultFilesMap.put(file, resultItem);
             updateResultCount();
         }
     }
 
-    private void addNameResult(File file) {
+    private void addNameResult(File file, FileInArchive fileInArchive) {
         // check duplicate
         // duplicate may happens when a depth limit is set, so prefSet does not remove parent-children directories.
         if (!resultFilesMap.containsKey(file)) {
-            ResultItem resultItem = ResultItem.createNameMatch(file, bundle, fileTypeBundle, customFormats);
-            tableList.add(resultItem);
+            ResultItem resultItem;
+            if (fileInArchive == null)
+                resultItem = ResultItem.createNameMatch(file, customFormats);
+            else
+                resultItem = ResultItem.RegularItem.createNameMatchInArchive(fileInArchive, customFormats);
+            table.getItems().add(resultItem);
             resultFilesMap.put(file, resultItem);
             updateResultCount();
         }
@@ -322,7 +382,21 @@ public class Searcher {
                 if (prefSet.isMatchAll()) result = searcher.searchAll(prefSet.getTargets());
                 else result = searcher.searchAny(prefSet.getTargets());
             }
-            if (result != null) addContentResult(file, result);
+            if (result != null) addContentResult(file, null, result);
+        }
+    }
+
+    private static class SearchArchiveTask implements Runnable {
+
+        private final ArchiveSearcher archiveSearcher;
+
+        private SearchArchiveTask(ArchiveSearcher archiveSearcher) {
+            this.archiveSearcher = archiveSearcher;
+        }
+
+        @Override
+        public void run() {
+            archiveSearcher.search();
         }
     }
 }

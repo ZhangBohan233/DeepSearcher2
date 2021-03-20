@@ -52,9 +52,7 @@ import java.util.*;
 
 public class MainViewController implements Initializable, CacheObservable {
 
-    private final ResourceBundle fileTypeBundle =
-            ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
-                    Configs.getConfigs().getCurrentLocale());
+    private final ResourceBundle fileTypeBundle = Client.getFileTypeBundle();
     @FXML
     GridPane basePane;
     @FXML
@@ -378,9 +376,11 @@ public class MainViewController implements Initializable, CacheObservable {
         TableColumn<ResultItem, ?> matchModeCol = resultTable.getColumns().get(3);
 
         fileNameCol.setCellValueFactory(param -> {
-            File file = param.getValue().getFile();
-            String name = showFullPathMenu.isSelected() ? file.getAbsolutePath() : file.getName();
-            if (!showExtMenu.isSelected() && !file.isDirectory()) {
+//            File file = param.getValue().getFile();
+            ResultItem resultItem = param.getValue();
+            String name = showFullPathMenu.isSelected() ?
+                    resultItem.getFullPath() : resultItem.getSimpleName();
+            if (!showExtMenu.isSelected() && !resultItem.isDir()) {
                 int dotIndex = name.lastIndexOf('.');
                 if (dotIndex > 0) name = name.substring(0, dotIndex);
             }
@@ -405,7 +405,7 @@ public class MainViewController implements Initializable, CacheObservable {
         fileNameCol.setCellFactory(new ResTableCallback<>(resultTable) {
             @Override
             protected String tooltipText(ResultItem cellData) {
-                return cellData.getFile().getAbsolutePath();
+                return cellData.getFullPath();
             }
         });
     }
@@ -464,13 +464,13 @@ public class MainViewController implements Initializable, CacheObservable {
             final ContextMenu contextMenu = new ContextMenu();
             final MenuItem openFileMenu = new MenuItem(bundle.getString("openFile"));
             final MenuItem openLocationMenu = new MenuItem(bundle.getString("openFileLocation"));
-            openFileMenu.setOnAction(event -> openFile(row.getItem().getFile()));
-            openLocationMenu.setOnAction(event -> openFile(row.getItem().getFile().getParentFile()));
+            openFileMenu.setOnAction(event -> row.getItem().open());
+            openLocationMenu.setOnAction(event -> row.getItem().openParentDir());
             contextMenu.getItems().addAll(openFileMenu, openLocationMenu);
             // Set context menu on row, but use a binding to make it only show for non-empty rows:
             row.setOnMouseClicked(mouseEvent -> {
                 if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-                    openFile(row.getItem().getFile());
+                    row.getItem().open();
                 }
             });
             row.contextMenuProperty().bind(
@@ -667,9 +667,7 @@ public class MainViewController implements Initializable, CacheObservable {
 
             Searcher searcher = new Searcher(
                     prefSet,
-                    resultTable.getItems(),
-                    bundle,
-                    fileTypeBundle,
+                    resultTable,
                     formatTable.getCustomFormats());
             service = new SearchService(searcher);
 
@@ -757,15 +755,6 @@ public class MainViewController implements Initializable, CacheObservable {
             popupMenu.show(parent, e.getScreenX(), e.getScreenY());
             parent.setOnMouseClicked(originalHandler);
         });
-    }
-
-    private void openFile(File file) {
-        try {
-            Desktop.getDesktop().open(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            EventLogger.log(e);
-        }
     }
 
     private List<String> getTargets() {
