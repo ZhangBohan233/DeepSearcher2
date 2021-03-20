@@ -10,6 +10,8 @@ module DeepSearcher {
     requires poi.ooxml;
     requires poi.scratchpad;
     requires poi;
+    requires org.tukaani.xz;
+    requires junrar;
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.guiItems;

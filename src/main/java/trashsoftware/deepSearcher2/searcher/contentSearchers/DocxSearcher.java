@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.searcher.contentSearchers;
 
+import org.apache.poi.EmptyFileException;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import trashsoftware.deepSearcher2.searcher.ContentResult;
@@ -23,6 +24,8 @@ public class DocxSearcher extends TwoKeysSearcher {
                 String par = paragraphs.get(i).getText();
                 searchInString(par, targets, i);
             }
+        } catch (EmptyFileException e) {
+            System.err.println(e.toString());
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(file);

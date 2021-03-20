@@ -7,6 +7,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Duration;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.searcher.archiveSearchers.ArchiveSearcher;
 import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
@@ -50,10 +51,9 @@ public class CmpFileSearchPage extends SettingsPage {
         checkCol.setCellValueFactory(new PropertyValueFactory<>("checkBox"));
         formatCol.setCellValueFactory(new PropertyValueFactory<>("extension"));
 
-        formatTable.getItems().addAll(
-                new CmpFormatItem("zip"),
-                new CmpFormatItem("7z")
-        );
+        for (String format : ArchiveSearcher.COMPRESSED_FORMATS) {
+            formatTable.getItems().add(new CmpFormatItem(format));
+        }
 
         Set<String> formats = Configs.getConfigs().getCmpFormats();
         for (CmpFormatItem cfi : formatTable.getItems()) {

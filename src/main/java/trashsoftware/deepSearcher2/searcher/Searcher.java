@@ -2,12 +2,9 @@ package trashsoftware.deepSearcher2.searcher;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TableView;
 import trashsoftware.deepSearcher2.guiItems.ResultItem;
-import trashsoftware.deepSearcher2.searcher.archiveSearchers.ArchiveSearcher;
-import trashsoftware.deepSearcher2.searcher.archiveSearchers.FileInArchive;
-import trashsoftware.deepSearcher2.searcher.archiveSearchers.ZipSearcher;
+import trashsoftware.deepSearcher2.searcher.archiveSearchers.*;
 import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
@@ -17,7 +14,10 @@ import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -54,9 +54,9 @@ public class Searcher {
     /**
      * Constructor.
      *
-     * @param prefSet        the pref set, recording all search preferences and is immutable.
-     * @param table          the javafx table of the result {@code TableView}
-     * @param customFormats  all custom formats, immutable after
+     * @param prefSet       the pref set, recording all search preferences and is immutable.
+     * @param table         the javafx table of the result {@code TableView}
+     * @param customFormats all custom formats, immutable after
      */
     public Searcher(PrefSet prefSet,
                     TableView<ResultItem> table,
@@ -177,7 +177,7 @@ public class Searcher {
         }
     }
 
-    private void searchOneFile(File file) {
+    public void searchOneFile(File file) {
         // Check if this format is excluded
         if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) return;
 
@@ -191,10 +191,31 @@ public class Searcher {
         }
         // check search compressed files is selected
         if (prefSet.isSearchCmpFile()) {
-            ArchiveSearcher archiveSearcher = makeArchiveSearcher(file);
-            if (archiveSearcher != null) {
-                contentService.execute(new SearchArchiveTask(archiveSearcher));
-            }
+            searchArchiveFile(file);
+        }
+    }
+
+    private void searchArchiveFile(File file) {
+        searchArchiveFile(file, file, "", true);
+    }
+
+    /**
+     * Searches an archive file
+     *
+     * @param realFile         the real file on disk, ready to read, may be a temp file
+     * @param outermostArchive the outermost archive file, permanently existing on disk
+     * @param internalPath     path between the outermost archive and the current processing file
+     */
+    public void searchArchiveFile(File realFile, File outermostArchive, String internalPath) {
+        searchArchiveFile(realFile, outermostArchive, internalPath, false);
+    }
+
+    private void searchArchiveFile(File realFile, File outermostArchive, String internalPath, boolean needThread) {
+        if (outermostArchive == null) outermostArchive = realFile;
+        ArchiveSearcher archiveSearcher = makeArchiveSearcher(realFile, outermostArchive, internalPath);
+        if (archiveSearcher != null) {
+            if (needThread) contentService.execute(new SearchArchiveTask(archiveSearcher));
+            else archiveSearcher.search();
         }
     }
 
@@ -286,14 +307,16 @@ public class Searcher {
         }
     }
 
-    private ArchiveSearcher makeArchiveSearcher(File file) {
-        String ext = Util.getFileExtension(file.getName()).toLowerCase();
+    private ArchiveSearcher makeArchiveSearcher(File realArchive, File outermostArchive, String internalPath) {
+        String ext = Util.getFileExtension(realArchive.getName()).toLowerCase();
         if (prefSet.getCmpFileFormats().contains(ext)) {
             switch (ext) {
                 case "zip":
-                    return new ZipSearcher(this, file);
+                    return new ZipSearcher(realArchive, outermostArchive, internalPath, this);
                 case "7z":
-                    return null;
+                    return new SevenZSearcher(realArchive, outermostArchive, internalPath, this);
+                case "rar":
+                    return new RarSearcher(realArchive, outermostArchive, internalPath, this);
             }
         }
         return null;
@@ -360,6 +383,20 @@ public class Searcher {
         }
     }
 
+    private static class SearchArchiveTask implements Runnable {
+
+        private final ArchiveSearcher archiveSearcher;
+
+        private SearchArchiveTask(ArchiveSearcher archiveSearcher) {
+            this.archiveSearcher = archiveSearcher;
+        }
+
+        @Override
+        public void run() {
+            archiveSearcher.search();
+        }
+    }
+
     /**
      * A class that runs file content searching in background.
      */
@@ -383,20 +420,6 @@ public class Searcher {
                 else result = searcher.searchAny(prefSet.getTargets());
             }
             if (result != null) addContentResult(file, null, result);
-        }
-    }
-
-    private static class SearchArchiveTask implements Runnable {
-
-        private final ArchiveSearcher archiveSearcher;
-
-        private SearchArchiveTask(ArchiveSearcher archiveSearcher) {
-            this.archiveSearcher = archiveSearcher;
-        }
-
-        @Override
-        public void run() {
-            archiveSearcher.search();
         }
     }
 }

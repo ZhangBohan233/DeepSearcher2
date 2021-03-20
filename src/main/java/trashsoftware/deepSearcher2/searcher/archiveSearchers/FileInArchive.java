@@ -1,15 +1,21 @@
 package trashsoftware.deepSearcher2.searcher.archiveSearchers;
 
+import trashsoftware.deepSearcher2.searcher.Searcher;
+
 import java.io.File;
 
 public class FileInArchive {
     private final long origSize;
     private final File fakeFile;
-    private final File archiveFile;
+    private final File outermostArchiveFile;
 
-    public FileInArchive(File fakeFile, File archiveFile, long origSize) {
+    /**
+     * Params:
+     * @see ArchiveSearcher#ArchiveSearcher(File, File, String, Searcher)
+     */
+    public FileInArchive(File fakeFile, File outermostArchiveFile, long origSize) {
         this.fakeFile = fakeFile;
-        this.archiveFile = archiveFile;
+        this.outermostArchiveFile = outermostArchiveFile;
         this.origSize = origSize;
     }
 
@@ -17,8 +23,13 @@ public class FileInArchive {
         return fakeFile;
     }
 
-    public File getArchiveFile() {
-        return archiveFile;
+    /**
+     * Returns the outermost archive file, which is 'permanently' existing on disk.
+     *
+     * @return the outermost archive file, which is 'permanently' existing on disk
+     */
+    public File getOutermostArchiveFile() {
+        return outermostArchiveFile;
     }
 
     public boolean isDirectory() {

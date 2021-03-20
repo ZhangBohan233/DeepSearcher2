@@ -7,7 +7,6 @@ import trashsoftware.deepSearcher2.searcher.archiveSearchers.FileInArchive;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Map;
 
 public abstract class ResultItem {
@@ -205,12 +204,12 @@ public abstract class ResultItem {
 
         @Override
         public void open() {
-            Util.desktopOpenFile(fileInArchive.getArchiveFile());
+            Util.desktopOpenFile(fileInArchive.getOutermostArchiveFile());
         }
 
         @Override
         public void openParentDir() {
-            Util.desktopOpenFile(fileInArchive.getArchiveFile().getParentFile());
+            Util.desktopOpenFile(fileInArchive.getOutermostArchiveFile().getParentFile());
         }
     }
 }

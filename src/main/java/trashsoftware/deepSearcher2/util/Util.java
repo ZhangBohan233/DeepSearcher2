@@ -56,8 +56,9 @@ public class Util {
      *
      * @param origName the desired file name, may conflict with an existing file
      * @return the file name that does not conflict with existing files
+     * @throws IOException if not able to create the temp file
      */
-    public static String fileNameNoConflict(String origName) {
+    public static String fileNameNoConflict(String origName) throws IOException {
         int count = 0;
         int dotIndex = origName.lastIndexOf('.');
         String front, back;
@@ -69,8 +70,18 @@ public class Util {
             back = origName.substring(dotIndex);
         }
         String aftName = origName;
-        while (new File(aftName).exists()) {
+        File file;
+        while ((file = new File(aftName)).exists()) {
             aftName = String.format("%s(%d)%s", front, ++count, back);
+        }
+        File parent = file.getParentFile();
+        if (!parent.exists()) {
+            if (!parent.mkdirs()) {
+                throw new IOException("Cannot create parent directory " + parent);
+            }
+        }
+        if (!file.createNewFile()) {
+            System.err.println("Cannot create file " + file);
         }
         return aftName;
     }
