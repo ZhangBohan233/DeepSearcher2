@@ -10,7 +10,7 @@ public class FileInArchive {
     private final File outermostArchiveFile;
 
     /**
-     * Params:
+     * @param origSize the size of the original file, uncompressed.
      * @see ArchiveSearcher#ArchiveSearcher(File, File, String, Searcher)
      */
     public FileInArchive(File fakeFile, File outermostArchiveFile, long origSize) {

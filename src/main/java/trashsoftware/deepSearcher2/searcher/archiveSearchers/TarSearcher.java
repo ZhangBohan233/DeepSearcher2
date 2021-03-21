@@ -1,33 +1,27 @@
 package trashsoftware.deepSearcher2.searcher.archiveSearchers;
 
-import com.github.junrar.Archive;
-import com.github.junrar.rarfile.FileHeader;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import trashsoftware.deepSearcher2.searcher.Searcher;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.Util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 
-public class RarSearcher extends EntryArchiveSearcher {
-
-    public RarSearcher(File archiveFile, File outermostArchiveFile, String internalPath, Searcher searcher) {
+public class TarSearcher extends EntryArchiveSearcher {
+    public TarSearcher(File archiveFile, File outermostArchiveFile, String internalPath, Searcher searcher) {
         super(archiveFile, outermostArchiveFile, internalPath, searcher);
     }
 
     @Override
     public void search() {
-        try (Archive rar = new Archive(archiveFile)) {
-            FileHeader fileHeader;
-            while (searcher.isSearching() && (fileHeader = rar.nextFileHeader()) != null) {
-                String entryName = fileHeader.getFileName();
-                FileInArchive fileInArchive =
-                        new FileInArchive(
-                                new File(archiveFile.getAbsolutePath() + File.separator + entryName),
-                                outermostArchiveFile,
-                                fileHeader.getUnpSize());
-                if (fileHeader.isDirectory()) {
+        try (TarArchiveInputStream tar = new TarArchiveInputStream(new FileInputStream(archiveFile))) {
+            TarArchiveEntry entry;
+            while (searcher.isSearching() && (entry = tar.getNextTarEntry()) != null) {
+                String entryName = entry.getName();
+                FileInArchive fileInArchive = createFileInArchive(entryName, entry.getRealSize());
+                if (entry.isDirectory()) {
                     // Check dir is selected
                     if (searcher.getPrefSet().isDirName()) {
                         searcher.matchName(fileInArchive);
@@ -45,7 +39,7 @@ public class RarSearcher extends EntryArchiveSearcher {
                     boolean childIsArchive = searcher.getPrefSet().getCmpFileFormats().contains(extension);
                     if (searcher.getPrefSet().getExtensions() != null || childIsArchive) {
                         String cachedName = cacheNameNonConflict(extension);
-                        if (uncompressSingle(cachedName, rar, fileHeader)) {
+                        if (extractSingle(cachedName, tar)) {
                             if (searcher.getPrefSet().getExtensions() != null) {
                                 searcher.matchFileContent(new File(cachedName), fileInArchive);
                             }
@@ -62,12 +56,17 @@ public class RarSearcher extends EntryArchiveSearcher {
         }
     }
 
-    private boolean uncompressSingle(String cachedName, Archive archive, FileHeader fileHeader) {
+    private boolean extractSingle(String cachedName, TarArchiveInputStream tar) {
         try (OutputStream uncOs = new FileOutputStream(cachedName)) {
-            archive.extractFile(fileHeader, uncOs);
+            if (uncBuffer == null) uncBuffer = new byte[BUFFER_SIZE];
+            int read;
+            while (searcher.isSearching() && (read = tar.read(uncBuffer)) >= 0) {
+                uncOs.write(uncBuffer, 0, read);
+            }
             uncOs.flush();
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
+            // the exception is contained in this method, to avoid interruption of archive entries iteration
             e.printStackTrace();
             return false;
         }

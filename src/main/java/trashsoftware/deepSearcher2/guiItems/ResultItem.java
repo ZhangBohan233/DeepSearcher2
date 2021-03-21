@@ -194,7 +194,7 @@ public abstract class ResultItem {
 
         @Override
         public String getType() {
-            return Client.getBundle().getString("cmpFile");
+            return Client.getBundle().getString("cmpFileContent");
         }
 
         @Override

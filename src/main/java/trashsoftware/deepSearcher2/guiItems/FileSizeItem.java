@@ -20,6 +20,7 @@ public class FileSizeItem implements Comparable<FileSizeItem> {
 
     @Override
     public String toString() {
+        if (size < 0) return "";
         return Util.sizeToReadable(size, Client.getBundle().getString("bytes"));
     }
 

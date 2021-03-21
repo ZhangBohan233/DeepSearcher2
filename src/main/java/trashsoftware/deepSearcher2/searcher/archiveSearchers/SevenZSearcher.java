@@ -19,7 +19,7 @@ public class SevenZSearcher extends EntryArchiveSearcher {
     public void search() {
         try (SevenZFile sevenZFile = new SevenZFile(archiveFile)) {
             SevenZArchiveEntry entry;
-            while ((entry = sevenZFile.getNextEntry()) != null) {
+            while (searcher.isSearching() && (entry = sevenZFile.getNextEntry()) != null) {
                 String entryName = entry.getName();
                 FileInArchive fileInArchive = createFileInArchive(entryName, entry.getSize());
                 if (entry.isDirectory()) {
@@ -36,7 +36,7 @@ public class SevenZSearcher extends EntryArchiveSearcher {
                         searcher.matchName(fileInArchive);
                     }
                     // check file content is selected
-                    String extension = Util.getFileExtension(entryName).toLowerCase(Locale.ROOT);
+                    String extension = Util.getFileExtension(entryName).toLowerCase();
                     boolean childIsArchive = searcher.getPrefSet().getCmpFileFormats().contains(extension);
                     if (searcher.getPrefSet().getExtensions() != null || childIsArchive) {
                         String cachedName = cacheNameNonConflict(extension);
@@ -52,7 +52,7 @@ public class SevenZSearcher extends EntryArchiveSearcher {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -61,7 +61,7 @@ public class SevenZSearcher extends EntryArchiveSearcher {
         try (OutputStream uncOs = new FileOutputStream(cachedName)) {
             if (uncBuffer == null) uncBuffer = new byte[BUFFER_SIZE];
             int read;
-            while ((read = sevenZFile.read(uncBuffer)) >= 0) {
+            while (searcher.isSearching() && (read = sevenZFile.read(uncBuffer)) >= 0) {
                 uncOs.write(uncBuffer, 0, read);
             }
             uncOs.flush();

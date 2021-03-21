@@ -35,13 +35,14 @@
             <CheckBox text="%cmpFileSearch" fx:id="enableBox"/>
             <Label text="(?)" fx:id="helpLabel"/>
         </HBox>
-        <TableView fx:id="formatTable" prefHeight="350.0" GridPane.rowIndex="1">
+        <Label text="%cmpFileHarmfulPerf" GridPane.rowIndex="1"/>
+        <TableView fx:id="formatTable" prefHeight="350.0" GridPane.rowIndex="2">
             <columns>
                 <TableColumn fx:id="checkCol" prefWidth="40.0"/>
                 <TableColumn text="%cmpFileFormats" fx:id="formatCol" prefWidth="300.0"/>
             </columns>
         </TableView>
-        <CheckBox text="%selectAll" fx:id="selectAllBox" GridPane.rowIndex="2"/>
+        <CheckBox text="%selectAll" fx:id="selectAllBox" GridPane.rowIndex="3"/>
     </GridPane>
 
 </fx:root>

@@ -50,6 +50,7 @@ public class Searcher {
     private final MatcherFactory nameMatcherFactory;
     private final MatcherFactory contentMatcherFactory;
     private boolean searching = true;
+    private boolean finished = false;
 
     /**
      * Constructor.
@@ -96,6 +97,7 @@ public class Searcher {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        finished = true;
     }
 
     public PrefSet getPrefSet() {
@@ -317,6 +319,14 @@ public class Searcher {
                     return new SevenZSearcher(realArchive, outermostArchive, internalPath, this);
                 case "rar":
                     return new RarSearcher(realArchive, outermostArchive, internalPath, this);
+                case "gz":
+                    return new GzSearcher(realArchive, outermostArchive, internalPath, this);
+                case "tar":
+                    return new TarSearcher(realArchive, outermostArchive, internalPath, this);
+                case "xz":
+                    return new XzSearcher(realArchive, outermostArchive, internalPath, this);
+                case "bz2":
+                    return new Bz2Searcher(realArchive, outermostArchive, internalPath, this);
             }
         }
         return null;
@@ -361,7 +371,11 @@ public class Searcher {
     }
 
     public boolean isNormalFinish() {
-        return searching;
+        return finished && searching;
+    }
+
+    public boolean isSearching() {
+        return !finished && searching;
     }
 
     public ReadOnlyIntegerProperty resultCountProperty() {
