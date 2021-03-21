@@ -43,7 +43,6 @@ import trashsoftware.deepSearcher2.guiItems.ResultItem;
 import trashsoftware.deepSearcher2.searcher.*;
 import trashsoftware.deepSearcher2.util.*;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -649,7 +648,7 @@ public class MainViewController implements Initializable, CacheObservable {
     private void startSearching() {
         try {
             long beginTime = System.currentTimeMillis();
-            PrefSet prefSet = new PrefSet.PrefSetBuilder()
+            SearchingOptions prefSet = new SearchingOptions.PrefSetBuilder()
                     .caseSensitive(false)
                     .setMatchAll(matchAllRadioBtn.isSelected())
                     .searchFileName(searchFileNameBox.isSelected())

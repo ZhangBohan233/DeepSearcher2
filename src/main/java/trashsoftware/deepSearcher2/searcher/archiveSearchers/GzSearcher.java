@@ -1,6 +1,7 @@
 package trashsoftware.deepSearcher2.searcher.archiveSearchers;
 
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipUtils;
 import trashsoftware.deepSearcher2.searcher.Searcher;
 
 import java.io.File;
@@ -24,6 +25,16 @@ public class GzSearcher extends SoloCmpSearcher {
     @Override
     protected StreamAndInfo createStream() throws IOException {
         GzipCompressorInputStream gis = new GzipCompressorInputStream(new FileInputStream(archiveFile));
-        return new StreamAndInfo(gis, gis.getMetaData().getFilename(), -1);
+        String gzContentName = gis.getMetaData().getFilename();
+        if (gzContentName == null) {
+            String gzName;
+            if (internalPath.length() == 0) gzName = archiveFile.getName();
+            else {
+                String standardPath = new File(internalPath).getPath();  // in internalPath, '/' and '\' are mixed
+                gzName = standardPath.substring(standardPath.lastIndexOf(File.separator) + 1);
+            }
+            gzContentName = GzipUtils.getUncompressedFilename(gzName);
+        }
+        return new StreamAndInfo(gis, gzContentName, -1);
     }
 }

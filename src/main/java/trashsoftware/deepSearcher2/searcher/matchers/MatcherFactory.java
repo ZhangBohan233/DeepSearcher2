@@ -1,7 +1,7 @@
 package trashsoftware.deepSearcher2.searcher.matchers;
 
 import trashsoftware.deepSearcher2.searcher.Algorithm;
-import trashsoftware.deepSearcher2.searcher.PrefSet;
+import trashsoftware.deepSearcher2.searcher.SearchingOptions;
 
 public abstract class MatcherFactory {
 
@@ -11,7 +11,7 @@ public abstract class MatcherFactory {
      * @param prefSet the pref set
      * @return the new factory
      */
-    public static MatcherFactory createFactoryByPrefSet(PrefSet prefSet) {
+    public static MatcherFactory createFactoryByPrefSet(SearchingOptions prefSet) {
         Algorithm alg;
         if (prefSet.getMatchMode() == MatchMode.NORMAL) {
             alg = prefSet.getMatchingAlgorithm();

@@ -34,8 +34,9 @@ public class Util {
      * @return the extension (suffix name) of a file's name, in lower case.
      */
     public static String getFileExtension(String fileName) {
-        int extIndex = fileName.lastIndexOf(".");
-        return extIndex == -1 ? "" : fileName.substring(extIndex + 1).toLowerCase();
+        String pureName = new File(fileName).getName();
+        int extIndex = pureName.lastIndexOf(".");
+        return extIndex == -1 ? "" : pureName.substring(extIndex + 1).toLowerCase();
     }
 
     @SafeVarargs

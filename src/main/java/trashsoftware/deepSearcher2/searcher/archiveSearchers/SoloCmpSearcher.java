@@ -39,19 +39,19 @@ public abstract class SoloCmpSearcher extends ArchiveSearcher {
             throws IOException {
         FileInArchive fileInArchive = createFileInArchive(contentFileName, uncompressedSize);
         // Check if this format is excluded
-        if (searcher.getPrefSet().getExcludedFormats().contains(
+        if (searcher.getOptions().getExcludedFormats().contains(
                 Util.getFileExtension(contentFileName))) return;
         // check file name is selected
-        if (searcher.getPrefSet().isFileName()) {
+        if (searcher.getOptions().isFileName()) {
             searcher.matchName(fileInArchive);
         }
         // check file content is selected
         String extension = Util.getFileExtension(contentFileName).toLowerCase();
-        boolean childIsArchive = searcher.getPrefSet().getCmpFileFormats().contains(extension);
-        if (searcher.getPrefSet().getExtensions() != null || childIsArchive) {
+        boolean childIsArchive = searcher.getOptions().getCmpFileFormats().contains(extension);
+        if (searcher.getOptions().getExtensions() != null || childIsArchive) {
             String cachedName = cacheNameNonConflict(extension);
             uncompressContent(cachedName, compressedInput);
-            if (searcher.getPrefSet().getExtensions() != null) {
+            if (searcher.getOptions().getExtensions() != null) {
                 searcher.matchFileContent(new File(cachedName), fileInArchive);
             }
             if (childIsArchive) {

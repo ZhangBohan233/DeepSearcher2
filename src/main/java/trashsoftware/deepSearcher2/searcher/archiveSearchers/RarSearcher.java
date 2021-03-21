@@ -29,24 +29,24 @@ public class RarSearcher extends EntryArchiveSearcher {
                                 fileHeader.getUnpSize());
                 if (fileHeader.isDirectory()) {
                     // Check dir is selected
-                    if (searcher.getPrefSet().isDirName()) {
+                    if (searcher.getOptions().isDirName()) {
                         searcher.matchName(fileInArchive);
                     }
                 } else {
                     // Check if this format is excluded
-                    if (searcher.getPrefSet().getExcludedFormats().contains(
+                    if (searcher.getOptions().getExcludedFormats().contains(
                             Util.getFileExtension(entryName))) continue;
                     // check file name is selected
-                    if (searcher.getPrefSet().isFileName()) {
+                    if (searcher.getOptions().isFileName()) {
                         searcher.matchName(fileInArchive);
                     }
                     // check file content is selected
-                    String extension = Util.getFileExtension(entryName).toLowerCase();
-                    boolean childIsArchive = searcher.getPrefSet().getCmpFileFormats().contains(extension);
-                    if (searcher.getPrefSet().getExtensions() != null || childIsArchive) {
+                    String extension = Util.getFileExtension(entryName);
+                    boolean childIsArchive = searcher.getOptions().getCmpFileFormats().contains(extension);
+                    if (searcher.getOptions().getExtensions() != null || childIsArchive) {
                         String cachedName = cacheNameNonConflict(extension);
                         if (uncompressSingle(cachedName, rar, fileHeader)) {
-                            if (searcher.getPrefSet().getExtensions() != null) {
+                            if (searcher.getOptions().getExtensions() != null) {
                                 searcher.matchFileContent(new File(cachedName), fileInArchive);
                             }
                             if (childIsArchive) {

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * A class that holds the current search preferences set by user.
  */
-public class PrefSet {
+public class SearchingOptions {
     private static final Map<String, String> ESCAPES = Map.of(
             "\\0", "\0",
             "\\b", "\b",
@@ -49,7 +49,7 @@ public class PrefSet {
      * <p>
      * Please use {@code PrefSet.PrefSetBuilder} to create instances of this class.
      */
-    private PrefSet() {
+    private SearchingOptions() {
     }
 
     private static List<String> replaceEscapes(List<String> targets) {
@@ -218,7 +218,7 @@ public class PrefSet {
 
     public static class PrefSetBuilder {
 
-        private final PrefSet prefSet = new PrefSet();
+        private final SearchingOptions prefSet = new SearchingOptions();
 
         public PrefSetBuilder setMatchAll(boolean matchAll) {
             prefSet.matchAll = matchAll;
@@ -311,7 +311,7 @@ public class PrefSet {
          * @throws SearchDirNotSetException    if no search directory is set
          * @throws SearchPrefNotSetException   if nothing to search
          */
-        public PrefSet build()
+        public SearchingOptions build()
                 throws SearchTargetNotSetException, SearchDirNotSetException, SearchPrefNotSetException {
             if (prefSet.targets == null || prefSet.targets.isEmpty() || areTargetsAllEmpty()) {
                 throw new SearchTargetNotSetException("No searching targets");

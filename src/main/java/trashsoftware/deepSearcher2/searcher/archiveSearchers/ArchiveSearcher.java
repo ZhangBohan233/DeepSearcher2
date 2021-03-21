@@ -7,6 +7,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * A searches that searches inside archive files or compressed files.
+ * <p>
+ * All searching options are still effective to any internal file of archives.
+ *
+ * @since 1.1
+ */
 public abstract class ArchiveSearcher {
 
     public static final Set<String> COMPRESSED_FORMATS = Set.of(
@@ -33,8 +40,6 @@ public abstract class ArchiveSearcher {
         this.searcher = searcher;
     }
 
-    public abstract void search();
-
     /**
      * A commonly used utility method.
      * <p>
@@ -52,11 +57,21 @@ public abstract class ArchiveSearcher {
         while ((file = new File(cacheName)).exists()) {
             cacheName = String.format("%s(%d).%s", front, ++count, extension);
         }
-        if (!file.createNewFile()) {
+        try {
+            if (!file.createNewFile()) {
+                throw new IOException("Cannot create " + file);
+            }
+        } catch (IOException e) {
             System.err.println("Cannot create file " + file);
+            throw e;
         }
         return cacheName;
     }
+
+    /**
+     * Searches the content.
+     */
+    public abstract void search();
 
     protected FileInArchive createFileInArchive(String entryName, long entrySize) {
         return new FileInArchive(

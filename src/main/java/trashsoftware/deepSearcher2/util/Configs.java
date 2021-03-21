@@ -115,7 +115,7 @@ public class Configs {
                 }
                 Date date = DATE_FORMAT.parse(his.getName());
                 JSONObject jsonObject = new JSONObject(builder.toString());
-                PrefSet prefSet = toPrefSet(jsonObject, his.getName());
+                SearchingOptions prefSet = toPrefSet(jsonObject, his.getName());
                 if (prefSet == null) continue;
                 HistoryItem historyItem = new HistoryItem(prefSet, date);
                 list.add(historyItem);
@@ -148,7 +148,7 @@ public class Configs {
         }
     }
 
-    public static void addHistory(PrefSet historyItem) {
+    public static void addHistory(SearchingOptions historyItem) {
         JSONObject object = toJsonObject(historyItem);
 
         String fileName = HISTORY_DIR + File.separator + DATE_FORMAT.format(new Date()) + ".json";
@@ -161,7 +161,7 @@ public class Configs {
         }
     }
 
-    private static JSONObject toJsonObject(PrefSet historyItem) {
+    private static JSONObject toJsonObject(SearchingOptions historyItem) {
         JSONObject root = new JSONObject();
         root.put("searchFileName", historyItem.isFileName());
         root.put("includePathName", historyItem.isIncludePathName());
@@ -179,7 +179,7 @@ public class Configs {
         return root;
     }
 
-    private static PrefSet toPrefSet(JSONObject root, String fileName) {
+    private static SearchingOptions toPrefSet(JSONObject root, String fileName) {
         List<File> dirs = new ArrayList<>();
         for (Object s : root.getJSONArray("dirs")) dirs.add(new File((String) s));
         List<String> patterns = new ArrayList<>();
@@ -187,7 +187,7 @@ public class Configs {
         Set<String> extensions = new HashSet<>();
         for (Object e : root.getJSONArray("extensions")) extensions.add((String) e);
         try {
-            return new PrefSet.PrefSetBuilder()
+            return new SearchingOptions.PrefSetBuilder()
                     .searchFileName(root.getBoolean("searchFileName"))
                     .caseSensitive(root.getBoolean("matchCase"))
                     .directSetMatchMode(MatchMode.valueOf(root.getString("matchMode")))

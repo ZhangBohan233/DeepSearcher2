@@ -2,7 +2,7 @@ package trashsoftware.deepSearcher2.guiItems;
 
 import javafx.fxml.FXML;
 import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.searcher.PrefSet;
+import trashsoftware.deepSearcher2.searcher.SearchingOptions;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -15,10 +15,10 @@ public class HistoryItem {
             DateFormat.SHORT,
             DateFormat.SHORT,
             Client.getBundle().getLocale());
-    private final PrefSet prefSet;
+    private final SearchingOptions prefSet;
     private final Date date;
 
-    public HistoryItem(PrefSet prefSet, Date date) {
+    public HistoryItem(SearchingOptions prefSet, Date date) {
         this.prefSet = prefSet;
         this.date = date;
     }

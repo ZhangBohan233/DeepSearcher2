@@ -38,7 +38,7 @@ public class Searcher {
             "xlsx", XlsxSearcher.class
     );
     private final Map<String, String> customFormats;
-    private final PrefSet prefSet;
+    private final SearchingOptions options;
     private final ExecutorService contentService;
 
     private final ReadOnlyIntegerWrapper resultCountWrapper = new ReadOnlyIntegerWrapper();
@@ -55,17 +55,17 @@ public class Searcher {
     /**
      * Constructor.
      *
-     * @param prefSet       the pref set, recording all search preferences and is immutable.
+     * @param options       the pref set, recording all search preferences and is immutable.
      * @param table         the javafx table of the result {@code TableView}
      * @param customFormats all custom formats, immutable after
      */
-    public Searcher(PrefSet prefSet,
+    public Searcher(SearchingOptions options,
                     TableView<ResultItem> table,
                     Map<String, String> customFormats) {
-        this.prefSet = prefSet;
+        this.options = options;
         this.table = table;
-        this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
-        this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(prefSet);
+        this.nameMatcherFactory = MatcherFactory.createFactoryByPrefSet(options);
+        this.contentMatcherFactory = MatcherFactory.createFactoryByPrefSet(options);
         // This is wrapped by a new map to avoid situations that the user modifies custom formats while searching
         this.customFormats = new HashMap<>(customFormats);
 
@@ -76,13 +76,13 @@ public class Searcher {
      * Start searching
      */
     public void search() {
-        boolean depthFirst = prefSet.isDepthFirst();
+        boolean depthFirst = options.isDepthFirst();
         if (depthFirst) {
-            for (File f : prefSet.getSearchDirs()) {
+            for (File f : options.getSearchDirs()) {
                 depthFirstSearch(f);
             }
         } else {
-            for (File f : prefSet.getSearchDirs()) {
+            for (File f : options.getSearchDirs()) {
                 breadthFirstSearch(f);
             }
         }
@@ -100,8 +100,8 @@ public class Searcher {
         finished = true;
     }
 
-    public PrefSet getPrefSet() {
-        return prefSet;
+    public SearchingOptions getOptions() {
+        return options;
     }
 
     /**
@@ -116,8 +116,8 @@ public class Searcher {
     }
 
     private void depthFirstSearch(File rootFile) {
-        boolean notShowHidden = prefSet.notShowHidden();
-        int maxDepth = prefSet.isLimitDepth() ? prefSet.getMaxSearchDepth() : Integer.MAX_VALUE;
+        boolean notShowHidden = options.notShowHidden();
+        int maxDepth = options.isLimitDepth() ? options.getMaxSearchDepth() : Integer.MAX_VALUE;
         Deque<DepthFile> stack = new ArrayDeque<>();
         stack.addLast(new DepthFile(rootFile, 0));
 
@@ -128,10 +128,10 @@ public class Searcher {
             if (notShowHidden && file.file.isHidden()) continue;
             if (file.file.isDirectory()) {
                 // Check if this directory is excluded
-                if (prefSet.getExcludedDirs().contains(file.file.getAbsolutePath())) continue;
+                if (options.getExcludedDirs().contains(file.file.getAbsolutePath())) continue;
 
                 // Check dir is selected
-                if (prefSet.isDirName()) {
+                if (options.isDirName()) {
                     matchName(file.file);
                 }
 
@@ -148,8 +148,8 @@ public class Searcher {
     }
 
     private void breadthFirstSearch(File rootFile) {
-        boolean notShowHidden = prefSet.notShowHidden();
-        int maxDepth = prefSet.isLimitDepth() ? prefSet.getMaxSearchDepth() : Integer.MAX_VALUE;
+        boolean notShowHidden = options.notShowHidden();
+        int maxDepth = options.isLimitDepth() ? options.getMaxSearchDepth() : Integer.MAX_VALUE;
         Deque<DepthFile> stack = new ArrayDeque<>();
         stack.addLast(new DepthFile(rootFile, 0));
 
@@ -160,10 +160,10 @@ public class Searcher {
             if (notShowHidden && file.file.isHidden()) continue;
             if (file.file.isDirectory()) {
                 // Check if this directory is excluded
-                if (prefSet.getExcludedDirs().contains(file.file.getAbsolutePath())) continue;
+                if (options.getExcludedDirs().contains(file.file.getAbsolutePath())) continue;
 
                 // Check dir is selected
-                if (prefSet.isDirName()) {
+                if (options.isDirName()) {
                     matchName(file.file);
                 }
 
@@ -181,18 +181,18 @@ public class Searcher {
 
     public void searchOneFile(File file) {
         // Check if this format is excluded
-        if (prefSet.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) return;
+        if (options.getExcludedFormats().contains(Util.getFileExtension(file.getName()))) return;
 
         // check file name is selected
-        if (prefSet.isFileName()) {
+        if (options.isFileName()) {
             matchName(file);
         }
         // check file content is selected
-        if (prefSet.getExtensions() != null) {
+        if (options.getExtensions() != null) {
             matchFileContent(file);
         }
         // check search compressed files is selected
-        if (prefSet.isSearchCmpFile()) {
+        if (options.isSearchCmpFile()) {
             searchArchiveFile(file);
         }
     }
@@ -222,12 +222,12 @@ public class Searcher {
     }
 
     private void matchName(File file) {
-        if (prefSet.isMatchAll()) matchNameAll(file, null);
+        if (options.isMatchAll()) matchNameAll(file, null);
         else matchNameAny(file, null);
     }
 
     public void matchName(FileInArchive fileInArchive) {
-        if (prefSet.isMatchAll()) matchNameAll(fileInArchive.getFakeFile(), fileInArchive);
+        if (options.isMatchAll()) matchNameAll(fileInArchive.getFakeFile(), fileInArchive);
         else matchNameAny(fileInArchive.getFakeFile(), fileInArchive);
     }
 
@@ -235,7 +235,7 @@ public class Searcher {
         String name = getSearchingFileName(file);
 
         StringMatcher matcher = nameMatcherFactory.createMatcher(name);
-        for (String target : prefSet.getTargets()) {
+        for (String target : options.getTargets()) {
             if (matcher.search(target) < 0) return;
         }
 
@@ -246,7 +246,7 @@ public class Searcher {
         String name = getSearchingFileName(file);
 
         StringMatcher matcher = nameMatcherFactory.createMatcher(name);
-        for (String target : prefSet.getTargets()) {
+        for (String target : options.getTargets()) {
             if (matcher.search(target) >= 0) {
                 addNameResult(file, fileInArchive);
                 return;
@@ -256,13 +256,13 @@ public class Searcher {
 
     private ContentSearcher createContentSearcher(File file) {
         String ext = Util.getFileExtension(file.getName());
-        if (prefSet.getExtensions().contains(ext)) {
+        if (options.getExtensions().contains(ext)) {
             ContentSearcher searcher;
             if (FORMAT_MAP.containsKey(ext)) {
                 try {
                     searcher = FORMAT_MAP.get(ext)
                             .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
-                            .newInstance(file, contentMatcherFactory, prefSet.isCaseSensitive());
+                            .newInstance(file, contentMatcherFactory, options.isCaseSensitive());
                 } catch (InvocationTargetException |
                         NoSuchMethodException |
                         InstantiationException |
@@ -270,7 +270,7 @@ public class Searcher {
                     throw new InvalidClassException("Unexpected file content searcher. ", e);
                 }
             } else {
-                searcher = new PlainTextSearcher(file, contentMatcherFactory, prefSet.isCaseSensitive());
+                searcher = new PlainTextSearcher(file, contentMatcherFactory, options.isCaseSensitive());
             }
             return searcher;
         }
@@ -288,30 +288,30 @@ public class Searcher {
         ContentSearcher searcher = createContentSearcher(uncompressed);
         if (searcher != null) {
             ContentResult result;
-            if (prefSet.isWholeContent()) {
-                if (prefSet.isMatchAll()) result = searcher.searchAllWhole(prefSet.getTargets());
-                else result = searcher.searchAnyWhole(prefSet.getTargets());
+            if (options.isWholeContent()) {
+                if (options.isMatchAll()) result = searcher.searchAllWhole(options.getTargets());
+                else result = searcher.searchAnyWhole(options.getTargets());
             } else {
-                if (prefSet.isMatchAll()) result = searcher.searchAll(prefSet.getTargets());
-                else result = searcher.searchAny(prefSet.getTargets());
+                if (options.isMatchAll()) result = searcher.searchAll(options.getTargets());
+                else result = searcher.searchAny(options.getTargets());
             }
             if (result != null) addContentResult(fileInArchive.getFakeFile(), fileInArchive, result);
         }
     }
 
     private String getSearchingFileName(File file) {
-        if (prefSet.isIncludePathName()) {
-            if (prefSet.isCaseSensitive()) return file.getAbsolutePath();
+        if (options.isIncludePathName()) {
+            if (options.isCaseSensitive()) return file.getAbsolutePath();
             else return file.getAbsolutePath().toLowerCase();
         } else {
-            if (prefSet.isCaseSensitive()) return file.getName();
+            if (options.isCaseSensitive()) return file.getName();
             else return file.getName().toLowerCase();
         }
     }
 
     private ArchiveSearcher makeArchiveSearcher(File realArchive, File outermostArchive, String internalPath) {
         String ext = Util.getFileExtension(realArchive.getName()).toLowerCase();
-        if (prefSet.getCmpFileFormats().contains(ext)) {
+        if (options.getCmpFileFormats().contains(ext)) {
             switch (ext) {
                 case "zip":
                     return new ZipSearcher(realArchive, outermostArchive, internalPath, this);
@@ -426,12 +426,12 @@ public class Searcher {
         @Override
         public void run() {
             ContentResult result;
-            if (prefSet.isWholeContent()) {
-                if (prefSet.isMatchAll()) result = searcher.searchAllWhole(prefSet.getTargets());
-                else result = searcher.searchAnyWhole(prefSet.getTargets());
+            if (options.isWholeContent()) {
+                if (options.isMatchAll()) result = searcher.searchAllWhole(options.getTargets());
+                else result = searcher.searchAnyWhole(options.getTargets());
             } else {
-                if (prefSet.isMatchAll()) result = searcher.searchAll(prefSet.getTargets());
-                else result = searcher.searchAny(prefSet.getTargets());
+                if (options.isMatchAll()) result = searcher.searchAll(options.getTargets());
+                else result = searcher.searchAny(options.getTargets());
             }
             if (result != null) addContentResult(file, null, result);
         }

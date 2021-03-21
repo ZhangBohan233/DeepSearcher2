@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>trashsoftware</groupId>
     <artifactId>deep-searcher-2</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <name>deep-searcher</name>
     <dependencies>
