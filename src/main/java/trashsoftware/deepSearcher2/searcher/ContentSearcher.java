@@ -10,8 +10,20 @@ import java.util.List;
  * The abstract class for searcher that searches the content of a specific file format.
  */
 public abstract class ContentSearcher {
+
+    /**
+     * The file to be searched.
+     */
     protected File file;
+
+    /**
+     * matcher factory which produces a string searcher according to algorithm and match mode.
+     */
     protected MatcherFactory matcherFactory;
+
+    /**
+     * Whether the search is case sensitive, i.e. whether UPPER CASE LETTERS differs from lower case letters.
+     */
     protected boolean caseSensitive;
 
     /**

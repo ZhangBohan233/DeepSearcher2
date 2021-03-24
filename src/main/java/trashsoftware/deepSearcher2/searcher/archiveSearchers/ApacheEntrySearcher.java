@@ -59,6 +59,12 @@ public abstract class ApacheEntrySearcher extends EntryArchiveSearcher {
         }
     }
 
+    /**
+     * Creates the archive input stream corresponding to the class which implements a type of archive.
+     *
+     * @return the newly created stream
+     * @throws IOException if IOError occurs
+     */
     protected abstract ArchiveInputStream createStream() throws IOException;
 
     private boolean uncompressSingle(String cachedName, ArchiveInputStream zip) {

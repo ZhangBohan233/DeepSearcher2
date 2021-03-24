@@ -28,7 +28,7 @@ public abstract class ArchiveSearcher {
     /**
      * Constructor.
      *
-     * @param archiveFile          the archive file on disk, must be readable
+     * @param archiveFile          the real archive file on disk, must be readable
      * @param outermostArchiveFile the outermost archive file, which is used to be opened by user
      * @param internalPath         the intermediate path between the outermost archive and the current archive
      * @param searcher             the searcher instance
