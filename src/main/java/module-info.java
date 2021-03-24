@@ -10,6 +10,8 @@ module DeepSearcher {
     requires poi.ooxml;
     requires poi.scratchpad;
     requires poi;
+    requires org.tukaani.xz;
+    requires junrar;
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.guiItems;
@@ -20,6 +22,7 @@ module DeepSearcher {
     exports trashsoftware.deepSearcher2.controllers;
     exports trashsoftware.deepSearcher2.searcher;
     exports trashsoftware.deepSearcher2.searcher.matchers;
+    exports trashsoftware.deepSearcher2.searcher.archiveSearchers;
     exports trashsoftware.deepSearcher2.guiItems;
     exports trashsoftware.deepSearcher2.util;
     exports trashsoftware.deepSearcher2.controllers.widgets;

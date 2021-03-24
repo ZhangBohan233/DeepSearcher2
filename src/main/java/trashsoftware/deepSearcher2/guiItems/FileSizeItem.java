@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.guiItems;
 
+import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.util.ResourceBundle;
@@ -12,16 +13,15 @@ import java.util.ResourceBundle;
 public class FileSizeItem implements Comparable<FileSizeItem> {
 
     private final long size;
-    private final ResourceBundle bundle;
 
-    FileSizeItem(long size, ResourceBundle bundle) {
+    FileSizeItem(long size) {
         this.size = size;
-        this.bundle = bundle;
     }
 
     @Override
     public String toString() {
-        return Util.sizeToReadable(size, bundle.getString("bytes"));
+        if (size < 0) return "";
+        return Util.sizeToReadable(size, Client.getBundle().getString("bytes"));
     }
 
     @Override

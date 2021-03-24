@@ -1,6 +1,5 @@
 package trashsoftware.deepSearcher2.searcher;
 
-import javafx.fxml.FXML;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -10,7 +9,7 @@ import java.util.List;
 public class SearcherTest {
     @Test
     void testPrefSetAddDirs() throws Exception {
-        PrefSet.PrefSetBuilder psb = new PrefSet.PrefSetBuilder();
+        SearchingOptions.PrefSetBuilder psb = new SearchingOptions.PrefSetBuilder();
         psb.setSearchDirs(List.of(
                 new File("E:\\GitHub"),
                 //new File("E:\\"),
@@ -19,7 +18,7 @@ public class SearcherTest {
         ));
         psb.setTargets(new ArrayList<>(List.of("x")));
         psb.searchFileName(true);
-        PrefSet ps = psb.build();
+        SearchingOptions ps = psb.build();
         for (File f : ps.getSearchDirs()) {
             System.out.println(f + " " + f.getAbsolutePath());
         }

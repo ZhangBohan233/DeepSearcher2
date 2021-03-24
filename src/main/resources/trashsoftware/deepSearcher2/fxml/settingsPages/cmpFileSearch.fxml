@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import trashsoftware.deepSearcher2.controllers.settingsPages.CustomPage?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.CheckBox?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="trashsoftware.deepSearcher2.controllers.settingsPages.CmpFileSearchPage">
+    <padding>
+        <Insets top="5.0" left="5.0" right="5.0" bottom="5.0"/>
+    </padding>
+
+    <HBox alignment="CENTER" spacing="10.0">
+        <Separator prefWidth="100.0"/>
+        <Label text="%cmpFile"/>
+        <Separator prefWidth="100.0"/>
+    </HBox>
+
+    <GridPane vgap="5.0" hgap="5.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS"/>
+            <ColumnConstraints/>
+        </columnConstraints>
+
+        <HBox spacing="5.0" GridPane.rowIndex="0">
+            <CheckBox text="%cmpFileSearch" fx:id="enableBox"/>
+            <Label text="(?)" fx:id="helpLabel"/>
+        </HBox>
+        <Label text="%cmpFileHarmfulPerf" GridPane.rowIndex="1"/>
+        <TableView fx:id="formatTable" prefHeight="350.0" GridPane.rowIndex="2">
+            <columns>
+                <TableColumn fx:id="checkCol" prefWidth="40.0"/>
+                <TableColumn text="%cmpFileFormats" fx:id="formatCol" prefWidth="300.0"/>
+            </columns>
+        </TableView>
+        <CheckBox text="%selectAll" fx:id="selectAllBox" GridPane.rowIndex="3"/>
+    </GridPane>
+
+</fx:root>
