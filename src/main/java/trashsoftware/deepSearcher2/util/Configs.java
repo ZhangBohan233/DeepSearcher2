@@ -18,7 +18,7 @@ import java.util.zip.CRC32;
 
 public class Configs {
 
-    private static final String USER_DATA_DIR = "userData";
+    public static final String USER_DATA_DIR = "userData";
     private static final String CONFIG_FILE_NAME = USER_DATA_DIR + File.separator + "config.cfg";
     private static final String EXCLUDED_DIRS_NAME = USER_DATA_DIR + File.separator + "excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = USER_DATA_DIR + File.separator + "excludedFormats.cfg";

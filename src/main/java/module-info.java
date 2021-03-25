@@ -12,6 +12,7 @@ module DeepSearcher {
     requires poi;
     requires org.tukaani.xz;
     requires junrar;
+    requires dsApi;
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.guiItems;

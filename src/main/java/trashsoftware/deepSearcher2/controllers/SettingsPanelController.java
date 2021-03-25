@@ -142,6 +142,11 @@ public class SettingsPanelController implements Initializable {
             root.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("general"), generalPage)));
 
+            ExtensionManagerPage extensionManagerPage = new ExtensionManagerPage(this);
+            root.getChildren().add(new TreeItem<>(
+                    new SettingsItem(bundle.getString("extensionProg"), extensionManagerPage)
+            ));
+
             TreeItem<SettingsItem> searchingRoot = new TreeItem<>();
             NavigatorPage searchingMainPage = new NavigatorPage(this);
             searchingRoot.setValue(new SettingsItem(bundle.getString("searchSettings"), searchingMainPage));
