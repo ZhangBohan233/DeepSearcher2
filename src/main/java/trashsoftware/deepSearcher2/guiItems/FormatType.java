@@ -7,5 +7,6 @@ public enum FormatType {
     MS_OFFICE,
     DOCUMENTS,
     OTHERS,
-    CUSTOMS
+    CUSTOMS,
+    EXTENSIONS
 }

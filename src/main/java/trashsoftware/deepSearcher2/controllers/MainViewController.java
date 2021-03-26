@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.controllers;
 
+import dsApi.api.FileFormatReader;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -36,6 +37,7 @@ import org.json.JSONObject;
 import trashsoftware.deepSearcher2.controllers.settingsPages.SearchingOptionsPage;
 import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
 import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
+import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
 import trashsoftware.deepSearcher2.guiItems.FormatType;
@@ -560,18 +562,33 @@ public class MainViewController implements Initializable, CacheObservable {
     }
 
     private void fillFormatTable() {
+        // native formats
         Enumeration<String> keys = fileTypeBundle.getKeys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             FormatItem formatItem = new FormatItem(key, fileTypeBundle.getString(key));
             formatTable.addItem(formatItem);
         }
+        // custom text formats
         Map<String, String> customFormats = Configs.getConfigs().getAllCustomFormats();
         for (Map.Entry<String, String> extDes : customFormats.entrySet()) {
             FormatItem formatItem = new FormatItem(extDes.getKey(), extDes.getValue());
             formatTable.addItem(formatItem);
         }
         formatTable.setCustomFormats(customFormats);
+        // extension formats
+        List<FileFormatReader> enabledJarFmts = ExtensionLoader.listEnabledExternalReaders();
+        Map<String, String> extensionFormats = new HashMap<>();
+        for (FileFormatReader formatReader : enabledJarFmts) {
+            String description = formatReader.description(Configs.getConfigs().getCurrentLocale());
+            for (String ext : formatReader.extensions()) {
+                FormatItem formatItem = new FormatItem(ext, description);
+                formatTable.addItem(formatItem);
+                extensionFormats.put(ext, description);
+            }
+        }
+        formatTable.setExtensionFormats(extensionFormats);
+
         Collections.sort(formatTable.getAllItems());
     }
 
@@ -584,7 +601,8 @@ public class MainViewController implements Initializable, CacheObservable {
                 new FormatFilterItem(FormatType.MS_OFFICE, bundle.getString("officeFiles"), formatTable),
                 new FormatFilterItem(FormatType.DOCUMENTS, bundle.getString("documentFiles"), formatTable),
                 new FormatFilterItem(FormatType.OTHERS, bundle.getString("otherFiles"), formatTable),
-                new FormatFilterItem(FormatType.CUSTOMS, bundle.getString("custom"), formatTable)
+                new FormatFilterItem(FormatType.CUSTOMS, bundle.getString("custom"), formatTable),
+                new FormatFilterItem(FormatType.EXTENSIONS, bundle.getString("extensionProg"), formatTable)
         );
     }
 

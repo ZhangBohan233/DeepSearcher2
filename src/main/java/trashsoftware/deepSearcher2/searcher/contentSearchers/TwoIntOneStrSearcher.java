@@ -47,7 +47,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
         searchFile(targets);
 
         if (foundTargets.size() == targets.size()) {  // all matched
-            return new ContentResult(key1, found1s,
+            return new ContentResult.Native(key1, found1s,
                     key2, found2s, strValues);
         }
 
@@ -63,7 +63,7 @@ public abstract class TwoIntOneStrSearcher extends ContentSearcher {
         searchFile(targets);
 
         if (foundTargets.size() > 0) {  // at least one matched
-            return new ContentResult(key1, found1s,
+            return new ContentResult.Native(key1, found1s,
                     key2, found2s, strValues);
         }
 

@@ -33,6 +33,10 @@ public class FormatFilterItem {
             for (FormatItem fi : allFormats) {
                 if (parent.getCustomFormats().containsKey(fi.getExtension())) result.add(fi);
             }
+        } else if (filterType == FormatType.EXTENSIONS) {
+            for (FormatItem fi : allFormats) {
+                if (parent.getExtensionFormats().containsKey(fi.getExtension())) result.add(fi);
+            }
         } else {
             Set<String> fmts = FormatTable.FMT_MAP.get(filterType);
             for (FormatItem fi : allFormats) {

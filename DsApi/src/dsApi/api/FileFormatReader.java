@@ -8,14 +8,14 @@ import java.util.Locale;
 /**
  * An API for developers to customize the supported file formats of file content searching.
  * <p>
- * There are three subclasses in this API. It is strongly recommended for developers to extend those three
- * subclasses, {@link SimpleReader}, {@link OneKeyReader}, {@link TwoKeysReader}.
+ * There are two subclasses in this API. It is strongly recommended for developers to extend those two
+ * subclasses, {@link SimpleReader}, {@link SplitterReader}.
  *
  * @see SimpleReader
- * @see OneKeyReader
- * @see TwoKeysReader
+ * @see SplitterReader
  * @since 1.1
  */
+@SuppressWarnings("unused")
 public abstract class FileFormatReader {
 
     /**
@@ -38,35 +38,12 @@ public abstract class FileFormatReader {
      * Returns the description of file formats supported by this class.
      * <p>
      * No matter {@link FileFormatReader#extensions()} returns how many extensions, this method should return
-     * only one description.
+     * only one description. That is, all extensions share a same description.
      *
      * @param locale the locale
      * @return the description of file formats supported by this class
      */
     public abstract String description(Locale locale);
-
-    /**
-     * Returns the description of the primary key.
-     * <p>
-     * For example, "primary key" can be pages, paragraphs, lines, etc.
-     *
-     * @param locale the locale
-     * @return the description of the primary key, or
-     * {@code null} if {@link FileFormatReader#hasPrimaryKey()} returns {@code false}
-     */
-    public abstract String primaryKeyDescription(Locale locale);
-
-    /**
-     * Returns the description of the secondary key.
-     * <p>
-     * For example, if "primary key" is "line", then "secondary key" can be "character"
-     *
-     * @param locale the locale
-     * @return the description of the secondary key,
-     * or {@code null} if {@link FileFormatReader#hasPrimaryKey()} returns {@code true} but
-     * {@link FileFormatReader#hasSecondaryKey()} returns {@code false}
-     */
-    public abstract String secondaryKeyDescription(Locale locale);
 
     /**
      * Returns the string content of the whole file.
@@ -78,45 +55,48 @@ public abstract class FileFormatReader {
     public abstract String readFile(File file) throws IOException;
 
     /**
-     * Returns an array consists of strings separated according to "primary key".
+     * Returns the formatter string of the word 'nth character' in the locale {@code locale}.
      * <p>
-     * For example, if "primary key" is line, then the returning value of this method is an array of all lines
+     * For example, in English, this method should return {@code "character %d"}, meaning the %d th character.
+     * 例如，若语言为中文，则该方法应返回{@code "第%d字"}。
+     *
+     * @param locale the locale
+     * @return the translation of the word 'character' in the language of {@code locale}
+     */
+    public abstract String characterFormat(Locale locale);
+
+    /**
+     * Returns the formatter string of the splitter to show on the gui.
+     * <p>
+     * For example, the splitter can be pages, paragraphs, lines, etc.
+     * The returned value of this method should be similar as in {@link FileFormatReader#characterFormat(Locale)}
+     *
+     * @param locale the locale
+     * @return the formatter string of the splitter to show on the gui, or
+     * {@code null} if {@link FileFormatReader#hasSplitter()} returns {@code false}
+     */
+    public abstract String splitterFormat(Locale locale);
+
+    /**
+     * Returns an array consists of strings separated according to the splitter.
+     * <p>
+     * For example, if the splitter is line, then the returning value of this method is an array of all lines
      * read from the file.
      *
      * @param file the file to be read
-     * @return an array consists of strings separated according to "primary key"
+     * @return an array consists of strings separated according to the splitter
      * @throws IOException if any IOError occurs during reading
      */
-    public abstract String[] readByPrimaryKey(File file) throws IOException;
+    public abstract String[] readBySplitter(File file) throws IOException;
 
     /**
-     * Returns a 2d array consists of arrays of strings separated according to "primary key", each sub-array
-     * is formed by strings separated according to "secondary key".
+     * Returns whether this reader has a splitter.
      * <p>
-     * For example, if "primary key" is paragraph and "secondary key" is line,
-     * then the returning value of this method is an 2d array. Each element array represents a paragraph, and
-     * each string in the element array represents a line in that paragraph.
+     * For the information of splitter, see {@link FileFormatReader#splitterFormat(Locale)}
      *
-     * @param file the file to be read
-     * @return a 2d array consists of arrays of strings separated according to "primary key", each sub-array
-     * is formed by strings separated according to "secondary key"
-     * @throws IOException if any IOError occurs during reading
+     * @return whether this reader has a splitter
      */
-    public abstract String[][] readBySecondaryKey(File file) throws IOException;
-
-    /**
-     * Returns whether this reader has a primary key.
-     *
-     * @return whether this reader has a primary key
-     */
-    public abstract boolean hasPrimaryKey();
-
-    /**
-     * Returns whether this reader has a secondary key.
-     *
-     * @return whether this reader has a secondary key
-     */
-    public abstract boolean hasSecondaryKey();
+    public abstract boolean hasSplitter();
 
     @Override
     public int hashCode() {

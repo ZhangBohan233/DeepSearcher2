@@ -11,16 +11,14 @@ import trashsoftware.deepSearcher2.util.EventLogger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class SettingsPanelController implements Initializable {
 
     private final StatusSaver statusSaver = new StatusSaver();
-    private final List<ComboBox<?>> comboBoxes = new ArrayList<>();
-    private final List<CheckBox> checkBoxes = new ArrayList<>();
-    private final List<TextField> textFields = new ArrayList<>();
+    private final Collection<ComboBox<?>> comboBoxes = new HashSet<>();
+    private final Collection<CheckBox> checkBoxes = new HashSet<>();
+    private final Collection<TextField> textFields = new HashSet<>();
     @FXML
     TreeView<SettingsItem> treeView;
     @FXML
@@ -67,6 +65,7 @@ public class SettingsPanelController implements Initializable {
      * This method should be called just after {@code FXMLLoader.load} in the constructor of any sub-classes of this.
      *
      * @param controls array of controllable {@code Control}'s
+     * @throws RuntimeException if the control type is not supported
      */
     public void addControls(Control... controls) {
         for (Control control : controls) {
@@ -76,6 +75,20 @@ public class SettingsPanelController implements Initializable {
 
             else throw new RuntimeException("Unrecognizable Control");
         }
+    }
+
+    /**
+     * Removes a {@code Control} from the monitoring set.
+     *
+     * @param control the control to be removed
+     * @throws RuntimeException if the control is not managed
+     */
+    public void removeControl(Control control) {
+        if (control instanceof ComboBox) comboBoxes.remove(control);
+        else if (control instanceof CheckBox) checkBoxes.remove(control);
+        else if (control instanceof TextField) textFields.remove(control);
+
+        else throw new RuntimeException("Unrecognizable Control");
     }
 
     /**

@@ -37,7 +37,8 @@
         </VBox>
         <TreeTableView fx:id="extensionTable" GridPane.rowIndex="1">
             <columns>
-                <TreeTableColumn fx:id="extJarNameCol" text="%extJarName" prefWidth="320.0"/>
+                <TreeTableColumn fx:id="extJarNameCol" text="%extJarName" prefWidth="190.0"/>
+                <TreeTableColumn fx:id="extDescriptionCol" text="%description" prefWidth="170.0"/>
                 <TreeTableColumn fx:id="extCheckBoxCol" text="%enable" prefWidth="40.0"/>
             </columns>
             <placeholder>

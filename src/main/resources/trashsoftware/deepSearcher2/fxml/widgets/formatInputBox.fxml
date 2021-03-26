@@ -21,10 +21,10 @@
             <RowConstraints/>
         </rowConstraints>
 
-        <Label fx:id="descriptionLabel" text="%description"/>
+        <Label fx:id="descriptionLabel" text="%fmtDescription"/>
         <TextField fx:id="descriptionField" GridPane.columnIndex="1"/>
 
-        <Label text="%extension" GridPane.rowIndex="1"/>
+        <Label text="%fmtExtName" GridPane.rowIndex="1"/>
         <TextField fx:id="extField" onAction="#okAction" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
     </GridPane>
 

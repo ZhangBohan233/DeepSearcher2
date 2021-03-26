@@ -2,6 +2,7 @@ package trashsoftware.deepSearcher2.controllers.settingsPages;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 
 import java.util.HashMap;
@@ -41,6 +42,15 @@ public class StatusSaver {
      */
     public void store(TextField textField) {
         textFieldStatus.put(System.identityHashCode(textField), textField.getText());
+    }
+
+    /**
+     * Removes a CheckBox.
+     *
+     * @param checkBox the check box to be removed
+     */
+    public void remove(CheckBox checkBox) {
+        checkBoxesStatus.remove(System.identityHashCode(checkBox));
     }
 
     /**

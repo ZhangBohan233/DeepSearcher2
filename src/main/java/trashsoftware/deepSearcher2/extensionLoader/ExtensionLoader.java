@@ -7,12 +7,10 @@ import trashsoftware.deepSearcher2.util.EventLogger;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -31,7 +29,7 @@ public class ExtensionLoader {
                         URL jarUrl = file.toURI().toURL();
                         JarFile jarFile = new JarFile(file);
                         List<Class<?>> classesInJar = findClassInJar(jarFile, jarUrl);
-                        list.add(new ExtensionJar(file, classesInJar));
+                        list.add(new ExtensionJar(file.getName(), classesInJar));
                     } catch (IOException e) {
                         e.printStackTrace();
                         EventLogger.log(e);
@@ -52,20 +50,42 @@ public class ExtensionLoader {
         return list;
     }
 
-//    public static List<FileFormatReader> listExternalReaders() {
-//        List<Class<?>> allClasses = listExternalClasses();
-//        List<FileFormatReader> result = new ArrayList<>();
-//        for (Class<?> clazz : allClasses) {
-//            if (subclassOf(clazz, FileFormatReader.class)) {
-//                try {
-//                    result.add((FileFormatReader) clazz.getDeclaredConstructor().newInstance());
-//                } catch (Exception e) {
-//                    //
-//                }
-//            }
-//        }
-//        return result;
-//    }
+    public static List<FileFormatReader> createFormatReaderInstances(ExtensionJar extensionJar) {
+        List<FileFormatReader> list = new ArrayList<>();
+        for (Class<?> clazz : extensionJar.getClassList()) {
+            if (!isAbstract(clazz) && subclassOf(clazz, FileFormatReader.class)) {
+                try {
+                    FileFormatReader ffr = (FileFormatReader) clazz.getDeclaredConstructor().newInstance();
+                    list.add(ffr);
+                } catch (Exception e) {
+                    System.err.println(clazz);
+                    e.printStackTrace();
+                    EventLogger.log(e);
+                }
+            }
+        }
+        return list;
+    }
+
+    public static List<FileFormatReader> listEnabledExternalReaders() {
+        List<ExtensionJar> allClasses = listExternalJars();
+        Set<String> enabled = Configs.getConfigs().getEnabledJars();
+        List<FileFormatReader> result = new ArrayList<>();
+        for (ExtensionJar ej : allClasses) {
+            if (enabled.contains(ej.getJarName())) {
+                for (Class<?> clazz : ej.getClassList()) {
+                    if (subclassOf(clazz, FileFormatReader.class)) {
+                        try {
+                            result.add((FileFormatReader) clazz.getDeclaredConstructor().newInstance());
+                        } catch (Exception e) {
+                            //
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
 //    public static List<Class<?>> listExternalClasses() {
 //        List<File> jarFiles = listExternalJars();
@@ -121,6 +141,10 @@ public class ExtensionLoader {
         if (childClass == null) return false;
         if (childClass == superClass) return true;
         return subclassOf(childClass.getSuperclass(), superClass);
+    }
+
+    public static boolean isAbstract(Class<?> clazz) {
+        return Modifier.isAbstract(clazz.getModifiers());
     }
 
     private static class JarFilter implements FilenameFilter {

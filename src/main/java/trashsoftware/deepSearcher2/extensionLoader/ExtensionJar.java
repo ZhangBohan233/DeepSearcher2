@@ -7,16 +7,16 @@ import java.util.List;
  * A representation of a .jar file under userData/extensions/ directory.
  */
 public class ExtensionJar {
-    private final File file;
+    private final String jarName;
     private final List<Class<?>> classList;
 
-    ExtensionJar(File file, List<Class<?>> classList) {
-        this.file = file;
+    ExtensionJar(String jarName, List<Class<?>> classList) {
+        this.jarName = jarName;
         this.classList = classList;
     }
 
-    public File getFile() {
-        return file;
+    public String getJarName() {
+        return jarName;
     }
 
     public List<Class<?>> getClassList() {

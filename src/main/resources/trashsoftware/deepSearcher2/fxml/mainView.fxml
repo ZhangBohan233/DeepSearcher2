@@ -112,7 +112,7 @@
                 <columns>
                     <TableColumn minWidth="25.0" maxWidth="25.0"/>
                     <TableColumn fx:id="formatNameCol" text="%format" prefWidth="170.0"/>
-                    <TableColumn text="%extension" prefWidth="50.0"/>
+                    <TableColumn text="%fmtExtName" prefWidth="50.0"/>
                 </columns>
                 <placeholder>
                     <Label text="%formatTablePlaceHolder"/>

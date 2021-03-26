@@ -88,7 +88,7 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
         TableColumn<FmtItem, ?> desCol = customFmtTable.getColumns().get(0);
         TableColumn<FmtItem, ?> extCol = customFmtTable.getColumns().get(1);
 
-        desCol.setCellValueFactory(new PropertyValueFactory<>("description"));
+        desCol.setCellValueFactory(new PropertyValueFactory<>("fmtDescription"));
         extCol.setCellValueFactory(new PropertyValueFactory<>("ext"));
 
         customFmtTable.getSelectionModel().selectedIndexProperty().addListener(((observableValue, number, t1) ->

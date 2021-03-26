@@ -19,60 +19,31 @@ public abstract class SimpleReader extends FileFormatReader {
     }
 
     /**
-     * Returns {@code null} since simple reader does not have any keys.
+     * Returns {@code null} since simple reader does not have a splitter.
      *
      * @param file the file to be read
-     * @return {@code null} since simple reader does not have any keys
+     * @return {@code null} since simple reader does not have a splitter
      */
     @Override
-    public String[] readByPrimaryKey(File file) {
+    public String[] readBySplitter(File file) {
         return null;
     }
 
     /**
-     * Returns {@code null} since simple reader does not have any keys.
+     * Returns {@code null} since simple reader does not have a splitter.
      *
-     * @param file the file to be read
-     * @return {@code null} since simple reader does not have any keys
+     * @return {@code null} since simple reader does not have a splitter
      */
     @Override
-    public final String[][] readBySecondaryKey(File file) {
+    public final String splitterFormat(Locale locale) {
         return null;
     }
 
     /**
-     * Returns {@code null} since simple reader does not have any keys.
-     *
-     * @return {@code null} since simple reader does not have any keys
+     * @see FileFormatReader#hasSplitter()
      */
     @Override
-    public final String primaryKeyDescription(Locale locale) {
-        return null;
-    }
-
-    /**
-     * Returns {@code null} since simple reader does not have any keys.
-     *
-     * @return {@code null} since simple reader does not have any keys
-     */
-    @Override
-    public final String secondaryKeyDescription(Locale locale) {
-        return null;
-    }
-
-    /**
-     * @see FileFormatReader#hasPrimaryKey()
-     */
-    @Override
-    public final boolean hasPrimaryKey() {
-        return false;
-    }
-
-    /**
-     * @see FileFormatReader#hasSecondaryKey()
-     */
-    @Override
-    public final boolean hasSecondaryKey() {
+    public final boolean hasSplitter() {
         return false;
     }
 }

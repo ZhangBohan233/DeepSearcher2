@@ -70,7 +70,7 @@ public abstract class ContentSearcher {
         for (String tar : targets) {
             if (matcher.search(tar) == -1) return null;
         }
-        return new ContentResult();
+        return new ContentResult.Native();
     }
 
     /**
@@ -85,7 +85,7 @@ public abstract class ContentSearcher {
         if (!caseSensitive) content = content.toLowerCase();
         StringMatcher matcher = matcherFactory.createMatcher(content);
         for (String tar : targets) {
-            if (matcher.search(tar) >= 0) return new ContentResult();
+            if (matcher.search(tar) >= 0) return new ContentResult.Native();
         }
         return null;
     }

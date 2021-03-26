@@ -36,6 +36,7 @@ public class FormatTable extends TableView<FormatItem> {
     private final Set<String> knownFormats = new HashSet<>();
     private final List<FormatItem> allItems = new ArrayList<>();
     private Map<String, String> customFormats;
+    private Map<String, String> extensionFormats;
 
     public FormatTable() {
         initialize();
@@ -111,6 +112,23 @@ public class FormatTable extends TableView<FormatItem> {
     public void setCustomFormats(Map<String, String> customFormats) {
         this.customFormats = customFormats;
         knownFormats.addAll(customFormats.keySet());
+    }
+
+    /**
+     * Returns the formats loaded from external jars.
+     */
+    public Map<String, String> getExtensionFormats() {
+        return extensionFormats;
+    }
+
+    /**
+     * Sets the formats loaded from external jars.
+     *
+     * @param extensionFormats formats loaded from external jars
+     */
+    public void setExtensionFormats(Map<String, String> extensionFormats) {
+        this.extensionFormats = extensionFormats;
+        knownFormats.addAll(extensionFormats.keySet());
     }
 
     /**
