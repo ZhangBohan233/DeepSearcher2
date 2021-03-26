@@ -19,6 +19,10 @@ public class ExtensionJar {
         return jarName;
     }
 
+    public String getPathName() {
+        return ExtensionLoader.EXT_JAR_DIR + File.separator + jarName;
+    }
+
     public List<Class<?>> getClassList() {
         return classList;
     }

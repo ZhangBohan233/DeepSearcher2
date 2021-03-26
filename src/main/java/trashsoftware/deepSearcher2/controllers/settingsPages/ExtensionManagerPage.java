@@ -83,7 +83,25 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
 
     @FXML
     void uninstallExtension() {
+        ConfirmBox confirmBox = ConfirmBox.createConfirmBox(getController().getStage());
+        confirmBox.setMessage(Client.getBundle().getString("confirmUninstall"));
+        confirmBox.setConfirmButtonText(Client.getBundle().getString("confirm"));
+        confirmBox.setOnConfirmed(this::uninstallSelectedJar);
+        confirmBox.show();
+    }
 
+    private void uninstallSelectedJar() {
+        JarItem selected = (JarItem) extensionTable.getSelectionModel().getSelectedItem().getValue();
+        String path = selected.extensionJar.getPathName();
+        File file = new File(path);
+        if (!file.delete()) {
+            ConfirmBox infoBox = ConfirmBox.createInfoBox(
+                    getController().getStage(), Client.getBundle().getString("error"));
+            infoBox.setConfirmButtonText(Client.getBundle().getString("confirm"));
+            infoBox.setMessage(Client.getBundle().getString("cannotUninstall"));
+            infoBox.show();
+        }
+        refreshExtensions();
     }
 
     @Override
