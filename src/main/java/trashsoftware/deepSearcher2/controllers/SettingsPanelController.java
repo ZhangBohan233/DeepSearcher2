@@ -7,6 +7,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.controllers.settingsPages.*;
 import trashsoftware.deepSearcher2.guiItems.SettingsItem;
+import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.EventLogger;
 
 import java.io.IOException;
@@ -156,6 +157,7 @@ public class SettingsPanelController implements Initializable {
                     new SettingsItem(bundle.getString("general"), generalPage)));
 
             ExtensionManagerPage extensionManagerPage = new ExtensionManagerPage(this);
+            Cache.getCache().addObservable(extensionManagerPage);
             root.getChildren().add(new TreeItem<>(
                     new SettingsItem(bundle.getString("extensionProg"), extensionManagerPage)
             ));

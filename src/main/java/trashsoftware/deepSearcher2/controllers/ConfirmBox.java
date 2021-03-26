@@ -29,8 +29,10 @@ public class ConfirmBox implements Initializable {
     Label messageBox;
 
     @FXML
-    Button confirmButton;
+    Button cancelButton;
 
+    @FXML
+    Button confirmButton;
     private Stage stage;
 
     private Runnable onConfirmed;
@@ -68,6 +70,20 @@ public class ConfirmBox implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    /**
+     * Creates a new info box, but does not show it.
+     *
+     * @param ownerWindow the parent window, which will be blocked by this info box
+     * @return the new instance
+     */
+    public static ConfirmBox createInfoBox(Window ownerWindow, String title) {
+        ConfirmBox box = createConfirmBox(ownerWindow);
+        box.stage.setTitle(title);
+        box.cancelButton.setDisable(true);
+        box.cancelButton.setManaged(false);
+        return box;
     }
 
     @Override

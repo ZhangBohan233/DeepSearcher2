@@ -6,19 +6,26 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.stage.FileChooser;
+import org.json.JSONObject;
 import trashsoftware.deepSearcher2.controllers.Client;
 import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.controllers.ConfirmBox;
 import trashsoftware.deepSearcher2.extensionLoader.ExtensionJar;
 import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
+import trashsoftware.deepSearcher2.util.Cache;
+import trashsoftware.deepSearcher2.util.CacheObservable;
 import trashsoftware.deepSearcher2.util.Configs;
+import trashsoftware.deepSearcher2.util.Util;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ExtensionManagerPage extends SettingsPage {
+public class ExtensionManagerPage extends SettingsPage implements CacheObservable {
     private final TreeItem<ExtensionItem> rootItem = new TreeItem<>(new RootItem());
     @FXML
     Button uninstallButton;
@@ -29,6 +36,7 @@ public class ExtensionManagerPage extends SettingsPage {
     @FXML
     TreeTableColumn<ExtensionItem, String> extJarNameCol, extDescriptionCol;
     private final List<CheckBox> checkBoxes = new ArrayList<>();
+    private File jarDialogInit;
 
     public ExtensionManagerPage(SettingsPanelController controller) throws IOException {
         super(controller);
@@ -44,11 +52,33 @@ public class ExtensionManagerPage extends SettingsPage {
         extensionTable.setRoot(rootItem);
         setTableListeners();
         refreshExtensions();
+
+        loadFromCache(Cache.getCache());
     }
 
     @FXML
     void installExtension() {
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter filter =
+                new FileChooser.ExtensionFilter(
+                        Client.getBundle().getString("jarDescription"), "*.jar");
+        chooser.setSelectedExtensionFilter(filter);
+        chooser.setInitialDirectory(jarDialogInit);
 
+        File jarFile = chooser.showOpenDialog(getController().getStage());
+        if (jarFile != null) {
+            jarDialogInit = jarFile.getParentFile();
+            String destPath = ExtensionLoader.EXT_JAR_DIR + File.separator + jarFile.getName();
+            if (!Util.copyFile(destPath, jarFile)) {
+                ConfirmBox infoBox = ConfirmBox.createInfoBox(
+                        getController().getStage(), Client.getBundle().getString("error"));
+                infoBox.setConfirmButtonText(Client.getBundle().getString("confirm"));
+                infoBox.setMessage(Client.getBundle().getString("cannotInstall"));
+                infoBox.show();
+            } else {
+                refreshExtensions();
+            }
+        }
     }
 
     @FXML
@@ -110,6 +140,19 @@ public class ExtensionManagerPage extends SettingsPage {
         extCheckBoxCol.setCellValueFactory(p -> new ReadOnlyObjectWrapper<>(p.getValue().getValue().getBox()));
         extJarNameCol.setCellValueFactory(p -> new ReadOnlyStringWrapper(p.getValue().getValue().getName()));
         extDescriptionCol.setCellValueFactory(p -> new ReadOnlyStringWrapper(p.getValue().getValue().getDescription()));
+        extensionTable.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) ->
+                uninstallButton.setDisable(!(newValue != null && newValue.getValue() instanceof JarItem))));
+    }
+
+    @Override
+    public void putCache(JSONObject rootObject) {
+        if (jarDialogInit != null) rootObject.put("jarDialogInit", jarDialogInit.getAbsolutePath());
+    }
+
+    @Override
+    public void loadFromCache(Cache cache) {
+        String initD = cache.getStringCache("jarDialogInit");
+        if (initD != null) jarDialogInit = new File(initD);
     }
 
     public abstract static class ExtensionItem {

@@ -2,6 +2,8 @@ package trashsoftware.deepSearcher2.util;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -87,12 +89,39 @@ public class Util {
         return aftName;
     }
 
+    /**
+     * Opens a file in desktop, using the system default way.
+     *
+     * @param file the file to be open
+     */
     public static void desktopOpenFile(File file) {
         try {
             Desktop.getDesktop().open(file);
         } catch (IOException e) {
             e.printStackTrace();
             EventLogger.log(e);
+        }
+    }
+
+    /**
+     * Copies a file to a given path.
+     *
+     * @param destFilePath the new file's path
+     * @param srcFile      the file to be copied
+     * @return {@code true} iff successfully copied
+     */
+    public static boolean copyFile(String destFilePath, File srcFile) {
+        try (FileInputStream inputStream = new FileInputStream(srcFile);
+             FileOutputStream outputStream = new FileOutputStream(destFilePath)) {
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = inputStream.read(buffer)) >= 0) {
+                outputStream.write(buffer, 0, read);
+            }
+            outputStream.flush();
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 }

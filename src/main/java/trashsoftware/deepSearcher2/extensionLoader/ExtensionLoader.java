@@ -28,9 +28,9 @@ public class ExtensionLoader {
                     try {
                         URL jarUrl = file.toURI().toURL();
                         JarFile jarFile = new JarFile(file);
-                        List<Class<?>> classesInJar = findClassInJar(jarFile, jarUrl);
+                        List<Class<?>> classesInJar = findClassesInJar(jarFile, jarUrl);
                         list.add(new ExtensionJar(file.getName(), classesInJar));
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                         EventLogger.log(e);
                     }
@@ -87,23 +87,7 @@ public class ExtensionLoader {
         return result;
     }
 
-//    public static List<Class<?>> listExternalClasses() {
-//        List<File> jarFiles = listExternalJars();
-//        List<Class<?>> result = new ArrayList<>();
-//        for (File file : jarFiles) {
-//            try {
-//                URL jarUrl = file.toURI().toURL();
-//                JarFile jarFile = new JarFile(file);
-//                findClassInJar(jarFile, jarUrl, result);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                EventLogger.log(e);
-//            }
-//        }
-//        return result;
-//    }
-
-    private static List<Class<?>> findClassInJar(JarFile jarFile, URL jarUrl) {
+    private static List<Class<?>> findClassesInJar(JarFile jarFile, URL jarUrl) {
         List<Class<?>> list = new ArrayList<>();
         Enumeration<JarEntry> enumeration = jarFile.entries();
         while (enumeration.hasMoreElements()) {
@@ -111,10 +95,6 @@ public class ExtensionLoader {
             String name = entry.getName();
             if (!entry.isDirectory() && name.endsWith(".class")) {
                 if (name.endsWith("module-info.class")) continue;
-//                if (name.endsWith(FileFormatReader.class.getSimpleName() + ".class")) continue;
-//                if (name.endsWith(SimpleReader.class.getSimpleName() + ".class")) continue;
-//                if (name.endsWith(OneKeyReader.class.getSimpleName() + ".class")) continue;
-//                if (name.endsWith(TwoKeysReader.class.getSimpleName() + ".class")) continue;
 
                 // removes ".class"
                 String className = name.substring(0, name.length() - 6).replace('/', '.');
@@ -129,9 +109,10 @@ public class ExtensionLoader {
 
     private static Class<?> loadClass(String className, URL jarUrl) {
         try {
-            URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{jarUrl});
+            URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{jarUrl},
+                    Thread.currentThread().getContextClassLoader());
             return urlClassLoader.loadClass(className);
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
