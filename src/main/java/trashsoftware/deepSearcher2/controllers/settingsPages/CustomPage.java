@@ -57,6 +57,11 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
         getController().getMainView().refreshFormatTable();
     }
 
+    @FXML
+    void jumpToExtensions() {
+        getController().expandUntil(ExtensionManagerPage.class);
+    }
+
     @Override
     public void addFormat(String ext, String description) {
         String pureExt;

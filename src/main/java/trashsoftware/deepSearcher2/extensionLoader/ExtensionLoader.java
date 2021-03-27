@@ -10,13 +10,36 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ExtensionLoader {
 
     public static final String EXT_JAR_DIR = Configs.USER_DATA_DIR + File.separator + "extensions";
+
+    /**
+     * Returns {@code true} iff this jar file can be loaded without error.
+     *
+     * @param file the jar file
+     * @return {@code true} iff this jar file can be loaded without error
+     */
+    public static boolean testJar(File file) {
+        try {
+            URL jarUrl = file.toURI().toURL();
+            JarFile jarFile = new JarFile(file);
+            findClassesInJar(jarFile, jarUrl);
+            jarFile.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            EventLogger.log(e);
+        }
+        return false;
+    }
 
     public static List<ExtensionJar> listExternalJars() {
         List<ExtensionJar> list = new ArrayList<>();
@@ -29,6 +52,7 @@ public class ExtensionLoader {
                         URL jarUrl = file.toURI().toURL();
                         JarFile jarFile = new JarFile(file);
                         List<Class<?>> classesInJar = findClassesInJar(jarFile, jarUrl);
+                        jarFile.close();
                         list.add(new ExtensionJar(file.getName(), classesInJar));
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -111,7 +135,9 @@ public class ExtensionLoader {
         try {
             URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{jarUrl},
                     Thread.currentThread().getContextClassLoader());
-            return urlClassLoader.loadClass(className);
+            Class<?> clazz = urlClassLoader.loadClass(className);
+            urlClassLoader.close();
+            return clazz;
         } catch (Exception e) {
             e.printStackTrace();
         }

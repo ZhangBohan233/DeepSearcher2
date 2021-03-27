@@ -68,15 +68,27 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
         File jarFile = chooser.showOpenDialog(getController().getStage());
         if (jarFile != null) {
             jarDialogInit = jarFile.getParentFile();
-            String destPath = ExtensionLoader.EXT_JAR_DIR + File.separator + jarFile.getName();
-            if (!Util.copyFile(destPath, jarFile)) {
+            // todo: this check actually cannot return 'false', but it at least prevents incompatible jars to be copied
+            // todo: to the extension directory
+            if (ExtensionLoader.testJar(jarFile)) {
+                String destPath = ExtensionLoader.EXT_JAR_DIR + File.separator + jarFile.getName();
+                if (Util.copyFile(destPath, jarFile)) {
+                    refreshExtensions();
+                } else {
+                    ConfirmBox infoBox = ConfirmBox.createInfoBox(
+                            getController().getStage(), Client.getBundle().getString("error"));
+                    infoBox.setConfirmButtonText(Client.getBundle().getString("confirm"));
+                    infoBox.setMessage(Client.getBundle().getString("cannotInstall"));
+                    infoBox.show();
+                }
+            } else {
                 ConfirmBox infoBox = ConfirmBox.createInfoBox(
                         getController().getStage(), Client.getBundle().getString("error"));
                 infoBox.setConfirmButtonText(Client.getBundle().getString("confirm"));
-                infoBox.setMessage(Client.getBundle().getString("cannotInstall"));
+                infoBox.setMessage(
+                        Client.getBundle().getString("cannotInstall") + "\n" +
+                        Client.getBundle().getString("errorWhenLoadJar"));
                 infoBox.show();
-            } else {
-                refreshExtensions();
             }
         }
     }
