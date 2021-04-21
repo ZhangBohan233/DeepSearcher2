@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -30,6 +27,11 @@ public class ExtensionLoader {
         extensionJarList = listExternalJars();
     }
 
+    /**
+     * Starts the loader.
+     * <p>
+     * This static method reads jars from
+     */
     public static void startLoader() {
         jarLoader = new ExtensionLoader();
     }
@@ -86,7 +88,6 @@ public class ExtensionLoader {
         } else {
             try {
                 if (!dir.createNewFile()) {
-                    System.err.println("Failed to create " + EXT_JAR_DIR);
                     EventLogger.log("Failed to create " + EXT_JAR_DIR);
                 }
             } catch (IOException e) {
@@ -97,6 +98,13 @@ public class ExtensionLoader {
         return list;
     }
 
+    /**
+     * Creates and returns a list containing instances of all subclass of {@link FileFormatReader} in a given
+     * {@link ExtensionJar} instance which represents a jar file.
+     *
+     * @param extensionJar the jar file representation
+     * @return a list containing instances of all subclass of {@link FileFormatReader} in a given {@link ExtensionJar}
+     */
     public static List<FileFormatReader> createFormatReaderInstances(ExtensionJar extensionJar) {
         List<FileFormatReader> list = new ArrayList<>();
         for (Class<?> clazz : extensionJar.getClassList()) {
@@ -116,7 +124,7 @@ public class ExtensionLoader {
 
     private static List<Class<?>> findClassesInJar(JarFile jarFile,
                                                    URL jarUrl) {
-        ClassCollector loadService = new ClassCollector();
+        List<Class<?>> classList = new ArrayList<>();
         Enumeration<JarEntry> enumeration = jarFile.entries();
         while (enumeration.hasMoreElements()) {
             JarEntry entry = enumeration.nextElement();
@@ -126,41 +134,48 @@ public class ExtensionLoader {
 
                 // removes ".class"
                 String className = name.substring(0, name.length() - 6).replace('/', '.');
-                loadClass(className, jarUrl, loadService);
+                Class<?> loadedClass = loadClass(className, jarUrl);
+                if (loadedClass != null) {
+                    classList.add(loadedClass);
+                } else {
+                    System.out.println("Failed to load class '" + className + "'");
+                }
             }
         }
-        if (!loadService.terminate()) {
-            EventLogger.log("Jar loader timeout");
-        }
-        return loadService.classList;
+        return classList;
     }
 
-    private static void loadClass(String className, URL jarUrl, ClassCollector loadService) {
-        Thread loaderThread = new Thread(() -> {
-            try {
-                URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{jarUrl});
-                loadService.classList.add(urlClassLoader.loadClass(className));
-                urlClassLoader.close();
-            } catch (Exception e) {
-                // This catch actually does not catch loader exceptions because the exception is
-                // thrown to the classloader of this thread.
-                // The real mechanism is, the loader thread itself isolates the exception from the main thread,
-                // to keep the whole program safe.
-            }
-        });
-        loadService.loaderService.execute(loaderThread);
+    private static Class<?> loadClass(String className, URL jarUrl) {
+        ClassLoaderWrapper wrapper = new ClassLoaderWrapper(jarUrl, className);
+        return wrapper.load();
     }
 
+    /**
+     * Returns whether {@code childClass} is or is a subclass of {@code superClass}.
+     *
+     * @param childClass the probable child class
+     * @param superClass the superclass {@code childClass} is or is a subclass of {@code superClass}
+     * @return {@code true} if
+     */
     public static boolean subclassOf(Class<?> childClass, Class<?> superClass) {
         if (childClass == null) return false;
         if (childClass == superClass) return true;
         return subclassOf(childClass.getSuperclass(), superClass);
     }
 
+    /**
+     * Returns whether a class is abstract.
+     *
+     * @param clazz the class
+     * @return {@code true} if {@code clazz} is abstract
+     */
     public static boolean isAbstract(Class<?> clazz) {
         return Modifier.isAbstract(clazz.getModifiers());
     }
 
+    /**
+     * @return the list of all loaded {@link ExtensionJar} instances.
+     */
     public List<ExtensionJar> getExtensionJarList() {
         return extensionJarList;
     }
@@ -169,20 +184,17 @@ public class ExtensionLoader {
         jarLoader = null;
     }
 
+    /**
+     * Creates and returns a list containing instances of all subclass of {@link FileFormatReader} that are enabled.
+     *
+     * @return a list containing instances of all subclass of {@link FileFormatReader} that are enabled
+     */
     public List<FileFormatReader> listEnabledExternalReaders() {
         Set<String> enabled = Configs.getConfigs().getEnabledJars();
         List<FileFormatReader> result = new ArrayList<>();
         for (ExtensionJar ej : extensionJarList) {
             if (enabled.contains(ej.getJarName())) {
-                for (Class<?> clazz : ej.getClassList()) {
-                    if (subclassOf(clazz, FileFormatReader.class)) {
-                        try {
-                            result.add((FileFormatReader) clazz.getDeclaredConstructor().newInstance());
-                        } catch (Exception e) {
-                            //
-                        }
-                    }
-                }
+                result.addAll(createFormatReaderInstances(ej));
             }
         }
         return result;
@@ -195,18 +207,45 @@ public class ExtensionLoader {
         }
     }
 
-    private static class ClassCollector {
-        private final ExecutorService loaderService = Executors.newFixedThreadPool(1);
-        private final List<Class<?>> classList = new ArrayList<>();
+    /**
+     * A wrapper of a url class loader.
+     * <p>
+     * Because the java try-catch statement cannot catch exceptions thrown by {@link URLClassLoader} in the
+     * main thread, this wrapper creates a new thread to contain the exception.
+     */
+    private static class ClassLoaderWrapper {
+        private final URLClassLoader classLoader;
+        private final String className;
+        private Class<?> loadedClass;
 
-        boolean terminate() {
-            loaderService.shutdown();
+        ClassLoaderWrapper(URL jarUrl, String className) {
+            this.className = className;
+            this.classLoader = new URLClassLoader(new URL[]{jarUrl});
+        }
+
+        Class<?> load() {
+            Thread loaderThread = new Thread(() -> {
+                try {
+                    loadedClass = classLoader.loadClass(className);
+                } catch (Exception e) {
+                    // This catch actually does not catch loader exceptions because the exception is
+                    // thrown to the classloader of this thread.
+                    // The real mechanism is, the loader thread itself isolates the exception from the main thread,
+                    // to keep the whole program safe.
+                }
+            });
+            loaderThread.start();
             try {
-                return loaderService.awaitTermination(10000, TimeUnit.MILLISECONDS);
+                loaderThread.join();  // block the main thread until the loader thread finishes or fails
             } catch (InterruptedException e) {
-                EventLogger.log(e);
-                return false;
+                e.printStackTrace();
             }
+            try {
+                classLoader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return loadedClass;
         }
     }
 }

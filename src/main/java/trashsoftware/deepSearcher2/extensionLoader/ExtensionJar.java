@@ -15,14 +15,23 @@ public class ExtensionJar {
         this.classList = classList;
     }
 
+    /**
+     * @return the simple name of jar file
+     */
     public String getJarName() {
         return jarName;
     }
 
+    /**
+     * @return the jar file name with path
+     */
     public String getPathName() {
         return ExtensionLoader.EXT_JAR_DIR + File.separator + jarName;
     }
 
+    /**
+     * @return a list containing all classes loaded from this jar file
+     */
     public List<Class<?>> getClassList() {
         return classList;
     }
