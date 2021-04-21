@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import trashsoftware.deepSearcher2.controllers.settingsPages.ExclusionPage?>
-<fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.ExclusionPage" xmlns="http://javafx.com/javafx"
+<?import trashsoftware.deepSearcher2.fxml.settingsPages.ExclusionPage?>
+<fx:root type="trashsoftware.deepSearcher2.fxml.settingsPages.ExclusionPage" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
     <padding>
         <Insets top="5.0" left="5.0" right="5.0" bottom="5.0"/>

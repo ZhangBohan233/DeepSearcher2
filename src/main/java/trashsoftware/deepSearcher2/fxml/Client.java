@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.EventLogger;
@@ -108,6 +109,7 @@ public class Client extends Application {
             return;
         }
 
+        ExtensionLoader.startLoader();
         Cache.startCache();
 
         currentStage = stage;
@@ -117,7 +119,8 @@ public class Client extends Application {
         Parent root = loader.load();
         MainViewController controller = loader.getController();
 
-        iconImage = new Image(getClass().getResourceAsStream("/trashsoftware/deepSearcher2/images/icon.bmp"));
+        iconImage = new Image(
+                getClass().getResourceAsStream("/trashsoftware/deepSearcher2/images/icon.bmp"));
 
         Scene rootScene = new Scene(root);
         rootScene.getStylesheets().add(
@@ -136,6 +139,7 @@ public class Client extends Application {
         stage.setOnHidden(e -> {
             controller.stopActiveSearcher();
             deleteMarkFile();
+            ExtensionLoader.stopLoader();
             Cache.stopCache();
             Configs.stopConfig();
         });

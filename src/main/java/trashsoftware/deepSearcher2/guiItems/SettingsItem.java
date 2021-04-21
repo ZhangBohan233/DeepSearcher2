@@ -1,6 +1,6 @@
 package trashsoftware.deepSearcher2.guiItems;
 
-import trashsoftware.deepSearcher2.controllers.settingsPages.Page;
+import trashsoftware.deepSearcher2.fxml.settingsPages.Page;
 
 public class SettingsItem {
 

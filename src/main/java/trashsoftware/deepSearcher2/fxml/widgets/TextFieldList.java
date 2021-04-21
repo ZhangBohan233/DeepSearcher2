@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers.widgets;
+package trashsoftware.deepSearcher2.fxml.widgets;
 
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;

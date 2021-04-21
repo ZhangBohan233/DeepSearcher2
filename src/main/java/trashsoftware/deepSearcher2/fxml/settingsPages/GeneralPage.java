@@ -1,13 +1,13 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.ConfirmBox;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.ConfirmBox;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.NamedLocale;
 

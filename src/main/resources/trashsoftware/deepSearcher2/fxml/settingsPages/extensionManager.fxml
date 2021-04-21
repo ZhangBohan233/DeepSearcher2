@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import trashsoftware.deepSearcher2.controllers.settingsPages.ExtensionManagerPage?>
-<fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.ExtensionManagerPage"
+<?import trashsoftware.deepSearcher2.fxml.settingsPages.ExtensionManagerPage?>
+<fx:root type="trashsoftware.deepSearcher2.fxml.settingsPages.ExtensionManagerPage"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
     <padding>
@@ -34,6 +34,7 @@
         <VBox spacing="5.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
             <Button text="+" onAction="#installExtension" minWidth="25.0"/>
             <Button fx:id="uninstallButton" text="-" onAction="#uninstallExtension" minWidth="25.0" disable="true"/>
+            <Button text="↺" styleClass="refreshButton" onAction="#reloadJarsAction" minWidth="25.0"/>
         </VBox>
         <TreeTableView fx:id="extensionTable" GridPane.rowIndex="1">
             <columns>

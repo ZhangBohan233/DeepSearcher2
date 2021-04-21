@@ -1,10 +1,6 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
-import javafx.scene.control.*;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
-
-import java.util.ArrayList;
-import java.util.List;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 
 /**
  * A page that has real setting items.

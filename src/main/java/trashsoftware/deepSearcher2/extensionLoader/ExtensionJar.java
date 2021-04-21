@@ -26,4 +26,12 @@ public class ExtensionJar {
     public List<Class<?>> getClassList() {
         return classList;
     }
+
+    @Override
+    public String toString() {
+        return "ExtensionJar{" +
+                "jarName='" + jarName + '\'' +
+                ", classList=" + classList +
+                '}';
+    }
 }

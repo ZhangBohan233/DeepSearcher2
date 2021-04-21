@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers.widgets;
+package trashsoftware.deepSearcher2.fxml.widgets;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +12,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.settingsPages.FormatInputAble;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.settingsPages.FormatInputAble;
 
 import java.io.IOException;
 import java.net.URL;

@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="trashsoftware.deepSearcher2.controllers.ConfirmBox"
+      fx:controller="trashsoftware.deepSearcher2.fxml.ConfirmBox"
       prefWidth="320.0" spacing="10.0">
     <padding>
         <Insets left="5.0" right="5.0" top="5.0" bottom="5.0"/>

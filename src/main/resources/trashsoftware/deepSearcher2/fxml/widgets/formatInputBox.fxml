@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="trashsoftware.deepSearcher2.controllers.widgets.FormatInputBox"
+      fx:controller="trashsoftware.deepSearcher2.fxml.widgets.FormatInputBox"
       prefWidth="320.0" alignment="CENTER" spacing="10.0">
     <padding>
         <Insets left="10.0" right="10.0" top="10.0" bottom="10.0"/>

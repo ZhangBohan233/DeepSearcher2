@@ -1,6 +1,6 @@
 package trashsoftware.deepSearcher2.searcher;
 
-import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 import trashsoftware.deepSearcher2.searcher.matchers.regexMatchers.NativeRegexMatcher;
 import trashsoftware.deepSearcher2.searcher.matchers.regularMatchers.KMPMatcher;

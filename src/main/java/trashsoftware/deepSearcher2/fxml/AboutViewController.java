@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

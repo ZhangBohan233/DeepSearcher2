@@ -1,8 +1,7 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.TextField;
 
 import java.util.HashMap;

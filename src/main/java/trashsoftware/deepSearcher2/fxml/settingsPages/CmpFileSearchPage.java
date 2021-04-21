@@ -1,12 +1,12 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Duration;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import trashsoftware.deepSearcher2.searcher.archiveSearchers.ArchiveSearcher;
 import trashsoftware.deepSearcher2.util.Configs;
 

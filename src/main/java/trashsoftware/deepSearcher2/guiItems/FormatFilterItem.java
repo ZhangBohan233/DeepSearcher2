@@ -1,6 +1,6 @@
 package trashsoftware.deepSearcher2.guiItems;
 
-import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatTable;
 
 import java.util.ArrayList;
 import java.util.List;

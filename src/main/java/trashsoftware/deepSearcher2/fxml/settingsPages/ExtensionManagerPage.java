@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 import dsApi.api.FileFormatReader;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -8,9 +8,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import org.json.JSONObject;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
-import trashsoftware.deepSearcher2.controllers.ConfirmBox;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.ConfirmBox;
 import trashsoftware.deepSearcher2.extensionLoader.ExtensionJar;
 import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.util.Cache;
@@ -51,7 +51,7 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
 
         extensionTable.setRoot(rootItem);
         setTableListeners();
-        refreshExtensions();
+        refreshExtensionTable();
 
         loadFromCache(Cache.getCache());
     }
@@ -68,12 +68,10 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
         File jarFile = chooser.showOpenDialog(getController().getStage());
         if (jarFile != null) {
             jarDialogInit = jarFile.getParentFile();
-            // todo: this check actually cannot return 'false', but it at least prevents incompatible jars to be copied
-            // todo: to the extension directory
             if (ExtensionLoader.testJar(jarFile)) {
                 String destPath = ExtensionLoader.EXT_JAR_DIR + File.separator + jarFile.getName();
                 if (Util.copyFile(destPath, jarFile)) {
-                    refreshExtensions();
+                    reloadJarFromDisk();
                 } else {
                     ConfirmBox infoBox = ConfirmBox.createInfoBox(
                             getController().getStage(), Client.getBundle().getString("error"));
@@ -102,6 +100,11 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
         confirmBox.show();
     }
 
+    @FXML
+    void reloadJarsAction() {
+        reloadJarFromDisk();
+    }
+
     private void uninstallSelectedJar() {
         JarItem selected = (JarItem) extensionTable.getSelectionModel().getSelectedItem().getValue();
         String path = selected.extensionJar.getPathName();
@@ -113,7 +116,7 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
             infoBox.setMessage(Client.getBundle().getString("cannotUninstall"));
             infoBox.show();
         }
-        refreshExtensions();
+        reloadJarFromDisk();
     }
 
     @Override
@@ -129,9 +132,16 @@ public class ExtensionManagerPage extends SettingsPage implements CacheObservabl
         getController().getMainView().refreshFormatTable();
     }
 
-    public void refreshExtensions() {
+    public void reloadJarFromDisk() {
+        ExtensionLoader.stopLoader();
+        ExtensionLoader.startLoader();
+        refreshExtensionTable();
+        getController().getMainView().refreshFormatTable();
+    }
+
+    public void refreshExtensionTable() {
         clearCheckBoxes();
-        List<ExtensionJar> extensionJars = ExtensionLoader.listExternalJars();
+        List<ExtensionJar> extensionJars = ExtensionLoader.getJarLoader().getExtensionJarList();
         Set<String> enabledJars = Configs.getConfigs().getEnabledJars();
         for (ExtensionJar jar : extensionJars) {
             ExtensionItem item = new JarItem(jar);

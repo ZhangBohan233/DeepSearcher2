@@ -16,16 +16,16 @@ module DeepSearcher {
 
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.guiItems;
-    opens trashsoftware.deepSearcher2.controllers;
-    opens trashsoftware.deepSearcher2.controllers.widgets;
-    opens trashsoftware.deepSearcher2.controllers.settingsPages;
+    opens trashsoftware.deepSearcher2.fxml;
+    opens trashsoftware.deepSearcher2.fxml.widgets;
+    opens trashsoftware.deepSearcher2.fxml.settingsPages;
 
-    exports trashsoftware.deepSearcher2.controllers;
+    exports trashsoftware.deepSearcher2.fxml;
     exports trashsoftware.deepSearcher2.searcher;
     exports trashsoftware.deepSearcher2.searcher.matchers;
     exports trashsoftware.deepSearcher2.searcher.archiveSearchers;
     exports trashsoftware.deepSearcher2.guiItems;
     exports trashsoftware.deepSearcher2.util;
-    exports trashsoftware.deepSearcher2.controllers.widgets;
-    exports trashsoftware.deepSearcher2.controllers.settingsPages;
+    exports trashsoftware.deepSearcher2.fxml.widgets;
+    exports trashsoftware.deepSearcher2.fxml.settingsPages;
 }

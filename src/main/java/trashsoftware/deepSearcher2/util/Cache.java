@@ -113,28 +113,16 @@ public class Cache {
         }
         Configs.createDirsIfNotExist();
         String s = root.toString(2);
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(COMMON_CACHE_NAME);
+        try (FileWriter fw = new FileWriter(COMMON_CACHE_NAME)) {
             fw.write(s);
             fw.flush();
         } catch (IOException e) {
-            //
-        } finally {
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
-            }
+            e.printStackTrace();
         }
     }
 
     private void loadFromDisk() {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new FileReader(COMMON_CACHE_NAME));
+        try (BufferedReader br = new BufferedReader(new FileReader(COMMON_CACHE_NAME))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
@@ -145,14 +133,6 @@ public class Cache {
             root = new JSONObject();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

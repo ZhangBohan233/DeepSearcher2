@@ -1,11 +1,11 @@
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import trashsoftware.deepSearcher2.controllers.settingsPages.*;
+import trashsoftware.deepSearcher2.fxml.settingsPages.*;
 import trashsoftware.deepSearcher2.guiItems.SettingsItem;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.EventLogger;

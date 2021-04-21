@@ -1,9 +1,7 @@
 package trashsoftware.deepSearcher2.guiItems;
 
-import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.util.Util;
-
-import java.util.ResourceBundle;
 
 /**
  * A class that contains a file's size and can convert size in byte to a readable form.

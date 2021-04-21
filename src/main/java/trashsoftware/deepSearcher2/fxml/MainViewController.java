@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 
 import dsApi.api.FileFormatReader;
 import javafx.application.Platform;
@@ -34,9 +34,9 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import trashsoftware.deepSearcher2.controllers.settingsPages.SearchingOptionsPage;
-import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
-import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
+import trashsoftware.deepSearcher2.fxml.settingsPages.SearchingOptionsPage;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatTable;
+import trashsoftware.deepSearcher2.fxml.widgets.TextFieldList;
 import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
@@ -577,7 +577,7 @@ public class MainViewController implements Initializable, CacheObservable {
         }
         formatTable.setCustomFormats(customFormats);
         // extension formats
-        List<FileFormatReader> enabledJarFmts = ExtensionLoader.listEnabledExternalReaders();
+        List<FileFormatReader> enabledJarFmts = ExtensionLoader.getJarLoader().listEnabledExternalReaders();
         Map<String, String> extensionFormats = new HashMap<>();
         for (FileFormatReader formatReader : enabledJarFmts) {
             String description = formatReader.description(Configs.getConfigs().getCurrentLocale());

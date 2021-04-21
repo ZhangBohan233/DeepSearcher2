@@ -1,9 +1,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import trashsoftware.deepSearcher2.controllers.widgets.FormatTable?>
-<?import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList?>
-<VBox fx:controller="trashsoftware.deepSearcher2.controllers.MainViewController"
+<?import trashsoftware.deepSearcher2.fxml.widgets.FormatTable?>
+<?import trashsoftware.deepSearcher2.fxml.widgets.TextFieldList?>
+<VBox fx:controller="trashsoftware.deepSearcher2.fxml.MainViewController"
       xmlns:fx="http://javafx.com/fxml" prefWidth="1080.0" prefHeight="640.0">
 
     <MenuBar>

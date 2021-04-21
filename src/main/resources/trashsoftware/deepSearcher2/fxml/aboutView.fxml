@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="trashsoftware.deepSearcher2.controllers.AboutViewController"
+      fx:controller="trashsoftware.deepSearcher2.fxml.AboutViewController"
       prefHeight="320.0" prefWidth="480.0"
       alignment="CENTER" spacing="20.0">
 

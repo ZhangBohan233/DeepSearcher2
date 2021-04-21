@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers.widgets;
+package trashsoftware.deepSearcher2.fxml.widgets;
 
 import javafx.scene.control.TableView;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;

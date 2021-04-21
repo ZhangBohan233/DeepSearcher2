@@ -359,7 +359,7 @@ public class SearchingOptions {
             // initialize extensions
             if (prefSet.getExtensions() != null) {
                 prefSet.externalReaders = new HashMap<>();
-                List<FileFormatReader> enabled = ExtensionLoader.listEnabledExternalReaders();
+                List<FileFormatReader> enabled = ExtensionLoader.getJarLoader().listEnabledExternalReaders();
                 for (FileFormatReader ffr : enabled) {
                     for (String ext : ffr.extensions()) {
                         if (prefSet.getExtensions().contains(ext)) {

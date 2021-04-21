@@ -1,7 +1,7 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 import javafx.scene.layout.VBox;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 
 /**
  * A page that can be shown inside the right panel of the settings panel.

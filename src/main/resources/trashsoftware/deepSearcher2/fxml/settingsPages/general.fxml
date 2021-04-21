@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
-<?import trashsoftware.deepSearcher2.controllers.settingsPages.GeneralPage?>
-<fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.GeneralPage"
+<?import trashsoftware.deepSearcher2.fxml.settingsPages.GeneralPage?>
+<fx:root type="trashsoftware.deepSearcher2.fxml.settingsPages.GeneralPage"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
          alignment="CENTER" spacing="10.0">
     <padding>

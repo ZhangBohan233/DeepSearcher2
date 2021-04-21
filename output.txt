@@ -1,5 +1,5 @@
 package trashsoftware.deepSearcher2;
-import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.util.EventLogger;
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -25,18 +25,18 @@ module DeepSearcher {
     requires poi;
     opens trashsoftware.deepSearcher2;
     opens trashsoftware.deepSearcher2.guiItems;
-    opens trashsoftware.deepSearcher2.controllers;
-    opens trashsoftware.deepSearcher2.controllers.widgets;
-    opens trashsoftware.deepSearcher2.controllers.settingsPages;
-    exports trashsoftware.deepSearcher2.controllers;
+    opens trashsoftware.deepSearcher2.fxml;
+    opens trashsoftware.deepSearcher2.fxml.widgets;
+    opens trashsoftware.deepSearcher2.fxml.settingsPages;
+    exports trashsoftware.deepSearcher2.fxml;
     exports trashsoftware.deepSearcher2.searcher;
     exports trashsoftware.deepSearcher2.searcher.matchers;
     exports trashsoftware.deepSearcher2.guiItems;
     exports trashsoftware.deepSearcher2.util;
-    exports trashsoftware.deepSearcher2.controllers.widgets;
-    exports trashsoftware.deepSearcher2.controllers.settingsPages;
+    exports trashsoftware.deepSearcher2.fxml.widgets;
+    exports trashsoftware.deepSearcher2.fxml.settingsPages;
 }
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -57,7 +57,7 @@ public class AboutViewController implements Initializable {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -171,7 +171,7 @@ public class Client extends Application {
         stage.show();
     }
 }
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -283,7 +283,7 @@ public class ConfirmBox implements Initializable {
         this.onCancelled = eventHandler;
     }
 }
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -360,7 +360,7 @@ public class HistoryListController implements Initializable {
         historyTable.getItems().addAll(allHistory);
     }
 }
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -394,9 +394,9 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import trashsoftware.deepSearcher2.controllers.settingsPages.SearchingOptionsPage;
-import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
-import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList;
+import trashsoftware.deepSearcher2.fxml.settingsPages.SearchingOptionsPage;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatTable;
+import trashsoftware.deepSearcher2.fxml.widgets.TextFieldList;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
 import trashsoftware.deepSearcher2.guiItems.FormatType;
@@ -1110,7 +1110,7 @@ public class MainViewController implements Initializable, CacheObservable {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
@@ -1118,8 +1118,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import trashsoftware.deepSearcher2.searcher.Algorithm;
 import trashsoftware.deepSearcher2.util.Configs;
 import java.io.IOException;
@@ -1259,16 +1259,16 @@ public class AdvancedSearchingPage extends SettingsPage {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
-import trashsoftware.deepSearcher2.controllers.widgets.FormatInputBox;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatInputBox;
 import trashsoftware.deepSearcher2.util.Configs;
 import java.io.IOException;
 import java.util.Map;
@@ -1357,15 +1357,15 @@ public class CustomPage extends SettingsPage implements FormatInputAble {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
-import trashsoftware.deepSearcher2.controllers.widgets.FormatInputBox;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatInputBox;
 import trashsoftware.deepSearcher2.util.Configs;
 import java.io.File;
 import java.io.IOException;
@@ -1453,7 +1453,7 @@ public class ExclusionPage extends SettingsPage implements FormatInputAble {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 /**
  * An interface that supports the {@code FormatInputBox} to input a format.
  */
@@ -1466,15 +1466,15 @@ public interface FormatInputAble {
      */
     void addFormat(String ext, String description);
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.ConfirmBox;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.ConfirmBox;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 import trashsoftware.deepSearcher2.util.NamedLocale;
 import java.io.IOException;
@@ -1568,19 +1568,19 @@ public class GeneralPage extends SettingsPage {
         getStatusSaver().store(fontSizeBox);
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 public class NavigatorPage extends Page {
     public NavigatorPage(SettingsPanelController controller) {
         super(controller);
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.ConfirmBox;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.ConfirmBox;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
 import java.io.IOException;
@@ -1629,9 +1629,9 @@ public class OthersPage extends SettingsPage {
         Cache.clearCache();
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.scene.layout.VBox;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 /**
  * A page that can be shown inside the right panel of the settings panel.
  */
@@ -1644,13 +1644,13 @@ public abstract class Page extends VBox {
         return controller;
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import trashsoftware.deepSearcher2.util.Configs;
 import java.io.IOException;
 public class SearchingOptionsPage extends SettingsPage {
@@ -1726,9 +1726,9 @@ public class SearchingOptionsPage extends SettingsPage {
         getStatusSaver().store(searchDepthField);
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.scene.control.*;
-import trashsoftware.deepSearcher2.controllers.SettingsPanelController;
+import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -1749,7 +1749,7 @@ public abstract class SettingsPage extends Page {
         return getController().getStatusSaver();
     }
 }
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -1820,13 +1820,13 @@ public class StatusSaver {
         return !textField.getText().equals(storedValue);
     }
 }
-package trashsoftware.deepSearcher2.controllers;
+package trashsoftware.deepSearcher2.fxml;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import trashsoftware.deepSearcher2.controllers.settingsPages.*;
+import trashsoftware.deepSearcher2.fxml.settingsPages.*;
 import trashsoftware.deepSearcher2.guiItems.SettingsItem;
 import trashsoftware.deepSearcher2.util.EventLogger;
 import java.io.IOException;
@@ -2024,7 +2024,7 @@ public class SettingsPanelController implements Initializable {
         return true;
     }
 }
-package trashsoftware.deepSearcher2.controllers.widgets;
+package trashsoftware.deepSearcher2.fxml.widgets;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -2037,8 +2037,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import trashsoftware.deepSearcher2.controllers.Client;
-import trashsoftware.deepSearcher2.controllers.settingsPages.FormatInputAble;
+import trashsoftware.deepSearcher2.fxml.Client;
+import trashsoftware.deepSearcher2.fxml.settingsPages.FormatInputAble;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -2097,7 +2097,7 @@ public class FormatInputBox implements Initializable {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers.widgets;
+package trashsoftware.deepSearcher2.fxml.widgets;
 import javafx.scene.control.TableView;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
@@ -2227,7 +2227,7 @@ public class FormatTable extends TableView<FormatItem> {
         }
     }
 }
-package trashsoftware.deepSearcher2.controllers.widgets;
+package trashsoftware.deepSearcher2.fxml.widgets;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.value.ChangeListener;
@@ -2318,7 +2318,7 @@ public class FileSizeItem implements Comparable<FileSizeItem> {
     }
 }
 package trashsoftware.deepSearcher2.guiItems;
-import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatTable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -2412,7 +2412,7 @@ public enum FormatType {
 }
 package trashsoftware.deepSearcher2.guiItems;
 import javafx.fxml.FXML;
-import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.searcher.PrefSet;
 import java.io.File;
 import java.text.DateFormat;
@@ -2553,7 +2553,7 @@ public class ResultItem {
     }
 }
 package trashsoftware.deepSearcher2.guiItems;
-import trashsoftware.deepSearcher2.controllers.settingsPages.Page;
+import trashsoftware.deepSearcher2.fxml.settingsPages.Page;
 public class SettingsItem {
     private final String name;
     private final Page page;
@@ -2570,7 +2570,7 @@ public class SettingsItem {
     }
 }
 package trashsoftware.deepSearcher2.searcher;
-import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 import trashsoftware.deepSearcher2.searcher.matchers.regexMatchers.NativeRegexMatcher;
 import trashsoftware.deepSearcher2.searcher.matchers.regularMatchers.KMPMatcher;

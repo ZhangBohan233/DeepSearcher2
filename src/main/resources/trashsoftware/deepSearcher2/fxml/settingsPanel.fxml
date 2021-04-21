@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
-          fx:controller="trashsoftware.deepSearcher2.controllers.SettingsPanelController"
+          fx:controller="trashsoftware.deepSearcher2.fxml.SettingsPanelController"
           prefHeight="480.0" prefWidth="720.0" hgap="5.0">
     <padding>
         <Insets left="5.0" right="5.0"/>

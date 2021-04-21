@@ -1,4 +1,4 @@
-package trashsoftware.deepSearcher2.controllers.settingsPages;
+package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 /**
  * An interface that supports the {@code FormatInputBox} to input a format.
