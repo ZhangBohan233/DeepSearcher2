@@ -1,6 +1,6 @@
 package trashsoftware.deepSearcher2.guiItems;
 
-import trashsoftware.deepSearcher2.controllers.widgets.FormatTable;
+import trashsoftware.deepSearcher2.fxml.widgets.FormatTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,10 @@ public class FormatFilterItem {
         } else if (filterType == FormatType.CUSTOMS) {
             for (FormatItem fi : allFormats) {
                 if (parent.getCustomFormats().containsKey(fi.getExtension())) result.add(fi);
+            }
+        } else if (filterType == FormatType.EXTENSIONS) {
+            for (FormatItem fi : allFormats) {
+                if (parent.getExtensionFormats().containsKey(fi.getExtension())) result.add(fi);
             }
         } else {
             Set<String> fmts = FormatTable.FMT_MAP.get(filterType);

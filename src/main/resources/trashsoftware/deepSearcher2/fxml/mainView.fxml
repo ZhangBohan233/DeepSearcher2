@@ -1,15 +1,18 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import trashsoftware.deepSearcher2.controllers.widgets.FormatTable?>
-<?import trashsoftware.deepSearcher2.controllers.widgets.TextFieldList?>
-<VBox fx:controller="trashsoftware.deepSearcher2.controllers.MainViewController"
+<?import trashsoftware.deepSearcher2.fxml.widgets.FormatTable?>
+<?import trashsoftware.deepSearcher2.fxml.widgets.TextFieldList?>
+<VBox fx:controller="trashsoftware.deepSearcher2.fxml.MainViewController"
       xmlns:fx="http://javafx.com/fxml" prefWidth="1080.0" prefHeight="640.0">
 
     <MenuBar>
         <Menu text="%file">
             <MenuItem text="%settings" onAction="#openSettingsAction"/>
             <MenuItem text="%history" onAction="#openHistoryAction"/>
+            <SeparatorMenuItem/>
+            <MenuItem text="%addSearchDir" onAction="#addSearchDir"/>
+            <MenuItem text="%addSearchTarget" onAction="#addSearchItem"/>
             <SeparatorMenuItem/>
             <MenuItem text="%restart" onAction="#restartAction"/>
             <MenuItem text="%exit" onAction="#exitAction"/>
@@ -112,7 +115,7 @@
                 <columns>
                     <TableColumn minWidth="25.0" maxWidth="25.0"/>
                     <TableColumn fx:id="formatNameCol" text="%format" prefWidth="170.0"/>
-                    <TableColumn text="%extension" prefWidth="50.0"/>
+                    <TableColumn text="%fmtExtName" prefWidth="50.0"/>
                 </columns>
                 <placeholder>
                     <Label text="%formatTablePlaceHolder"/>

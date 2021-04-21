@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.geometry.Insets?>
-<fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.OthersPage"
+<fx:root type="trashsoftware.deepSearcher2.fxml.settingsPages.OthersPage"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
          alignment="CENTER" spacing="10.0">
     <padding>

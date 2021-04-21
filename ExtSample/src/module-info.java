@@ -1,0 +1,3 @@
+module extSample {
+    requires dsApi;
+}

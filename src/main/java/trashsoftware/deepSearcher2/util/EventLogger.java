@@ -37,6 +37,17 @@ public class EventLogger {
      * @param message text message
      */
     public static void log(String message) {
+        log(message, true);
+    }
+
+    /**
+     * Logs text error message to a new log file.
+     *
+     * @param message text message
+     * @param print   whether to also print message in console
+     */
+    public static void log(String message, boolean print) {
+        if (print) System.err.println(message);
         createLogDirIfNone();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
         String realName = LOG_BASE_NAME + sdf.format(new Date()) + ".log";

@@ -2,7 +2,7 @@
 
 <?import javafx.scene.layout.*?>
 
-<fx:root type="trashsoftware.deepSearcher2.controllers.widgets.TextFieldList"
+<fx:root type="trashsoftware.deepSearcher2.fxml.widgets.TextFieldList"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <VBox fx:id="baseList" alignment="TOP_CENTER"/>
 </fx:root>

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="trashsoftware.deepSearcher2.controllers.widgets.FormatInputBox"
+      fx:controller="trashsoftware.deepSearcher2.fxml.widgets.FormatInputBox"
       prefWidth="320.0" alignment="CENTER" spacing="10.0">
     <padding>
         <Insets left="10.0" right="10.0" top="10.0" bottom="10.0"/>
@@ -21,10 +21,10 @@
             <RowConstraints/>
         </rowConstraints>
 
-        <Label fx:id="descriptionLabel" text="%description"/>
+        <Label fx:id="descriptionLabel" text="%fmtDescription"/>
         <TextField fx:id="descriptionField" GridPane.columnIndex="1"/>
 
-        <Label text="%extension" GridPane.rowIndex="1"/>
+        <Label text="%fmtExtName" GridPane.rowIndex="1"/>
         <TextField fx:id="extField" onAction="#okAction" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
     </GridPane>
 

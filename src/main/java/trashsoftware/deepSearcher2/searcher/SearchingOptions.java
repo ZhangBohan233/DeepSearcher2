@@ -1,5 +1,7 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import dsApi.api.FileFormatReader;
+import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 import trashsoftware.deepSearcher2.util.Configs;
 
@@ -26,8 +28,8 @@ public class SearchingOptions {
     private boolean fileName;
     private boolean dirName;
     private boolean matchCase;
-    private boolean includePathName;
-    private boolean showHidden;
+    private final boolean includePathName = Configs.getConfigs().isIncludePathName();
+    private final boolean showHidden = Configs.getConfigs().isShowHidden();
     private boolean matchRegex;
     private boolean matchWord;
     private boolean searchCmpFile;
@@ -38,11 +40,17 @@ public class SearchingOptions {
     private Set<String> excludedDirs;
     private Set<String> excludedFormats;
     private Set<String> cmpFileFormats;
+    private Map<String, FileFormatReader> externalReaders;
     private int maxSearchDepth;
     private boolean limitDepth;
-    private boolean wholeContent;
-    private boolean escapes;
+    private final boolean wholeContent = Configs.getConfigs().isWholeContent();
+    private final boolean escapes = Configs.getConfigs().isSearchEscapes();
     private int depthFirstIndicator = -1;  // -1 for not read, 0 for breadth first 1, for depth first
+
+    /**
+     * Current locale, serves for external jar reader.
+     */
+    private final Locale locale = Configs.getConfigs().getCurrentLocale();
 
     /**
      * Private constructor, avoiding constructing from outside.
@@ -50,6 +58,13 @@ public class SearchingOptions {
      * Please use {@code PrefSet.PrefSetBuilder} to create instances of this class.
      */
     private SearchingOptions() {
+    }
+
+    /**
+     * @return the locale when this search task is initiated
+     */
+    public Locale getLocale() {
+        return locale;
     }
 
     private static List<String> replaceEscapes(List<String> targets) {
@@ -73,6 +88,13 @@ public class SearchingOptions {
      */
     public Set<String> getExtensions() {
         return extensions;
+    }
+
+    /**
+     * @return a map that maps format ext names supported by external jars to its reader
+     */
+    public Map<String, FileFormatReader> getExternalReaders() {
+        return externalReaders;
     }
 
     /**
@@ -327,10 +349,6 @@ public class SearchingOptions {
                     prefSet.targets.set(i, prefSet.targets.get(i).toLowerCase());
                 }
             }
-            prefSet.showHidden = Configs.getConfigs().isShowHidden();
-            prefSet.includePathName = Configs.getConfigs().isIncludePathName();
-            prefSet.wholeContent = Configs.getConfigs().isWholeContent();
-            prefSet.escapes = Configs.getConfigs().isSearchEscapes();
             // depth limits are set in 'addSearchDirs'
             if (prefSet.escapes) {
                 prefSet.targets = replaceEscapes(prefSet.targets);
@@ -338,6 +356,18 @@ public class SearchingOptions {
             prefSet.searchCmpFile = Configs.getConfigs().isSearchCmpFiles();
             // wrap by a new instance to avoid unexpected mutation
             prefSet.cmpFileFormats = new HashSet<>(Configs.getConfigs().getCmpFormats());
+            // initialize extensions
+            if (prefSet.getExtensions() != null) {
+                prefSet.externalReaders = new HashMap<>();
+                List<FileFormatReader> enabled = ExtensionLoader.getJarLoader().listEnabledExternalReaders();
+                for (FileFormatReader ffr : enabled) {
+                    for (String ext : ffr.extensions()) {
+                        if (prefSet.getExtensions().contains(ext)) {
+                            prefSet.externalReaders.put(ext, ffr);
+                        }
+                    }
+                }
+            }
             return prefSet;
         }
 

@@ -1,7 +1,7 @@
 package trashsoftware.deepSearcher2.guiItems;
 
 import javafx.fxml.FXML;
-import trashsoftware.deepSearcher2.controllers.Client;
+import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.searcher.SearchingOptions;
 
 import java.io.File;

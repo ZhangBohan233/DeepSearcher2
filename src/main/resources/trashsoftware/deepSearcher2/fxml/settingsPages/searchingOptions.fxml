@@ -3,10 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.HBox?>
-<?import trashsoftware.deepSearcher2.controllers.settingsPages.SearchingOptionsPage?>
+<?import trashsoftware.deepSearcher2.fxml.settingsPages.SearchingOptionsPage?>
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         type="trashsoftware.deepSearcher2.controllers.settingsPages.SearchingOptionsPage"
+         type="trashsoftware.deepSearcher2.fxml.settingsPages.SearchingOptionsPage"
          alignment="CENTER" spacing="10.0">
     <padding>
         <Insets top="5.0"/>

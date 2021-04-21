@@ -1,5 +1,6 @@
 package trashsoftware.deepSearcher2.searcher;
 
+import dsApi.api.FileFormatReader;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.scene.control.TableView;
@@ -14,10 +15,7 @@ import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -257,10 +255,10 @@ public class Searcher {
     private ContentSearcher createContentSearcher(File file) {
         String ext = Util.getFileExtension(file.getName());
         if (options.getExtensions().contains(ext)) {
-            ContentSearcher searcher;
-            if (FORMAT_MAP.containsKey(ext)) {
+            Class<? extends ContentSearcher> searcherClass = FORMAT_MAP.get(ext);
+            if (searcherClass != null) {
                 try {
-                    searcher = FORMAT_MAP.get(ext)
+                    return searcherClass
                             .getDeclaredConstructor(File.class, MatcherFactory.class, boolean.class)
                             .newInstance(file, contentMatcherFactory, options.isCaseSensitive());
                 } catch (InvocationTargetException |
@@ -269,10 +267,13 @@ public class Searcher {
                         IllegalAccessException e) {
                     throw new InvalidClassException("Unexpected file content searcher. ", e);
                 }
-            } else {
-                searcher = new PlainTextSearcher(file, contentMatcherFactory, options.isCaseSensitive());
             }
-            return searcher;
+            FileFormatReader formatReader = options.getExternalReaders().get(ext);
+            if (formatReader != null) {
+                return new FormatReaderSearcher(file, formatReader, contentMatcherFactory, options.isCaseSensitive(),
+                        options.getLocale());
+            }
+            return new PlainTextSearcher(file, contentMatcherFactory, options.isCaseSensitive());
         }
         return null;
     }

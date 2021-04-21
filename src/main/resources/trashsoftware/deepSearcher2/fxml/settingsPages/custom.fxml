@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import trashsoftware.deepSearcher2.controllers.settingsPages.CustomPage?>
+<?import trashsoftware.deepSearcher2.fxml.settingsPages.CustomPage?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Separator?>
@@ -11,9 +11,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Hyperlink?>
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         type="trashsoftware.deepSearcher2.controllers.settingsPages.CustomPage">
+         type="trashsoftware.deepSearcher2.fxml.settingsPages.CustomPage">
     <padding>
         <Insets top="5.0" left="5.0" right="5.0" bottom="5.0"/>
     </padding>
@@ -30,20 +31,20 @@
             <ColumnConstraints/>
         </columnConstraints>
 
-        <HBox spacing="5.0">
-            <Label text="%customTextFormats"/>
-            <Label text="%onlyTextFormat"/>
+        <Label text="%customTextFormats"/>
+        <HBox spacing="3.0" GridPane.rowIndex="1" alignment="CENTER_LEFT">
+            <Hyperlink text="%onlyTextFormat" onAction="#jumpToExtensions" wrapText="true"/>
         </HBox>
-        <TableView fx:id="customFmtTable" prefHeight="380.0" GridPane.rowIndex="1">
+        <TableView fx:id="customFmtTable" prefHeight="350.0" GridPane.rowIndex="2">
             <columns>
-                <TableColumn text="%description" prefWidth="200.0"/>
-                <TableColumn text="%extension" prefWidth="140.0"/>
+                <TableColumn text="%fmtDescription" prefWidth="200.0"/>
+                <TableColumn text="%fmtExtName" prefWidth="140.0"/>
             </columns>
             <placeholder>
                 <Label text="%customFmtTablePlaceHolder"/>
             </placeholder>
         </TableView>
-        <VBox spacing="5.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
+        <VBox spacing="5.0" GridPane.rowIndex="2" GridPane.columnIndex="1">
             <Button text="+" onAction="#addFmt" minWidth="25.0"/>
             <Button fx:id="deleteFmtButton" text="-" onAction="#deleteFmt" minWidth="25.0" disable="true"/>
         </VBox>

@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import trashsoftware.deepSearcher2.controllers.settingsPages.ExclusionPage?>
-<fx:root type="trashsoftware.deepSearcher2.controllers.settingsPages.ExclusionPage" xmlns="http://javafx.com/javafx"
+<?import trashsoftware.deepSearcher2.fxml.settingsPages.ExclusionPage?>
+<fx:root type="trashsoftware.deepSearcher2.fxml.settingsPages.ExclusionPage" xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml">
     <padding>
         <Insets top="5.0" left="5.0" right="5.0" bottom="5.0"/>
@@ -31,14 +31,14 @@
 
         <Label text="%excludedDirs"/>
         <ListView fx:id="excludedDirList" prefHeight="180.0" GridPane.rowIndex="1"/>
-        <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="1">
+        <VBox spacing="5.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
             <Button text="+" onAction="#addExcludedDir" minWidth="25.0"/>
             <Button fx:id="deleteDirButton" text="-" onAction="#deleteExcludedDir" minWidth="25.0" disable="true"/>
         </VBox>
 
         <Label text="%excludedFormats" GridPane.rowIndex="2"/>
         <ListView fx:id="excludedFormatList" prefHeight="180.0" GridPane.rowIndex="3"/>
-        <VBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="1">
+        <VBox spacing="5.0" GridPane.rowIndex="3" GridPane.columnIndex="1">
             <Button text="+" onAction="#addExcludedFormat" minWidth="25.0"/>
             <Button fx:id="deleteFormatButton" text="-" onAction="#deleteExcludedFormat" minWidth="25.0"
                     disable="true"/>

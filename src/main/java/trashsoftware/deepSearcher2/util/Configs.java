@@ -18,12 +18,13 @@ import java.util.zip.CRC32;
 
 public class Configs {
 
-    private static final String USER_DATA_DIR = "userData";
+    public static final String USER_DATA_DIR = "userData";
     private static final String CONFIG_FILE_NAME = USER_DATA_DIR + File.separator + "config.cfg";
     private static final String EXCLUDED_DIRS_NAME = USER_DATA_DIR + File.separator + "excludedDirs.cfg";
     private static final String EXCLUDED_FORMATS_NAME = USER_DATA_DIR + File.separator + "excludedFormats.cfg";
     private static final String CUSTOM_FORMATS_NAME = USER_DATA_DIR + File.separator + "customFormats.cfg";
     private static final String CMP_FORMATS_NAME = USER_DATA_DIR + File.separator + "cmpFormats.cfg";
+    private static final String ENABLED_JARS_NAME = USER_DATA_DIR + File.separator + "jars.cfg";
     private static final String CUSTOM_CSS = USER_DATA_DIR + File.separator + "style.css";
     private static final String HISTORY_DIR = USER_DATA_DIR + File.separator + "history";
     /**
@@ -37,10 +38,12 @@ public class Configs {
     private Set<String> excludedDirs;
     private Set<String> excludedFmts;
     private Set<String> cmpFmts;
+    private Set<String> jars;
     private Map<String, String> customFmts;
     private long excludedDirsChecksum;
     private long excludedFmtsChecksum;
     private long cmpFmtsChecksum;
+    private long jarsChecksum;
     private long customFmtsChecksum;
 
     private Configs() {
@@ -544,6 +547,17 @@ public class Configs {
     }
 
     /**
+     * @return a set containing all names of enabled jars
+     */
+    public Set<String> getEnabledJars() {
+        return jars;
+    }
+
+    public void setEnabledJars(Set<String> jarNames) {
+        this.jars = jarNames;
+    }
+
+    /**
      * Clears all user settings, but does not delete data.
      */
     public void clearSettings() {
@@ -586,6 +600,7 @@ public class Configs {
         excludedDirs = readListFile(EXCLUDED_DIRS_NAME);
         excludedFmts = readListFile(EXCLUDED_FORMATS_NAME);
         cmpFmts = readListFile(CMP_FORMATS_NAME);
+        jars = readListFile(ENABLED_JARS_NAME);
         customFmts = readMapFile(CUSTOM_FORMATS_NAME);
         excludedDirsChecksum = computeChecksum(excludedDirs);
         excludedFmtsChecksum = computeChecksum(excludedFmts);
@@ -596,6 +611,7 @@ public class Configs {
         long excDirsCs = computeChecksum(excludedDirs);
         long excFmtsCs = computeChecksum(excludedFmts);
         long cmpFmtsCs = computeChecksum(cmpFmts);
+        long jarCs = computeChecksum(jars);
         long cusFmtsCs = computeChecksum(customFmts.keySet());
 
         writeMapFile(CONFIG_FILE_NAME, configMap);
@@ -611,6 +627,10 @@ public class Configs {
         if (cmpFmtsCs != cmpFmtsChecksum) {
             cmpFmtsChecksum = cmpFmtsCs;
             writeListFile(CMP_FORMATS_NAME, cmpFmts);
+        }
+        if (jarCs != jarsChecksum) {
+            jarsChecksum = jarCs;
+            writeListFile(ENABLED_JARS_NAME, jars);
         }
         if (cusFmtsCs != customFmtsChecksum) {
             customFmtsChecksum = cusFmtsCs;
