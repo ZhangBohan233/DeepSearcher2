@@ -32,12 +32,20 @@
 
     <HBox alignment="CENTER" spacing="5.0">
         <CheckBox text="%contentAsWhole" fx:id="wholeContentBox"/>
-        <Label text="(?)" fx:id="wholeContentHelp"/>
+        <Label text="(?)">
+            <tooltip>
+                <Tooltip text="%contentAsWholeHelp" wrapText="true"/>
+            </tooltip>
+        </Label>
     </HBox>
 
     <HBox alignment="CENTER" spacing="5.0">
         <CheckBox text="%searchEscapes" fx:id="escapeBox" disable="true"/>
-        <Label text="(?)" fx:id="escapeHelp"/>
+        <Label text="(?)">
+            <tooltip>
+                <Tooltip text="%escapesHelp" wrapText="true"/>
+            </tooltip>
+        </Label>
     </HBox>
 
     <HBox alignment="CENTER">

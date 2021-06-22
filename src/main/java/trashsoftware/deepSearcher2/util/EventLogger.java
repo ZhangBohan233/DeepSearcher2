@@ -14,11 +14,23 @@ public class EventLogger {
     private static final String DATE_FMT = "yyyy-MM-dd HH-mm-ss";
 
     /**
-     * Logs complete error message and stack trace to a new log file.
+     * Logs and prints complete error message and stack trace to a new log file.
      *
      * @param throwable error
      */
     public static void log(Throwable throwable) {
+        log(throwable, true);
+    }
+
+    /**
+     * Logs complete error message and stack trace to a new log file.
+     *
+     * @param throwable error
+     * @param print whether to print stack trace to stderr
+     */
+    public static void log(Throwable throwable, boolean print) {
+        if (print) throwable.printStackTrace();
+
         createLogDirIfNone();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
         String realName = LOG_BASE_NAME + sdf.format(new Date()) + ".log";

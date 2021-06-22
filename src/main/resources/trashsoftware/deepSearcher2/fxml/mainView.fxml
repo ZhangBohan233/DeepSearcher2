@@ -61,16 +61,32 @@
             </ListView>
 
             <VBox GridPane.columnIndex="1" spacing="5.0">
-                <Button text="+" onAction="#addSearchDir" minWidth="25.0"/>
-                <Button text="-" fx:id="deleteDirButton" onAction="#deleteSearchDir" minWidth="25.0" disable="true"/>
+                <Button text="+" onAction="#addSearchDir" minWidth="25.0">
+                    <tooltip>
+                        <Tooltip text="%addSearchDir"/>
+                    </tooltip>
+                </Button>
+                <Button text="-" fx:id="deleteDirButton" onAction="#deleteSearchDir" minWidth="25.0" disable="true">
+                    <tooltip>
+                        <Tooltip text="%deleteSearchDir"/>
+                    </tooltip>
+                </Button>
             </VBox>
 
             <TextFieldList fx:id="searchItemsList" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
 
             <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="5.0">
-                <Button text="+" onAction="#addSearchItem" minWidth="25.0"/>
+                <Button text="+" onAction="#addSearchItem" minWidth="25.0">
+                    <tooltip>
+                        <Tooltip text="%addSearchTarget"/>
+                    </tooltip>
+                </Button>
                 <Button text="-" fx:id="deleteTargetButton" onAction="#deleteSearchItem" minWidth="25.0"
-                        disable="true"/>
+                        disable="true">
+                    <tooltip>
+                        <Tooltip text="%deleteSearchTarget"/>
+                    </tooltip>
+                </Button>
             </VBox>
 
             <GridPane GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" vgap="5.0">
