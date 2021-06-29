@@ -22,7 +22,7 @@ public class Util {
         if (size < Math.pow(2, 10)) return numToReadable((int) size) + " " + bytesString;
         else if (size < Math.pow(2, 20)) return numToReadable((double) size / 1024 + 1) + " KB";
         else if (size < Math.pow(2, 30)) return numToReadable((double) size / 1048576 + 1) + " MB";
-        else return numToReadable((double) size / 1073741824 + 1) + "GB";
+        else return numToReadable((double) size / 1073741824 + 1) + " GB";
     }
 
     public static String separateInteger(long number) {

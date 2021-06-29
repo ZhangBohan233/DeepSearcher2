@@ -99,11 +99,17 @@
                     <toggleGroup>
                         <ToggleGroup fx:id="andOrGroup"/>
                     </toggleGroup>
+                    <tooltip>
+                        <Tooltip text="%andTextHelp"/>
+                    </tooltip>
                 </RadioButton>
                 <RadioButton fx:id="matchAnyRadioBtn" GridPane.rowIndex="1" text="%orText">
                     <toggleGroup>
                         <fx:reference source="andOrGroup"/>
                     </toggleGroup>
+                    <tooltip>
+                        <Tooltip text="%orTextHelp"/>
+                    </tooltip>
                 </RadioButton>
 
                 <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" alignment="CENTER" spacing="10.0">
@@ -152,7 +158,7 @@
             </placeholder>
         </TableView>
 
-        <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2">
+        <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2" alignment="CENTER_LEFT">
             <padding>
                 <Insets left="5.0"/>
             </padding>
@@ -161,7 +167,7 @@
             <Label text="%filter"/>
         </HBox>
 
-        <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8.0">
+        <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8.0" alignment="CENTER_LEFT">
             <ProgressIndicator fx:id="progressIndicator" visible="false" managed="false" maxWidth="25.0"
                                maxHeight="25.0"/>
             <Label fx:id="searchingStatusText"/>
@@ -170,6 +176,7 @@
             <Label fx:id="timeUsedLabelText"/>
             <Label fx:id="timeUsedText"/>
             <Label fx:id="timeUnitText"/>
+            <Button fx:id="resultInfoBtn" onAction="#resultInfoAction" text="(i)" visible="false"/>
         </HBox>
     </GridPane>
 </VBox>

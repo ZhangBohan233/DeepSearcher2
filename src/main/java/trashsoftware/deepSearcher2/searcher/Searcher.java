@@ -50,6 +50,8 @@ public class Searcher {
     private boolean searching = true;
     private boolean finished = false;
 
+    private final SearchInfoCollector infoCollector = new SearchInfoCollector();
+
     /**
      * Constructor.
      *
@@ -102,6 +104,10 @@ public class Searcher {
         return options;
     }
 
+    public SearchInfoCollector getInfoCollector() {
+        return infoCollector;
+    }
+
     /**
      * Interrupt the search process.
      * <p>
@@ -114,6 +120,8 @@ public class Searcher {
     }
 
     private void depthFirstSearch(File rootFile) {
+        File[] roots = File.listRoots();
+
         boolean notShowHidden = options.notShowHidden();
         int maxDepth = options.isLimitDepth() ? options.getMaxSearchDepth() : Integer.MAX_VALUE;
         Deque<DepthFile> stack = new ArrayDeque<>();
@@ -123,7 +131,17 @@ public class Searcher {
             if (!searching) return;
 
             DepthFile file = stack.removeLast();
-            if (notShowHidden && file.file.isHidden()) continue;
+            if (notShowHidden && file.file.isHidden()) {
+                // A strange bug: Disks are hidden
+                boolean realHidden = true;
+                for (File root : roots) {
+                    if (root.equals(file.file)) {
+                        realHidden = false;
+                        break;
+                    }
+                }
+                if (realHidden) continue;
+            }
             if (file.file.isDirectory()) {
                 // Check if this directory is excluded
                 if (options.getExcludedDirs().contains(file.file.getAbsolutePath())) continue;
@@ -134,18 +152,24 @@ public class Searcher {
                 }
 
                 if (file.depth >= maxDepth) continue;
+
+                infoCollector.foldersSearched++;
                 File[] subFiles = file.file.listFiles();
                 if (subFiles == null) continue;
                 for (int i = subFiles.length - 1; i >= 0; i--) {
                     stack.addLast(new DepthFile(subFiles[i], file.depth + 1));
                 }
             } else {
+                infoCollector.filesSearched++;
+                infoCollector.filesSearchedSize += file.file.length();
                 searchOneFile(file.file);
             }
         }
     }
 
     private void breadthFirstSearch(File rootFile) {
+        File[] roots = File.listRoots();
+
         boolean notShowHidden = options.notShowHidden();
         int maxDepth = options.isLimitDepth() ? options.getMaxSearchDepth() : Integer.MAX_VALUE;
         Deque<DepthFile> stack = new ArrayDeque<>();
@@ -155,7 +179,17 @@ public class Searcher {
             if (!searching) return;
 
             DepthFile file = stack.removeFirst();
-            if (notShowHidden && file.file.isHidden()) continue;
+            if (notShowHidden && file.file.isHidden()) {
+                // A strange bug: Disks are hidden
+                boolean realHidden = true;
+                for (File root : roots) {
+                    if (root.equals(file.file)) {
+                        realHidden = false;
+                        break;
+                    }
+                }
+                if (realHidden) continue;
+            }
             if (file.file.isDirectory()) {
                 // Check if this directory is excluded
                 if (options.getExcludedDirs().contains(file.file.getAbsolutePath())) continue;
@@ -164,14 +198,17 @@ public class Searcher {
                 if (options.isDirName()) {
                     matchName(file.file);
                 }
-
                 if (file.depth >= maxDepth) continue;
+
+                infoCollector.foldersSearched++;
                 File[] subFiles = file.file.listFiles();
                 if (subFiles == null) continue;
                 for (File f : subFiles) {
                     stack.addLast(new DepthFile(f, file.depth + 1));
                 }
             } else {
+                infoCollector.filesSearched++;
+                infoCollector.filesSearchedSize += file.file.length();
                 searchOneFile(file.file);
             }
         }
@@ -202,7 +239,7 @@ public class Searcher {
     /**
      * Searches an archive file
      *
-     * @param realFile         the real file on disk, ready to read, may be a temp file
+     * @param realFile         the real archive file on disk, ready to read, may be a temp file
      * @param outermostArchive the outermost archive file, permanently existing on disk
      * @param internalPath     path between the outermost archive and the current processing file
      */
@@ -214,6 +251,8 @@ public class Searcher {
         if (outermostArchive == null) outermostArchive = realFile;
         ArchiveSearcher archiveSearcher = makeArchiveSearcher(realFile, outermostArchive, internalPath);
         if (archiveSearcher != null) {
+            infoCollector.archivesSearched++;
+            infoCollector.archivesSearchedSize += realFile.length();
             if (needThread) contentService.execute(new SearchArchiveTask(archiveSearcher));
             else archiveSearcher.search();
         }
@@ -252,6 +291,12 @@ public class Searcher {
         }
     }
 
+    /**
+     * Returns a content searcher corresponding to this kind of file, or {@code null} if not.
+     *
+     * @param file file to be searched
+     * @return a content searcher corresponding to this kind of file, or {@code null} if not
+     */
     private ContentSearcher createContentSearcher(File file) {
         String ext = Util.getFileExtension(file.getName());
         if (options.getExtensions().contains(ext)) {
@@ -281,11 +326,13 @@ public class Searcher {
     private void matchFileContent(File file) {
         ContentSearcher searcher = createContentSearcher(file);
         if (searcher != null) {
+            infoCollector.contentsSearched++;
+            infoCollector.contentsSearchedSize += file.length();
             contentService.execute(new SearchContentTask(file, searcher));
         }
     }
 
-    public void matchFileContent(File uncompressed, FileInArchive fileInArchive) {
+    public void matchFileContentUncompressed(File uncompressed, FileInArchive fileInArchive) {
         ContentSearcher searcher = createContentSearcher(uncompressed);
         if (searcher != null) {
             ContentResult result;
@@ -381,6 +428,42 @@ public class Searcher {
 
     public ReadOnlyIntegerProperty resultCountProperty() {
         return resultCountWrapper;
+    }
+
+    /**
+     * The numbers recorded in this class may not be real-timed, only guaranteed accurate after search finished.
+     */
+    public static class SearchInfoCollector {
+        private long filesSearched, foldersSearched, contentsSearched, archivesSearched;
+        private long filesSearchedSize, contentsSearchedSize, archivesSearchedSize;
+
+        public long getArchivesSearched() {
+            return archivesSearched;
+        }
+
+        public long getArchivesSearchedSize() {
+            return archivesSearchedSize;
+        }
+
+        public long getContentsSearched() {
+            return contentsSearched;
+        }
+
+        public long getContentsSearchedSize() {
+            return contentsSearchedSize;
+        }
+
+        public long getFilesSearched() {
+            return filesSearched;
+        }
+
+        public long getFilesSearchedSize() {
+            return filesSearchedSize;
+        }
+
+        public long getFoldersSearched() {
+            return foldersSearched;
+        }
     }
 
     private static class DepthFile {

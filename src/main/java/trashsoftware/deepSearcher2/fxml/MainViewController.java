@@ -27,6 +27,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
@@ -91,6 +92,8 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     Label searchingStatusText, resultNumberText, statusSuffixText, timeUsedLabelText, timeUsedText, timeUnitText;
     @FXML
+    Button resultInfoBtn;
+    @FXML
     ProgressIndicator progressIndicator;
     private ResourceBundle bundle;
     private Stage thisStage;
@@ -98,6 +101,8 @@ public class MainViewController implements Initializable, CacheObservable {
     private File dirDialogInitFile;
 
     private SearchService service;
+    private Searcher.SearchInfoCollector lastInfoCollector;
+    private long lastSearchTimeMs;
 
     private ChangeListener<Number> fileCountListener;
 
@@ -264,6 +269,33 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     void restartAction() {
         Client.restartClient();
+    }
+
+    @FXML
+    void resultInfoAction() throws IOException {
+        if (lastInfoCollector == null) {
+            EventLogger.log("Search info button should not be enabled.");
+            return;
+        }
+
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("resultInfoView.fxml"),
+                bundle
+        );
+        Parent root = loader.load();
+
+        Stage newStage = new Stage();
+        newStage.initOwner(thisStage);
+        newStage.initModality(Modality.WINDOW_MODAL);
+        newStage.initStyle(StageStyle.UTILITY);
+        newStage.setTitle(bundle.getString("appName"));
+        newStage.setScene(new Scene(root));
+        newStage.getIcons().add(Client.getIconImage());
+
+        ResultInfoView resultInfoView = loader.getController();
+        resultInfoView.setup(lastInfoCollector, lastSearchTimeMs);
+
+        newStage.show();
     }
 
     @Override
@@ -690,8 +722,10 @@ public class MainViewController implements Initializable, CacheObservable {
 
             service.setOnSucceeded(e -> {
                 unbindListeners();
-                finishSearching(searcher.isNormalFinish());
-                setTimerTexts(System.currentTimeMillis() - beginTime);
+                finishSearching(
+                        searcher.isNormalFinish(),
+                        searcher.getInfoCollector(),
+                        System.currentTimeMillis() - beginTime);
                 resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
                 System.gc();
             });
@@ -723,9 +757,13 @@ public class MainViewController implements Initializable, CacheObservable {
         timeUnitText.setText(bundle.getString("secondUnit"));
     }
 
-    private void finishSearching(boolean normalFinish) {
+    private void finishSearching(boolean normalFinish, Searcher.SearchInfoCollector infoCollector, long timeUsedMs) {
         setNotInSearchingUi(normalFinish ?
                 bundle.getString("searchDone") : bundle.getString("searchAbort"));
+        lastSearchTimeMs = timeUsedMs;
+        lastInfoCollector = infoCollector;
+        resultInfoBtn.setVisible(true);
+        setTimerTexts(timeUsedMs);
     }
 
     private void searchingFailed() {
@@ -748,6 +786,7 @@ public class MainViewController implements Initializable, CacheObservable {
         timeUsedLabelText.setText("");
         timeUsedText.setText("");
         timeUnitText.setText("");
+        resultInfoBtn.setVisible(false);
     }
 
     private void setNotInSearchingUi(String statusMsg) {

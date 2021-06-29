@@ -86,13 +86,8 @@ public class ExtensionLoader {
                 }
             }
         } else {
-            try {
-                if (!dir.createNewFile()) {
-                    EventLogger.log("Failed to create " + EXT_JAR_DIR);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                EventLogger.log(e);
+            if (!dir.mkdirs()) {
+                EventLogger.log("Failed to create directory " + EXT_JAR_DIR);
             }
         }
         return list;

@@ -3,10 +3,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>trashsoftware</groupId>
     <artifactId>deep-searcher-2</artifactId>
-    <version>1.1</version>
+    <version>1.1.3</version>
     <packaging>jar</packaging>
     <name>deep-searcher</name>
     <dependencies>
+        <dependency>
+            <groupId>trashsoftware</groupId>
+            <artifactId>dsApi</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/DsApi/out/artifacts/DsApi_jar/DsApi.jar</systemPath>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
         <dependency>
             <groupId>org.openjfx</groupId>

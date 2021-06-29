@@ -41,7 +41,7 @@ public class SevenZSearcher extends EntryArchiveSearcher {
                         String cachedName = cacheNameNonConflict(extension);
                         if (uncompressSingle(cachedName, sevenZFile)) {
                             if (searcher.getOptions().getExtensions() != null) {
-                                searcher.matchFileContent(new File(cachedName), fileInArchive);
+                                searcher.matchFileContentUncompressed(new File(cachedName), fileInArchive);
                             }
                             if (childIsArchive) {
                                 searchChildArchive(cachedName, entryName);
