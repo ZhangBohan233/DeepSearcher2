@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="trashsoftware.deepSearcher2.fxml.ResultInfoView"
+          prefHeight="300.0" prefWidth="400.0" vgap="10.0">
+    <padding>
+        <Insets topRightBottomLeft="5.0"/>
+    </padding>
+
+    <columnConstraints>
+        <ColumnConstraints percentWidth="30.0"/>
+        <ColumnConstraints percentWidth="30.0"/>
+        <ColumnConstraints percentWidth="40.0"/>
+    </columnConstraints>
+
+    <Label text="%quantity" GridPane.columnIndex="1"/>
+    <Label text="%size" GridPane.columnIndex="2"/>
+
+    <Label text="%timeUsed" GridPane.rowIndex="1"/>
+    <Label text="%filesSearched" GridPane.rowIndex="2"/>
+    <Label text="%foldersSearched" GridPane.rowIndex="3"/>
+    <Label text="%contentsSearched" GridPane.rowIndex="4"/>
+    <Label text="%archivesSearched" GridPane.rowIndex="5"/>
+
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="5.0">
+        <Label fx:id="timeUsedLabel"/>
+        <Label fx:id="timeUnitLabel"/>
+    </HBox>
+
+    <Label fx:id="filesSearchedLabel" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    <Label fx:id="foldersSearchedLabel" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+    <Label fx:id="contentsSearchedLabel" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+    <Label fx:id="archivesSearchedLabel" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+
+    <Label fx:id="filesSearchedSizeLabel" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+    <Label fx:id="contentSearchedSizeLabel" GridPane.columnIndex="2" GridPane.rowIndex="4"/>
+    <Label fx:id="archiveSearchedSizeLabel" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+
+</GridPane>

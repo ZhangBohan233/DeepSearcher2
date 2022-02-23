@@ -29,10 +29,6 @@ public class AdvancedSearchingPage extends SettingsPage {
     CheckBox wholeContentBox;
     @FXML
     CheckBox escapeBox;
-    @FXML
-    Label wholeContentHelp;
-    @FXML
-    Label escapeHelp;
 
     public AdvancedSearchingPage(SettingsPanelController controller) throws IOException {
         super(controller);
@@ -114,16 +110,6 @@ public class AdvancedSearchingPage extends SettingsPage {
 
         getStatusSaver().store(wholeContentBox);
         getStatusSaver().store(escapeBox);
-
-        Tooltip wholeTt = new Tooltip(Client.getBundle().getString("contentAsWholeHelp"));
-        wholeTt.setWrapText(true);
-        wholeTt.setShowDuration(Duration.seconds(10));
-        Tooltip.install(wholeContentHelp, wholeTt);
-
-        Tooltip escapeTt = new Tooltip(Client.getBundle().getString("escapesHelp"));
-        escapeTt.setWrapText(true);
-        escapeTt.setShowDuration(Duration.seconds(10));
-        Tooltip.install(escapeHelp, escapeTt);
     }
 
     private void initAlgorithmBoxes() {

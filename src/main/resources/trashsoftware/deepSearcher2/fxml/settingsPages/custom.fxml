@@ -12,6 +12,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Tooltip?>
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          type="trashsoftware.deepSearcher2.fxml.settingsPages.CustomPage">
@@ -45,8 +46,16 @@
             </placeholder>
         </TableView>
         <VBox spacing="5.0" GridPane.rowIndex="2" GridPane.columnIndex="1">
-            <Button text="+" onAction="#addFmt" minWidth="25.0"/>
-            <Button fx:id="deleteFmtButton" text="-" onAction="#deleteFmt" minWidth="25.0" disable="true"/>
+            <Button text="+" onAction="#addFmt" minWidth="25.0">
+                <tooltip>
+                    <Tooltip text="%addNew"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="deleteFmtButton" text="-" onAction="#deleteFmt" minWidth="25.0" disable="true">
+                <tooltip>
+                    <Tooltip text="%removeSelected"/>
+                </tooltip>
+            </Button>
         </VBox>
     </GridPane>
 

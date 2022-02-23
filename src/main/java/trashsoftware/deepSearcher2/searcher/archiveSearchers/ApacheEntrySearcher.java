@@ -44,7 +44,7 @@ public abstract class ApacheEntrySearcher extends EntryArchiveSearcher {
                         String cachedName = cacheNameNonConflict(extension);
                         if (uncompressSingle(cachedName, ais)) {
                             if (searcher.getOptions().getExtensions() != null) {
-                                searcher.matchFileContent(new File(cachedName), fileInArchive);
+                                searcher.matchFileContentUncompressed(new File(cachedName), fileInArchive);
                             }
                             if (childIsArchive) {
                                 searchChildArchive(cachedName, entryName);

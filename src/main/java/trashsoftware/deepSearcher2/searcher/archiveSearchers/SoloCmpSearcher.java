@@ -52,7 +52,7 @@ public abstract class SoloCmpSearcher extends ArchiveSearcher {
             String cachedName = cacheNameNonConflict(extension);
             uncompressContent(cachedName, compressedInput);
             if (searcher.getOptions().getExtensions() != null) {
-                searcher.matchFileContent(new File(cachedName), fileInArchive);
+                searcher.matchFileContentUncompressed(new File(cachedName), fileInArchive);
             }
             if (childIsArchive) {
                 searchChildArchive(cachedName, contentFileName);

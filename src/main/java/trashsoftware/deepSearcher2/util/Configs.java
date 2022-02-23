@@ -34,7 +34,7 @@ public class Configs {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd,HH-mm-ss-SSS");
     private static Configs activeConfig;
     private final Timer autoSave;
-    private Map<String, String> configMap;
+    private final Map<String, String> configMap = new HashMap<>();
     private Set<String> excludedDirs;
     private Set<String> excludedFmts;
     private Set<String> cmpFmts;
@@ -45,6 +45,24 @@ public class Configs {
     private long cmpFmtsChecksum;
     private long jarsChecksum;
     private long customFmtsChecksum;
+
+    {
+        configMap.put("locale", "zh_CN");
+        configMap.put("font", "null");
+        configMap.put("fontSize", "12");
+        configMap.put("useCustomFont", "false");
+        configMap.put("limitDepth", "false");
+        configMap.put("maxDepth", "5");
+        configMap.put("includePathName", "false");
+        configMap.put("showHidden", "true");
+        configMap.put("wholeContent", "false");
+        configMap.put("searchCmpFiles", "true");
+        configMap.put("depthFirst", "false");
+        configMap.put("alg", "algAuto");
+        configMap.put("wordAlg", "algNaive");
+        configMap.put("regexAlg", "algNative");
+        configMap.put("cpuThreads", "4");
+    }
 
     private Configs() {
         loadAll();
@@ -124,7 +142,7 @@ public class Configs {
                 list.add(historyItem);
             } catch (IOException e) {
                 e.printStackTrace();
-                EventLogger.log(e);
+                Log.severe(e);
             } catch (JSONException | ParseException e) {
                 //
             }
@@ -138,7 +156,7 @@ public class Configs {
         for (File file : Objects.requireNonNull(dir.listFiles())) {
             if (!file.delete()) {
                 System.err.println("Failed to delete " + file.getAbsolutePath());
-                EventLogger.log("Failed to delete " + file.getAbsolutePath());
+                Log.severe("Failed to delete " + file.getAbsolutePath());
             }
         }
     }
@@ -147,7 +165,7 @@ public class Configs {
         File file = new File(path);
         if (!file.delete()) {
             System.err.println("Failed to delete '" + path + "'!");
-            EventLogger.log("Failed to delete '" + path + "'!");
+            Log.severe("Failed to delete '" + path + "'!");
         }
     }
 
@@ -160,7 +178,7 @@ public class Configs {
             bufferedWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
     }
 
@@ -223,7 +241,7 @@ public class Configs {
             writeMapFile(fileName, map);
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
         return map;
     }
@@ -238,7 +256,7 @@ public class Configs {
             bw.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
     }
 
@@ -253,7 +271,7 @@ public class Configs {
             writeListFile(fileName, set);
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
         return set;
     }
@@ -268,7 +286,7 @@ public class Configs {
             bw.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
     }
 
@@ -277,21 +295,21 @@ public class Configs {
         if (!cache.exists()) {
             if (!cache.mkdirs()) {
                 System.err.println("Cannot create directory 'cache'");
-                EventLogger.log("Cannot create directory 'cache'");
+                Log.severe("Cannot create directory 'cache'");
             }
         }
         File userData = new File(USER_DATA_DIR);
         if (!userData.exists()) {
             if (!userData.mkdirs()) {
                 System.err.println("Cannot create directory 'userData'");
-                EventLogger.log("Cannot create directory 'userData'");
+                Log.severe("Cannot create directory 'userData'");
             }
         }
         File history = new File(HISTORY_DIR);
         if (!history.exists()) {
             if (!history.mkdirs()) {
                 System.err.println("Cannot create directory 'userData/history'");
-                EventLogger.log("Cannot create directory 'userData'");
+                Log.severe("Cannot create directory 'userData'");
             }
         }
     }
@@ -329,13 +347,13 @@ public class Configs {
             fw.flush();
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
         try {
             scene.getStylesheets().add(new File(CUSTOM_CSS).toURI().toURL().toExternalForm());
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
     }
 
@@ -596,7 +614,7 @@ public class Configs {
     }
 
     private void loadAll() {
-        configMap = readMapFile(CONFIG_FILE_NAME);
+        configMap.putAll(readMapFile(CONFIG_FILE_NAME));
         excludedDirs = readListFile(EXCLUDED_DIRS_NAME);
         excludedFmts = readListFile(EXCLUDED_FORMATS_NAME);
         cmpFmts = readListFile(CMP_FORMATS_NAME);

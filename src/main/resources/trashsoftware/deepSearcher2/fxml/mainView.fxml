@@ -61,16 +61,32 @@
             </ListView>
 
             <VBox GridPane.columnIndex="1" spacing="5.0">
-                <Button text="+" onAction="#addSearchDir" minWidth="25.0"/>
-                <Button text="-" fx:id="deleteDirButton" onAction="#deleteSearchDir" minWidth="25.0" disable="true"/>
+                <Button text="+" onAction="#addSearchDir" minWidth="25.0">
+                    <tooltip>
+                        <Tooltip text="%addSearchDir"/>
+                    </tooltip>
+                </Button>
+                <Button text="-" fx:id="deleteDirButton" onAction="#deleteSearchDir" minWidth="25.0" disable="true">
+                    <tooltip>
+                        <Tooltip text="%deleteSearchDir"/>
+                    </tooltip>
+                </Button>
             </VBox>
 
             <TextFieldList fx:id="searchItemsList" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
 
             <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="5.0">
-                <Button text="+" onAction="#addSearchItem" minWidth="25.0"/>
+                <Button text="+" onAction="#addSearchItem" minWidth="25.0">
+                    <tooltip>
+                        <Tooltip text="%addSearchTarget"/>
+                    </tooltip>
+                </Button>
                 <Button text="-" fx:id="deleteTargetButton" onAction="#deleteSearchItem" minWidth="25.0"
-                        disable="true"/>
+                        disable="true">
+                    <tooltip>
+                        <Tooltip text="%deleteSearchTarget"/>
+                    </tooltip>
+                </Button>
             </VBox>
 
             <GridPane GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" vgap="5.0">
@@ -83,11 +99,17 @@
                     <toggleGroup>
                         <ToggleGroup fx:id="andOrGroup"/>
                     </toggleGroup>
+                    <tooltip>
+                        <Tooltip text="%andTextHelp"/>
+                    </tooltip>
                 </RadioButton>
                 <RadioButton fx:id="matchAnyRadioBtn" GridPane.rowIndex="1" text="%orText">
                     <toggleGroup>
                         <fx:reference source="andOrGroup"/>
                     </toggleGroup>
+                    <tooltip>
+                        <Tooltip text="%orTextHelp"/>
+                    </tooltip>
                 </RadioButton>
 
                 <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" alignment="CENTER" spacing="10.0">
@@ -136,7 +158,7 @@
             </placeholder>
         </TableView>
 
-        <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2">
+        <HBox GridPane.rowIndex="1" spacing="10.0" GridPane.columnSpan="2" alignment="CENTER_LEFT">
             <padding>
                 <Insets left="5.0"/>
             </padding>
@@ -145,7 +167,7 @@
             <Label text="%filter"/>
         </HBox>
 
-        <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8.0">
+        <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8.0" alignment="CENTER_LEFT">
             <ProgressIndicator fx:id="progressIndicator" visible="false" managed="false" maxWidth="25.0"
                                maxHeight="25.0"/>
             <Label fx:id="searchingStatusText"/>
@@ -154,6 +176,7 @@
             <Label fx:id="timeUsedLabelText"/>
             <Label fx:id="timeUsedText"/>
             <Label fx:id="timeUnitText"/>
+            <Button fx:id="resultInfoBtn" onAction="#resultInfoAction" text="(i)" visible="false"/>
         </HBox>
     </GridPane>
 </VBox>
