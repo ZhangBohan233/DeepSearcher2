@@ -10,7 +10,7 @@ import trashsoftware.deepSearcher2.searcher.contentSearchers.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatcherFactory;
 import trashsoftware.deepSearcher2.searcher.matchers.StringMatcher;
 import trashsoftware.deepSearcher2.util.Configs;
-import trashsoftware.deepSearcher2.util.EventLogger;
+import trashsoftware.deepSearcher2.util.Log;
 import trashsoftware.deepSearcher2.util.Util;
 
 import java.io.File;
@@ -92,7 +92,7 @@ public class Searcher {
                 // error
                 // Note: a G-class main sequence star keeps brightening in its life
                 // The Sun has brightened about 30% comparing to the time when it was born (5 billion years ago)
-                EventLogger.log("292,471,208 years have passed! Even the Sun has brightened another 3%!");
+                Log.severe("292,471,208 years have passed! Even the Sun has brightened another 3%!");
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -7,19 +7,19 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class EventLogger {
+public class Log {
 
     private static final String LOG_DIR = "logs";
     private static final String LOG_BASE_NAME = LOG_DIR + File.separator + "error-";
     private static final String DATE_FMT = "yyyy-MM-dd HH-mm-ss";
 
     /**
-     * Logs and prints complete error message and stack trace to a new log file.
+     * Logs and prints complete error message and stack trace of a severe error to a new log file.
      *
      * @param throwable error
      */
-    public static void log(Throwable throwable) {
-        log(throwable, true);
+    public static void severe(Throwable throwable) {
+        severe(throwable, true);
     }
 
     /**
@@ -28,7 +28,7 @@ public class EventLogger {
      * @param throwable error
      * @param print whether to print stack trace to stderr
      */
-    public static void log(Throwable throwable, boolean print) {
+    public static void severe(Throwable throwable, boolean print) {
         if (print) throwable.printStackTrace();
 
         createLogDirIfNone();
@@ -48,8 +48,8 @@ public class EventLogger {
      *
      * @param message text message
      */
-    public static void log(String message) {
-        log(message, true);
+    public static void severe(String message) {
+        severe(message, true);
     }
 
     /**
@@ -58,7 +58,7 @@ public class EventLogger {
      * @param message text message
      * @param print   whether to also print message in console
      */
-    public static void log(String message, boolean print) {
+    public static void severe(String message, boolean print) {
         if (print) System.err.println(message);
         createLogDirIfNone();
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FMT);
@@ -70,6 +70,10 @@ public class EventLogger {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public static void warning() {
+        
     }
 
     private static void createLogDirIfNone() {

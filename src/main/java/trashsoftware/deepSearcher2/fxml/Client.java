@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.util.Cache;
 import trashsoftware.deepSearcher2.util.Configs;
-import trashsoftware.deepSearcher2.util.EventLogger;
+import trashsoftware.deepSearcher2.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class Client extends Application {
     public static final String AUTHOR_ZH = "张博涵";
     public static final String AUTHOR_EN = "Bohan Zhang";
 
-    public static final String VERSION = "1.1.3";
+    public static final String VERSION = "1.1.4";
 
     /**
      * Name of a file which marks the program is running. Create on launch and delete on exit.
@@ -44,7 +44,7 @@ public class Client extends Application {
             try {
                 new Client().showMainUi(new Stage());
             } catch (Exception e) {
-                EventLogger.log(e);
+                Log.severe(e);
                 e.printStackTrace();
             }
         });

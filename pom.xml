@@ -12,7 +12,7 @@
             <artifactId>dsApi</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/DsApi/out/artifacts/DsApi_jar/DsApi.jar</systemPath>
+            <systemPath>${project.basedir}/DsApi/DsApi.jar</systemPath>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->

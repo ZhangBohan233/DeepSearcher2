@@ -99,7 +99,7 @@ public class Util {
             Desktop.getDesktop().open(file);
         } catch (IOException e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
     }
 

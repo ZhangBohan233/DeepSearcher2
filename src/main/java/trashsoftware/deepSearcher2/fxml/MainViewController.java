@@ -274,7 +274,7 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     void resultInfoAction() throws IOException {
         if (lastInfoCollector == null) {
-            EventLogger.log("Search info button should not be enabled.");
+            Log.severe("Search info button should not be enabled.");
             return;
         }
 
@@ -734,7 +734,7 @@ public class MainViewController implements Initializable, CacheObservable {
                 unbindListeners();
                 searchingFailed();
                 e.getSource().getException().printStackTrace();
-                EventLogger.log(e.getSource().getException());
+                Log.severe(e.getSource().getException());
                 resultTable.setPlaceholder(new Label(bundle.getString("resTablePlaceHolder")));
                 System.gc();
             });

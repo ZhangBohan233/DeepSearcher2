@@ -2,7 +2,7 @@ package trashsoftware.deepSearcher2.extensionLoader;
 
 import dsApi.api.FileFormatReader;
 import trashsoftware.deepSearcher2.util.Configs;
-import trashsoftware.deepSearcher2.util.EventLogger;
+import trashsoftware.deepSearcher2.util.Log;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -59,7 +59,7 @@ public class ExtensionLoader {
             return !classList.isEmpty();
         } catch (Exception e) {
             e.printStackTrace();
-            EventLogger.log(e);
+            Log.severe(e);
         }
         return false;
     }
@@ -81,13 +81,13 @@ public class ExtensionLoader {
                             list.add(new ExtensionJar(file.getName(), classesInJar));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        EventLogger.log(e);
+                        Log.severe(e);
                     }
                 }
             }
         } else {
             if (!dir.mkdirs()) {
-                EventLogger.log("Failed to create directory " + EXT_JAR_DIR);
+                Log.severe("Failed to create directory " + EXT_JAR_DIR);
             }
         }
         return list;
@@ -110,7 +110,7 @@ public class ExtensionLoader {
                 } catch (Exception e) {
                     System.err.println(clazz);
                     e.printStackTrace();
-                    EventLogger.log(e);
+                    Log.severe(e);
                 }
             }
         }
