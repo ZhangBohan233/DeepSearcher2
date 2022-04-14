@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import trashsoftware.deepSearcher2.fxml.widgets.FormatTable?>
-<?import trashsoftware.deepSearcher2.fxml.widgets.TextFieldList?>
+<?import trashsoftware.deepSearcher2.fxml.widgets.SearchingTargetList?>
 <VBox fx:controller="trashsoftware.deepSearcher2.fxml.MainViewController"
       xmlns:fx="http://javafx.com/fxml" prefWidth="1080.0" prefHeight="640.0">
 
@@ -23,6 +23,7 @@
         </Menu>
         <Menu text="%help">
             <MenuItem text="%about" onAction="#openAboutAction"/>
+            <MenuItem text="%changelog" onAction="#changelogAction"/>
         </Menu>
     </MenuBar>
 
@@ -66,14 +67,15 @@
                         <Tooltip text="%addSearchDir"/>
                     </tooltip>
                 </Button>
-                <Button text="-" fx:id="deleteDirButton" onAction="#deleteSearchDir" minWidth="25.0" disable="true">
+                <Button text="-" fx:id="deleteDirButton" onAction="#deleteSearchDir" minWidth="25.0"
+                        disable="true">
                     <tooltip>
                         <Tooltip text="%deleteSearchDir"/>
                     </tooltip>
                 </Button>
             </VBox>
 
-            <TextFieldList fx:id="searchItemsList" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
+            <SearchingTargetList fx:id="searchItemsList" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
 
             <VBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="5.0">
                 <Button text="+" onAction="#addSearchItem" minWidth="25.0">
@@ -81,7 +83,8 @@
                         <Tooltip text="%addSearchTarget"/>
                     </tooltip>
                 </Button>
-                <Button text="-" fx:id="deleteTargetButton" onAction="#deleteSearchItem" minWidth="25.0"
+                <Button text="-" fx:id="deleteTargetButton" onAction="#deleteSearchItem"
+                        minWidth="25.0"
                         disable="true">
                     <tooltip>
                         <Tooltip text="%deleteSearchTarget"/>
@@ -89,7 +92,8 @@
                 </Button>
             </VBox>
 
-            <GridPane GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" vgap="5.0">
+            <GridPane GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS"
+                      vgap="5.0">
                 <columnConstraints>
                     <ColumnConstraints percentWidth="50.0"/>
                     <ColumnConstraints percentWidth="50.0"/>
@@ -112,7 +116,8 @@
                     </tooltip>
                 </RadioButton>
 
-                <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" alignment="CENTER" spacing="10.0">
+                <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" alignment="CENTER"
+                      spacing="10.0">
                     <Separator HBox.hgrow="ALWAYS"/>
                     <Label text="%searchingOptions"/>
                     <Separator HBox.hgrow="ALWAYS"/>
@@ -124,16 +129,21 @@
                 <CheckBox fx:id="searchContentBox" text="%searchContent" GridPane.rowIndex="5"/>
                 <Hyperlink text="%moreOptions" onAction="#moreOptionAction" GridPane.rowIndex="6"/>
 
-                <Button fx:id="searchButton" GridPane.columnIndex="1" GridPane.rowSpan="2" onAction="#searchAction"
+                <Button fx:id="searchButton" GridPane.columnIndex="1" GridPane.rowSpan="2"
+                        onAction="#searchAction"
                         text="%search" prefWidth="100.0" prefHeight="30.0"/>
 
                 <!--Second column boxes group-->
-                <CheckBox fx:id="matchCaseBox" text="%matchCase" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                <CheckBox fx:id="matchWordBox" text="%matchWord" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                <CheckBox fx:id="matchRegexBox" text="%matchRegex" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                <CheckBox fx:id="matchCaseBox" text="%matchCase" GridPane.rowIndex="3"
+                          GridPane.columnIndex="1"/>
+                <CheckBox fx:id="matchWordBox" text="%matchWord" GridPane.rowIndex="4"
+                          GridPane.columnIndex="1"/>
+                <CheckBox fx:id="matchRegexBox" text="%matchRegex" GridPane.rowIndex="5"
+                          GridPane.columnIndex="1"/>
             </GridPane>
 
-            <FormatTable fx:id="formatTable" GridPane.rowIndex="3" GridPane.columnSpan="2" disable="true">
+            <FormatTable fx:id="formatTable" GridPane.rowIndex="3" GridPane.columnSpan="2"
+                         disable="true">
                 <columns>
                     <TableColumn minWidth="25.0" maxWidth="25.0"/>
                     <TableColumn fx:id="formatNameCol" text="%format" prefWidth="170.0"/>
@@ -146,7 +156,8 @@
 
         </GridPane>
 
-        <TableView fx:id="resultTable" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.vgrow="ALWAYS">
+        <TableView fx:id="resultTable" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                   GridPane.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="fileNameCol" text="%fileName" minWidth="360.0"/>
                 <TableColumn text="%size" minWidth="100.0"/>
@@ -162,13 +173,15 @@
             <padding>
                 <Insets left="5.0"/>
             </padding>
-            <CheckBox fx:id="selectAllBox" text="%selectAll" onAction="#selectAllAction" disable="true"/>
+            <CheckBox fx:id="selectAllBox" text="%selectAll" onAction="#selectAllAction"
+                      disable="true"/>
             <ComboBox fx:id="filterBox" disable="true"/>
             <Label text="%filter"/>
         </HBox>
 
         <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" spacing="8.0" alignment="CENTER_LEFT">
-            <ProgressIndicator fx:id="progressIndicator" visible="false" managed="false" maxWidth="25.0"
+            <ProgressIndicator fx:id="progressIndicator" visible="false" managed="false"
+                               maxWidth="25.0"
                                maxHeight="25.0"/>
             <Label fx:id="searchingStatusText"/>
             <Label fx:id="resultNumberText"/>

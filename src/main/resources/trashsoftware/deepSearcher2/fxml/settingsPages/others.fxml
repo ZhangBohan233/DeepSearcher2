@@ -20,6 +20,9 @@
         <Separator prefWidth="100.0"/>
     </HBox>
 
+    <Label text="%maxSearchPrompt"/>
+    <ComboBox fx:id="promptsNumberBox"/>
+
     <HBox alignment="CENTER" spacing="10.0">
         <Separator prefWidth="60.0"/>
         <Label text="%data"/>

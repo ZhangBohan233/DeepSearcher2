@@ -13,18 +13,19 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-public class TextFieldList extends ScrollPane {
+public class SearchingTargetList extends ScrollPane {
 
     private final ReadOnlyIntegerWrapper selectedIndexWrapper = new ReadOnlyIntegerWrapper(-1);
     private final List<ChangeListener<Boolean>> itemFocusListeners = new ArrayList<>();
     @FXML
     private VBox baseList;
 
-    public TextFieldList() throws IOException {
+    public SearchingTargetList() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/trashsoftware/deepSearcher2/fxml/widgets/textFieldList.fxml"));
+                .getResource("/trashsoftware/deepSearcher2/fxml/widgets/searchingTargetList.fxml"));
         loader.setRoot(this);
         loader.setController(this);
 
@@ -35,7 +36,10 @@ public class TextFieldList extends ScrollPane {
         initializeListener();
     }
 
-    public ObservableList<Node> getTextFields() {
+    /**
+     * @return an observable list of {@link SearchingTargetBox}
+     */
+    public ObservableList<Node> getTargetBoxes() {
         return baseList.getChildren();
     }
 
@@ -47,12 +51,40 @@ public class TextFieldList extends ScrollPane {
         return selectedIndexWrapper.intValue();
     }
 
+    /**
+     * Sets the dropdown menu all boxes in <code>this</code> to the given prompt list.
+     *
+     * @param prompts collection of prompt texts, 
+     *                will appear in the dropdown menu of <code>box</code>
+     */
+    public void refreshPromptItems(Collection<String> prompts) {
+        for (Node node : getTargetBoxes()) {
+            refreshPromptItems((SearchingTargetBox) node, prompts);
+        }
+    }
+
+    /**
+     * Sets the dropdown menu of <code>box</code> to the given prompt list.
+     * 
+     * @param box     the box to be set
+     * @param prompts collection of prompt texts, 
+     *                will appear in the dropdown menu of <code>box</code>
+     */
+    public void refreshPromptItems(SearchingTargetBox box, Collection<String> prompts) {
+        String value = box.getValue();
+        box.getItems().clear();
+        for (String p : prompts) {
+            box.getItems().add(p);
+        }
+        box.setValue(value);
+    }
+
     private void initializeListener() {
-        getTextFields().addListener((ListChangeListener<Node>) change -> {
+        getTargetBoxes().addListener((ListChangeListener<Node>) change -> {
             change.next();
             if (change.wasAdded() && change.getAddedSize() == 1) {
                 final int thisIndex = change.getTo() - 1;
-                Node added = getTextFields().get(thisIndex);
+                Node added = getTargetBoxes().get(thisIndex);
                 ChangeListener<Boolean> focusListener = (observableValue, aBoolean, t1) -> {
                     if (t1) selectedIndexWrapper.setValue(thisIndex);
                 };
@@ -61,10 +93,10 @@ public class TextFieldList extends ScrollPane {
             } else if (change.wasRemoved() && change.getRemovedSize() == 1) {
                 final int removedIndex = change.getFrom();
                 itemFocusListeners.remove(removedIndex);
-                for (int i = removedIndex; i < getTextFields().size(); i++) {  // decreases the index stored in
+                for (int i = removedIndex; i < getTargetBoxes().size(); i++) {  // decreases the index stored in
                     // listeners of every element after the removed item
                     final int index = i;
-                    Node node = getTextFields().get(index);
+                    Node node = getTargetBoxes().get(index);
                     node.focusedProperty().removeListener(itemFocusListeners.get(index));
                     ChangeListener<Boolean> focusListener = (observableValue, aBoolean, t1) -> {
                         if (t1) selectedIndexWrapper.setValue(index);

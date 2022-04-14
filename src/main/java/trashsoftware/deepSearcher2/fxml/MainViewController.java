@@ -15,13 +15,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldListCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -35,10 +32,11 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
 import trashsoftware.deepSearcher2.fxml.settingsPages.SearchingOptionsPage;
 import trashsoftware.deepSearcher2.fxml.widgets.FormatTable;
-import trashsoftware.deepSearcher2.fxml.widgets.TextFieldList;
-import trashsoftware.deepSearcher2.extensionLoader.ExtensionLoader;
+import trashsoftware.deepSearcher2.fxml.widgets.SearchingTargetBox;
+import trashsoftware.deepSearcher2.fxml.widgets.SearchingTargetList;
 import trashsoftware.deepSearcher2.guiItems.FormatFilterItem;
 import trashsoftware.deepSearcher2.guiItems.FormatItem;
 import trashsoftware.deepSearcher2.guiItems.FormatType;
@@ -49,7 +47,6 @@ import trashsoftware.deepSearcher2.util.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.*;
 
 public class MainViewController implements Initializable, CacheObservable {
@@ -68,7 +65,7 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     FormatTable formatTable;
     @FXML
-    TextFieldList searchItemsList;
+    SearchingTargetList searchItemsList;
     @FXML
     ListView<File> dirList;
     @FXML
@@ -171,12 +168,15 @@ public class MainViewController implements Initializable, CacheObservable {
 
     @FXML
     void addSearchItem() {
-        TextField textField = new TextField();
-        textField.setPromptText(bundle.getString("searchPrompt"));
-        textField.setOnAction(e -> {  // the action of pressing 'Enter' in text field
-            if (!isSearching) startSearching();
+        SearchingTargetBox targetBox = new SearchingTargetBox(searchItemsList);
+        targetBox.setPromptText(bundle.getString("searchPrompt"));
+        targetBox.setOnKeyPressed(e -> {  // the action of pressing 'Enter' in text field
+            if (e.getCode() == KeyCode.ENTER) {
+                if (!isSearching) startSearching();
+            }
         });
-        searchItemsList.getTextFields().add(textField);
+        searchItemsList.getTargetBoxes().add(targetBox);
+        searchItemsList.refreshPromptItems(targetBox, Cache.getCache().getSearchPrompts());
     }
 
     @FXML
@@ -188,7 +188,7 @@ public class MainViewController implements Initializable, CacheObservable {
     @FXML
     void deleteSearchItem() {
         int index = searchItemsList.getSelectedIndex();
-        searchItemsList.getTextFields().remove(index);
+        searchItemsList.getTargetBoxes().remove(index);
     }
 
     @FXML
@@ -244,6 +244,21 @@ public class MainViewController implements Initializable, CacheObservable {
     void openAboutAction() throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/trashsoftware/deepSearcher2/fxml/aboutView.fxml"), bundle);
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.initOwner(thisStage);
+        stage.initStyle(StageStyle.UTILITY);
+        stage.setTitle(bundle.getString("appName"));
+        stage.getIcons().add(Client.getIconImage());
+        stage.setScene(new Scene(root));
+
+        stage.show();
+    }
+    
+    @FXML
+    void changelogAction() throws IOException {
+        FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/trashsoftware/deepSearcher2/fxml/changelogView.fxml"), bundle);
         Parent root = loader.load();
         Stage stage = new Stage();
         stage.initOwner(thisStage);
@@ -311,7 +326,8 @@ public class MainViewController implements Initializable, CacheObservable {
         rootObject.put("showFullPath", showFullPathMenu.isSelected());
         rootObject.put("showExt", showExtMenu.isSelected());
 
-        if (dirDialogInitFile != null) rootObject.put("dirDialogInit", dirDialogInitFile.getAbsolutePath());
+        if (dirDialogInitFile != null)
+            rootObject.put("dirDialogInit", dirDialogInitFile.getAbsolutePath());
 
         rootObject.put(Cache.OPENED_DIRS_KEY, new JSONArray(dirList.getItems()));
 
@@ -353,7 +369,7 @@ public class MainViewController implements Initializable, CacheObservable {
     }
 
     private void clearSearchItems() {
-        searchItemsList.getTextFields().clear();
+        searchItemsList.getTargetBoxes().clear();
     }
 
     private SettingsPanelController openSettings() throws IOException {
@@ -698,6 +714,7 @@ public class MainViewController implements Initializable, CacheObservable {
     private void startSearching() {
         try {
             long beginTime = System.currentTimeMillis();
+            List<String> targets = getTargets();
             SearchingOptions prefSet = new SearchingOptions.PrefSetBuilder()
                     .caseSensitive(false)
                     .setMatchAll(matchAllRadioBtn.isSelected())
@@ -706,10 +723,16 @@ public class MainViewController implements Initializable, CacheObservable {
                     .caseSensitive(matchCaseBox.isSelected())
                     .matchWord(matchWordBox.isSelected())
                     .matchRegex(matchRegexBox.isSelected())
-                    .setTargets(getTargets())
+                    .setTargets(targets)
                     .setSearchDirs(dirList.getItems())
                     .setExtensions(getExtensions())
                     .build();
+            
+            // Saves this time targets to cache and updates other boxes
+            for (String target : targets) {
+                Cache.getCache().addSearchItemPrompt(target);
+            }
+            searchItemsList.refreshPromptItems(Cache.getCache().getSearchPrompts());
 
             resultTable.getItems().clear();
             setInSearchingUi();
@@ -815,8 +838,9 @@ public class MainViewController implements Initializable, CacheObservable {
 
     private List<String> getTargets() {
         List<String> list = new ArrayList<>();
-        for (Node node : searchItemsList.getTextFields()) {
-            list.add(((TextField) node).getText());
+        for (Node node : searchItemsList.getTargetBoxes()) {
+            String value = ((SearchingTargetBox) node).getValue();
+            if (value != null && value.length() > 0) list.add(value);
         }
         return list;
     }

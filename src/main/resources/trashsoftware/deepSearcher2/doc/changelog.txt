@@ -1,3 +1,11 @@
+===== 1.1.5 =====
+2022/04/15
+
+* Added searching target prompt (history)
+* Added changelog viewer
+* Bug fixes:
+    * Fixed the error when searching with an empty search target box
+
 ===== 1.1.4 =====
 2022/02/23
 

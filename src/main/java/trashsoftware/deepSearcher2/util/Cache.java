@@ -5,10 +5,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * This class loads and saves user's cache to the disk periodically.
@@ -19,6 +17,7 @@ public class Cache {
     public static final String OPENED_DIRS_KEY = "openedDirs";
     public static final String CACHE_DIR = "cache";
     private static final String COMMON_CACHE_NAME = CACHE_DIR + File.separator + "cache.json";
+    private static final String SEARCH_PROMPTS_NAME = CACHE_DIR + File.separator + "prompts.json";
     /**
      * Time interval in mills between two save tasks that save cache in ram to disk
      */
@@ -28,6 +27,7 @@ public class Cache {
     private final Timer autoSave;
     private final List<CacheObservable> cacheObservables = new ArrayList<>();
     private JSONObject root;
+    private Deque<String> promptsQueue;
 
     private Cache(List<CacheObservable> cacheObservables) {
         loadFromDisk();
@@ -84,6 +84,7 @@ public class Cache {
         List<CacheObservable> cos = activeCache.cacheObservables;
         activeCache.stop();
         Configs.deleteFileByName(COMMON_CACHE_NAME);
+        Configs.deleteFileByName(SEARCH_PROMPTS_NAME);
         activeCache = new Cache(cos);
         for (CacheObservable co : cos) {
             co.loadFromCache(activeCache);
@@ -112,9 +113,23 @@ public class Cache {
             co.putCache(root);
         }
         Configs.createDirsIfNotExist();
-        String s = root.toString(2);
-        try (FileWriter fw = new FileWriter(COMMON_CACHE_NAME)) {
-            fw.write(s);
+        String cache = root.toString(2);
+        try (FileWriter fw = new FileWriter(COMMON_CACHE_NAME, StandardCharsets.UTF_8)) {
+            fw.write(cache);
+            fw.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        JSONObject promptObj = new JSONObject();
+        JSONArray promptArray = new JSONArray();
+        for (String p : promptsQueue) {
+            promptArray.put(p);
+        }
+        promptObj.put("prompts", promptArray);
+        String prompts = promptObj.toString(2);
+        try (FileWriter fw = new FileWriter(SEARCH_PROMPTS_NAME, StandardCharsets.UTF_8)) {
+            fw.write(prompts);
             fw.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,15 +137,38 @@ public class Cache {
     }
 
     private void loadFromDisk() {
-        try (BufferedReader br = new BufferedReader(new FileReader(COMMON_CACHE_NAME))) {
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(COMMON_CACHE_NAME, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
                 builder.append(line);
             }
             root = new JSONObject(builder.toString());
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | JSONException e) {
             root = new JSONObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+            root = new JSONObject();
+        }
+
+        promptsQueue = new ArrayDeque<>();
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(SEARCH_PROMPTS_NAME, StandardCharsets.UTF_8))) {
+            StringBuilder builder = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                builder.append(line);
+            }
+            JSONObject obj = new JSONObject(builder.toString());
+            int limit = Configs.getConfigs().getMaxSearchPrompt();
+            for (Object raw : obj.getJSONArray("prompts")) {
+                if (raw instanceof String) {
+                    addSearchItemPrompt((String) raw, limit);
+                }
+            }
+        } catch (FileNotFoundException | JSONException e) {
+            // do nothing
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -169,6 +207,21 @@ public class Cache {
         JSONArray array = new JSONArray();
         root.put(key, array);
         return array;
+    }
+    
+    public void addSearchItemPrompt(String searchItem) {
+        addSearchItemPrompt(searchItem, Configs.getConfigs().getMaxSearchPrompt());
+    }
+    
+    private void addSearchItemPrompt(String searchItem, int limit) {
+        promptsQueue.removeIf(next -> Objects.equals(next, searchItem));
+        promptsQueue.addFirst(searchItem);
+
+        while (promptsQueue.size() > limit) promptsQueue.removeLast();
+    }
+    
+    public Deque<String> getSearchPrompts() {
+        return promptsQueue;
     }
 
     private class AutoSaveTask extends TimerTask {

@@ -62,6 +62,7 @@ public class Configs {
         configMap.put("wordAlg", "algNaive");
         configMap.put("regexAlg", "algNative");
         configMap.put("cpuThreads", "4");
+        configMap.put("maxSearchPrompt", "3");
     }
 
     private Configs() {
@@ -472,6 +473,14 @@ public class Configs {
 
     public int getCurrentCpuThreads() {
         return getInt("cpuThreads", 4);
+    }
+    
+    public int getMaxSearchPrompt() {
+        return getInt("maxSearchPrompt", 10);
+    }
+    
+    public void setMaxSearchPrompt(int maxSearchPrompt) {
+        writeConfig("maxSearchPrompt", String.valueOf(maxSearchPrompt));
     }
 
     private int getInt(String key, int defaultValue) {

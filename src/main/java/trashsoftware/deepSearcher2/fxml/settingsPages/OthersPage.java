@@ -2,6 +2,7 @@ package trashsoftware.deepSearcher2.fxml.settingsPages;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ComboBox;
 import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.fxml.ConfirmBox;
 import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
@@ -11,6 +12,9 @@ import trashsoftware.deepSearcher2.util.Configs;
 import java.io.IOException;
 
 public class OthersPage extends SettingsPage {
+    
+    @FXML
+    ComboBox<Integer> promptsNumberBox;
 
     public OthersPage(SettingsPanelController controller) throws IOException {
         super(controller);
@@ -22,10 +26,27 @@ public class OthersPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
+        
+        controller.addControls(promptsNumberBox);
+        
+        setPromptsNumberBox();
+    }
+    
+    private void setPromptsNumberBox() {
+        promptsNumberBox.getItems().addAll(
+                1, 3, 5, 10, 20
+        );
+        promptsNumberBox.getSelectionModel().select(
+                Integer.valueOf(Configs.getConfigs().getMaxSearchPrompt()));
+        getStatusSaver().store(promptsNumberBox);
     }
 
     @Override
     public void saveChanges() {
+        if (getStatusSaver().hasChanged(promptsNumberBox)) {
+            Configs.getConfigs().setMaxSearchPrompt(promptsNumberBox.getValue());
+            getStatusSaver().store(promptsNumberBox);
+        }
     }
 
     private void showConfirm(String msg, String confirmButtonText, Runnable onConfirm) {
