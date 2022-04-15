@@ -3,6 +3,7 @@
 
 * Added searching target prompt (history)
 * Added changelog viewer
+* Completed changelogs of old versions
 * Modified copyright info in about view
 * Bug fixes:
     * Fixed the error when searching with an empty search target box
@@ -24,4 +25,23 @@
 ===== 1.1.2 =====
 2021/06/26
 
+* Usability improvements: tooltips
 * Fixed a bug: java treats windows root disks as hidden
+
+===== 1.1.1 =====
+2021/04/22
+
+* Added support of third party plugins
+* Extension API and framework
+
+===== 1.1 =====
+2021/03/25
+
+* Searching content inside archive files:
+    * Supported formats: zip, rar, 7z, tar, gz, xz, bz2
+* Bug fixes
+
+===== 1.0 =====
+2021/02/03
+
+* First release
