@@ -157,6 +157,7 @@
                     <include>**/*.fxml</include>
                     <include>**/*.properties</include>
                     <include>**/*.css</include>
+                    <include>**/*.txt</include>
                     <include>**/*.bmp</include>
                     <include>**/*.jpg</include>
                     <include>trashsoftware/deepSearcher2/css/general.css</include>

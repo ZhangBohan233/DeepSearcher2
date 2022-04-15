@@ -9,17 +9,26 @@ import java.util.ResourceBundle;
 
 public class AboutViewController implements Initializable {
     @FXML
-    Label authorLabel;
+    Label copyrightNameLabel;
+    @FXML
+    Label copyrightLabel;
     @FXML
     Label versionLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         versionLabel.setText(Client.VERSION);
+        String copyrightFormat = resourceBundle.getString("copyrightText");
+        String nameText;
+        String copyrightText;
         if ("CN".equals(resourceBundle.getLocale().getCountry())) {
-            authorLabel.setText(Client.AUTHOR_ZH);
+            nameText = Client.COPYRIGHT_NAME_ZH;
+            copyrightText = String.format(copyrightFormat, Client.COPYRIGHT_YEAR, Client.AUTHOR_ZH);
         } else {
-            authorLabel.setText(Client.AUTHOR_EN);
+            nameText = Client.COPYRIGHT_NAME_EN;
+            copyrightText = String.format(copyrightFormat, Client.COPYRIGHT_YEAR, Client.AUTHOR_EN);
         }
+        copyrightNameLabel.setText(nameText);
+        copyrightLabel.setText(copyrightText);
     }
 }

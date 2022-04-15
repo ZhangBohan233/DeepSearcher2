@@ -3,6 +3,7 @@
 
 * Added searching target prompt (history)
 * Added changelog viewer
+* Modified copyright info in about view
 * Bug fixes:
     * Fixed the error when searching with an empty search target box
 

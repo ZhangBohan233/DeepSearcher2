@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 public class Client extends Application {
+    public static final String COPYRIGHT_NAME_ZH = "潜望镜文件搜索软件";
+    public static final String COPYRIGHT_NAME_EN = "Deep Search 2";
+    public static final String COPYRIGHT_YEAR = "2021";
     public static final String AUTHOR_ZH = "张博涵";
     public static final String AUTHOR_EN = "Bohan Zhang";
 

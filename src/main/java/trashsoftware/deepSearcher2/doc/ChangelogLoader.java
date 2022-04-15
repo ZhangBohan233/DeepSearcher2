@@ -1,5 +1,7 @@
 package trashsoftware.deepSearcher2.doc;
 
+import trashsoftware.deepSearcher2.util.Log;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,8 +22,7 @@ public class ChangelogLoader {
             }
             return builder.toString();
         } catch (IOException | NullPointerException e) {
-            e.printStackTrace();
-//            Log.severe(e);
+            Log.severe(e);
         }
         return "";
     }

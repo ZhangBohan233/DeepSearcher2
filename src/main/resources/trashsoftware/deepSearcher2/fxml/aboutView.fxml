@@ -28,8 +28,8 @@
         </font>
     </Label>
 
-    <HBox spacing="5.0" alignment="CENTER">
-        <Label text="%authorText"/>
-        <Label fx:id="authorLabel"/>
-    </HBox>
+    <VBox spacing="5.0" alignment="CENTER">
+        <Label text="name" fx:id="copyrightNameLabel"/>
+        <Label text="copyright" fx:id="copyrightLabel"/>
+    </VBox>
 </VBox>
