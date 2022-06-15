@@ -14,6 +14,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.fxml.settingsPages.FormatInputAble;
+import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,6 +46,7 @@ public class FormatInputBox implements Initializable {
         stage.initModality(Modality.WINDOW_MODAL);
         stage.initStyle(StageStyle.UTILITY);
         stage.setScene(new Scene(root));
+        Configs.getConfigs().applyThemeAndFont(stage.getScene());
 
         FormatInputBox fib = loader.getController();
         fib.setParentAndStage(parent, stage, hasDescription);

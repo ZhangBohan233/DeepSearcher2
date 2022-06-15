@@ -30,7 +30,11 @@
         </rowConstraints>
 
         <Label text="%excludedDirs"/>
-        <ListView fx:id="excludedDirList" prefHeight="180.0" GridPane.rowIndex="1"/>
+        <ListView fx:id="excludedDirList" prefHeight="180.0" GridPane.rowIndex="1">
+            <placeholder>
+                <Label text="%excludedDirPlaceholder"/>
+            </placeholder>
+        </ListView>
         <VBox spacing="5.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
             <Button text="+" onAction="#addExcludedDir" minWidth="25.0">
                 <tooltip>
@@ -45,7 +49,11 @@
         </VBox>
 
         <Label text="%excludedFormats" GridPane.rowIndex="2"/>
-        <ListView fx:id="excludedFormatList" prefHeight="180.0" GridPane.rowIndex="3"/>
+        <ListView fx:id="excludedFormatList" prefHeight="180.0" GridPane.rowIndex="3">
+            <placeholder>
+                <Label text="%excludedFmtPlaceholder"/>
+            </placeholder>
+        </ListView>
         <VBox spacing="5.0" GridPane.rowIndex="3" GridPane.columnIndex="1">
             <Button text="+" onAction="#addExcludedFormat" minWidth="25.0">
                 <tooltip>

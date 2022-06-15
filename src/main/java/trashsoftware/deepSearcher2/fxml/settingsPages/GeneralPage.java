@@ -4,7 +4,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.text.Font;
+import javafx.util.Callback;
 import trashsoftware.deepSearcher2.fxml.Client;
 import trashsoftware.deepSearcher2.fxml.ConfirmBox;
 import trashsoftware.deepSearcher2.fxml.SettingsPanelController;
@@ -13,6 +16,7 @@ import trashsoftware.deepSearcher2.util.NamedLocale;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class GeneralPage extends SettingsPage {
 
@@ -22,6 +26,8 @@ public class GeneralPage extends SettingsPage {
     ComboBox<String> fontBox;
     @FXML
     ComboBox<NamedLocale> languageBox;
+    @FXML
+    ComboBox<ThemeSelector> themeBox;
     @FXML
     CheckBox useCustomFontBox;
 
@@ -35,9 +41,11 @@ public class GeneralPage extends SettingsPage {
         loader.setController(this);
 
         loader.load();
-        controller.addControls(languageBox, fontSizeBox, languageBox, useCustomFontBox, fontBox);
+        controller.addControls(languageBox, fontSizeBox, languageBox, themeBox, 
+                useCustomFontBox, fontBox);
 
         initLanguageBox();
+        initThemeBox();
         initUseCusFontBox();
         initFontBoxes();
     }
@@ -49,6 +57,12 @@ public class GeneralPage extends SettingsPage {
             Configs.getConfigs().writeConfig("locale", selectedLocale.getConfigValue());
             getStatusSaver().store(languageBox);
 
+            askRestart();
+        }
+        if (getStatusSaver().hasChanged(themeBox)) {
+            Configs.getConfigs().setTheme(themeBox.getValue().themeName);
+            getStatusSaver().store(themeBox);
+            
             askRestart();
         }
         if (getStatusSaver().hasChanged(useCustomFontBox) ||
@@ -64,6 +78,18 @@ public class GeneralPage extends SettingsPage {
 
             askRestart();
         }
+    }
+    
+    private void initThemeBox() {
+        themeBox.getItems().addAll(ThemeSelector.values());
+        String selected = Configs.getConfigs().getTheme();
+        for (int i = 0; i < themeBox.getItems().size(); i++) {
+            if (Objects.equals(selected, themeBox.getItems().get(i).themeName)) {
+                themeBox.getSelectionModel().select(i);
+                break;
+            }
+        }
+        getStatusSaver().store(themeBox);
     }
 
     private void askRestart() {
@@ -102,6 +128,7 @@ public class GeneralPage extends SettingsPage {
     }
 
     private void initFontBoxes() {
+        fontBox.setCellFactory(stringListView -> new FontCell());
         for (String font : Font.getFamilies()) {
             fontBox.getItems().add(font);
         }
@@ -114,5 +141,33 @@ public class GeneralPage extends SettingsPage {
         fontSizeBox.getItems().addAll(8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36);
         fontSizeBox.getSelectionModel().select(Integer.valueOf(Configs.getConfigs().getFontSize(12)));
         getStatusSaver().store(fontSizeBox);
+    }
+    
+    enum ThemeSelector {
+        DEFAULT("default", "themeDefault"),
+        DARK("dark", "themeDark");
+        
+        final String themeName;
+        private final String themeNameString;
+        
+        ThemeSelector(String themeName, String themeNameString) {
+            this.themeName = themeName;
+            this.themeNameString = themeNameString;
+        }
+
+        @Override
+        public String toString() {
+            return Client.getBundle().getString(themeNameString);
+        }
+    }
+    
+    private class FontCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            
+            setFont(new Font(item, fontSizeBox.getSelectionModel().getSelectedItem()));
+            setText(item);
+        }
     }
 }

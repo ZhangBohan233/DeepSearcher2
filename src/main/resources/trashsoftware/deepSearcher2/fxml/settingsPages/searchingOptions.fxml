@@ -18,11 +18,15 @@
         <Separator prefWidth="100.0"/>
     </HBox>
 
-    <CheckBox fx:id="includePathNameBox" text="%includeDirName">
-        <tooltip>
-            <Tooltip text="%includeDirNameHelp"/>
-        </tooltip>
-    </CheckBox>
+    <HBox spacing="5.0" alignment="CENTER">
+        <CheckBox fx:id="includePathNameBox" text="%includeDirName"/>
+        <Label text="(?)">
+            <tooltip>
+                <Tooltip text="%includeDirNameHelp"/>
+            </tooltip>
+        </Label>
+    </HBox>
+
     <CheckBox fx:id="shownHiddenBox" text="%showHidden"/>
 
     <CheckBox fx:id="limitDepthBox" text="%limitSearchDepth"/>

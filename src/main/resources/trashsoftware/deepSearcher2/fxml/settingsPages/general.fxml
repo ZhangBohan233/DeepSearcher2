@@ -25,6 +25,9 @@
         <Label text="%appearance"/>
         <Separator prefWidth="60.0"/>
     </HBox>
+    
+    <Label text="%theme"/>
+    <ComboBox fx:id="themeBox"/>
 
     <CheckBox fx:id="useCustomFontBox" text="%useCustomFont"/>
     <ComboBox fx:id="fontBox" disable="true"/>

@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import trashsoftware.deepSearcher2.util.Configs;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class SearchingTargetList extends ScrollPane {
     private VBox baseList;
 
     public SearchingTargetList() throws IOException {
+        getStylesheets().add(getUserAgentStylesheet());
+        getStyleClass().add("searching-target-list");
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/trashsoftware/deepSearcher2/fxml/widgets/searchingTargetList.fxml"));
         loader.setRoot(this);
@@ -34,6 +37,11 @@ public class SearchingTargetList extends ScrollPane {
         setFitToWidth(true);
 
         initializeListener();
+    }
+
+    @Override
+    public String getUserAgentStylesheet() {
+        return Configs.getConfigs().getStyleSheetPath();
     }
 
     /**

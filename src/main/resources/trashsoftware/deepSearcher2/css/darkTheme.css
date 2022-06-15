@@ -1,0 +1,206 @@
+.root {
+    -fx-background-color: #333333;
+    -fx-dark-text-color: #FFFFFF;
+    -fx-mid-text-color: #DDDDDD;
+    -fx-light-text-color: #AAAAAA;
+}
+
+.table-view {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header,
+.table-view .column-header .filler,
+.table-view .column-header-background,
+.table-view .column-header-background .filler {
+    -fx-background-color: #2A2A2A;
+}
+
+.table-view .table-cell {
+    -fx-border-color: transparent;
+}
+
+.table-row-cell: hover {
+    -fx-background-color: #454545;
+    -fx-text-background-color: #0077FF;
+}
+
+.table-row-cell: odd {
+    -fx-background-color: #2A2A2A;
+}
+
+.table-row-cell: even {
+    -fx-background-color: #222222;
+}
+
+.table-row-cell: selected {
+    -fx-background-color: #113366;
+}
+
+.tree-view {
+    -fx-background-color: transparent;
+}
+
+.tree-view .tree-cell {
+    -fx-border-color: transparent;
+}
+
+.tree-cell: hover {
+    -fx-background-color: #454545;
+    -fx-text-background-color: #0077FF;
+}
+
+.tree-cell: odd {
+    -fx-background-color: #2A2A2A;
+}
+
+.tree-cell: even {
+    -fx-background-color: #2A2A2A;
+}
+
+.tree-cell: selected {
+    -fx-background-color: #113366;
+}
+
+.tree-table-view {
+    -fx-background-color: transparent;
+}
+
+.tree-table-view .column-header,
+.tree-table-view .column-header .filler,
+.tree-table-view .column-header-background,
+.tree-table-view .column-header-background .filler {
+    -fx-background-color: #2A2A2A;
+}
+
+.tree-table-view .table-cell {
+    -fx-border-color: transparent;
+}
+
+.tree-table-row-cell: hover {
+    -fx-background-color: #454545;
+    -fx-text-background-color: #0077FF;
+}
+
+.tree-table-row-cell: odd {
+    -fx-background-color: #2A2A2A;
+}
+
+.tree-table-row-cell: even {
+    -fx-background-color: #222222;
+}
+
+.tree-table-row-cell: selected {
+    -fx-background-color: #113366;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+}
+
+.list-cell: hover {
+    -fx-background-color: #454545;
+    -fx-text-background-color: #0077FF;
+}
+
+.list-cell: odd {
+    -fx-background-color: #2A2A2A;
+}
+
+.list-cell: even {
+    -fx-background-color: #222222;
+}
+
+.list-cell: selected {
+    -fx-background-color: #113366;
+}
+
+.button {
+    -fx-background-color: #5D5D5D;
+}
+
+.button .disabled {
+    -fx-background-color: #454545;
+}
+
+.check-box .box {
+    -fx-background-color: #5D5D5D;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #DDDDDD;
+}
+
+.radio-button .radio {
+    -fx-background-color: #5D5D5D;
+    -fx-background-image: null;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: #DDDDDD;
+    -fx-background-image: null;
+}
+
+.menu-bar {
+    -fx-background-color: #333333;
+}
+
+.context-menu {
+    -fx-background-color: #333333;
+}
+
+.combo-box {
+    -fx-background-color: #5D5D5D;
+}
+
+.combo-box .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.combo-box .list-cell: selected {
+    -fx-background-color: #5D5D5D;
+}
+
+.text-field {
+    -fx-background-color: #4C4C4C;
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-color: #333333;
+}
+
+.scroll-pane > .corner {
+    -fx-background-color: #333333;
+}
+
+.scroll-bar:horizontal, .scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #5D5D5D;
+}
+
+.corner {
+    -fx-background-color: #333333;
+}
+
+.searching-target-list {
+    -fx-background-color: #2A2A2A;
+}
+
+.searching-target-box {
+    -fx-background-color: #4C4C4C;
+    -fx-fill: #5D5D5D;
+}

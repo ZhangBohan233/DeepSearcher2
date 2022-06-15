@@ -5,12 +5,15 @@ import javafx.scene.text.Font;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import trashsoftware.deepSearcher2.css.ThemeManager;
 import trashsoftware.deepSearcher2.guiItems.HistoryItem;
 import trashsoftware.deepSearcher2.searcher.*;
 import trashsoftware.deepSearcher2.searcher.matchers.MatchMode;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -56,13 +59,14 @@ public class Configs {
         configMap.put("includePathName", "false");
         configMap.put("showHidden", "true");
         configMap.put("wholeContent", "false");
-        configMap.put("searchCmpFiles", "true");
+        configMap.put("searchCmpFiles", "false");
         configMap.put("depthFirst", "false");
         configMap.put("alg", "algAuto");
         configMap.put("wordAlg", "algNaive");
         configMap.put("regexAlg", "algNative");
         configMap.put("cpuThreads", "4");
         configMap.put("maxSearchPrompt", "3");
+        configMap.put("theme", "default");
     }
 
     private Configs() {
@@ -335,15 +339,37 @@ public class Configs {
         saveToDisk();
     }
 
-    public void applyCustomFont(Scene scene) {
+    public String getTheme() {
+        return getConfig("theme");
+    }
+
+    public void setTheme(String themeName) {
+        configMap.put("theme", themeName);
+    }
+
+    public void applyThemeAndFont(Scene scene) {
+        String theme = getTheme();
+        URL themeStylesheet = ThemeManager.getThemeStylesheet(theme);
+        scene.getStylesheets().add(themeStylesheet.toExternalForm());
+
+        if (isUseCustomFont()) applyCustomFont(scene);
+    }
+
+    public String getStyleSheetPath() {
+        String theme = getTheme();
+        URL themeStylesheet = ThemeManager.getThemeStylesheet(theme);
+        return themeStylesheet.toExternalForm();
+    }
+
+    private void applyCustomFont(Scene scene) {
         String fontFamily = getCustomFont();
         if (fontFamily == null) fontFamily = Font.getDefault().getFamily();
         int fontSize = getFontSize(12);
         String content = String.format(
-                ".root {\n    -fx-font-family: %s;\n    -fx-font-size: %dpx;\n}",
+                ".root {\n    -fx-font-family: '%s';\n    -fx-font-size: %dpx;\n}\n",
                 fontFamily,
                 fontSize);
-        try (FileWriter fw = new FileWriter(CUSTOM_CSS)) {
+        try (FileWriter fw = new FileWriter(CUSTOM_CSS, StandardCharsets.UTF_8)) {
             fw.write(content);
             fw.flush();
         } catch (IOException e) {
@@ -474,11 +500,11 @@ public class Configs {
     public int getCurrentCpuThreads() {
         return getInt("cpuThreads", 4);
     }
-    
+
     public int getMaxSearchPrompt() {
         return getInt("maxSearchPrompt", 10);
     }
-    
+
     public void setMaxSearchPrompt(int maxSearchPrompt) {
         writeConfig("maxSearchPrompt", String.valueOf(maxSearchPrompt));
     }

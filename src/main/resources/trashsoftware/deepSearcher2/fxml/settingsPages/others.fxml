@@ -20,7 +20,15 @@
         <Separator prefWidth="100.0"/>
     </HBox>
 
-    <Label text="%maxSearchPrompt"/>
+    <HBox alignment="CENTER" spacing="5.0">
+        <Label text="%maxSearchPrompt"/>
+        <Label text="(?)">
+            <tooltip>
+                <Tooltip text="%maxSearchPromptHelp"/>
+            </tooltip>
+        </Label>
+    </HBox>
+
     <ComboBox fx:id="promptsNumberBox"/>
 
     <HBox alignment="CENTER" spacing="10.0">

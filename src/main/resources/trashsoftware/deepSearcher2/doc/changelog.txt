@@ -1,3 +1,20 @@
+===== 1.1.6 =====
+2022/06/16
+
+## EN ##
+* GUI updates:
+    * Theme selector and dark theme
+    * Fonts preview in font list
+    * Fixed issue that custom font family not working
+* Updated the running-check mechanism: check by file occupation instead of file existence
+
+## ZH ##
+* 图形界面更新:
+    * 主题选择器及夜间主题
+    * 字体列表的字体效果预览
+    * 修复了自定义中文字体无法正确显示的问题
+* 更新了主程序的单例检查方式：程序崩溃时会自动释放
+
 ===== 1.1.5 =====
 2022/04/15
 

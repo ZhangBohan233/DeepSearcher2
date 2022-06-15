@@ -15,6 +15,8 @@ import trashsoftware.deepSearcher2.util.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class Client extends Application {
@@ -24,12 +26,17 @@ public class Client extends Application {
     public static final String AUTHOR_ZH = "张博涵";
     public static final String AUTHOR_EN = "Bohan Zhang";
 
-    public static final String VERSION = "1.1.5";
+    public static final String VERSION = "1.1.6";
 
     /**
      * Name of a file which marks the program is running. Create on launch and delete on exit.
      */
     private static final String RUNNING_MARK = ".running";
+
+    /**
+     * Occupy the ".running" file on start.
+     */
+    private static RandomAccessFile runningOccupation;
 
     private static ResourceBundle bundle;
     private static ResourceBundle fileTypeBundle;
@@ -65,27 +72,28 @@ public class Client extends Application {
         return iconImage;
     }
 
-    private static void createRunningMarkFile() throws IOException {
+    private static boolean lockRunningFile() {
         File file = new File(RUNNING_MARK);
-        if (!file.createNewFile()) throw new IOException("Cannot create mark file. ");
-    }
-
-    private static boolean isRunning() {
-        File file = new File(RUNNING_MARK);
-        return file.exists();
-    }
-
-    private static void deleteMarkFile() {
-        File file = new File(RUNNING_MARK);
-        if (!file.delete()) {
-            System.gc();
-            if (!file.delete()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(bundle.getString("error"));
-                alert.setHeaderText(bundle.getString("cannotDeleteFile"));
-                alert.setContentText(bundle.getString("pleaseManualDelete") + " " + file.getAbsolutePath());
-                alert.show();
+        try {
+            if (!file.exists()) {
+                if (!file.createNewFile()) {
+                    return false;
+                }
             }
+            runningOccupation = new RandomAccessFile(file, "rw");
+            runningOccupation.write(1);
+            runningOccupation.getChannel().lock();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private static void releaseRunningFile() {
+        try {
+            runningOccupation.close();
+        } catch (IOException e) {
+            Log.severe(e);
         }
     }
 
@@ -102,7 +110,7 @@ public class Client extends Application {
         fileTypeBundle = ResourceBundle.getBundle("trashsoftware.deepSearcher2.bundles.FileTypeBundle",
                 Configs.getConfigs().getCurrentLocale());
 
-        if (isRunning()) {
+        if (!lockRunningFile()) {
             Configs.stopConfig();
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle(bundle.getString("appName"));
@@ -123,15 +131,15 @@ public class Client extends Application {
         MainViewController controller = loader.getController();
 
         iconImage = new Image(
-                getClass().getResourceAsStream("/trashsoftware/deepSearcher2/images/icon.bmp"));
+                Objects.requireNonNull(
+                        getClass().getResourceAsStream("/trashsoftware/deepSearcher2/images/icon.bmp")));
 
         Scene rootScene = new Scene(root);
-        rootScene.getStylesheets().add(
-                getClass().getResource("/trashsoftware/deepSearcher2/css/defaultTheme.css").toExternalForm());
         if (Configs.getConfigs().isUseCustomFont()) {
-            Configs.getConfigs().applyCustomFont(rootScene);
             controller.rescaleUi(Configs.getConfigs().getFontSize(12));
         }
+        Configs.getConfigs().applyThemeAndFont(rootScene);
+
         stage.setTitle(bundle.getString("appName"));
         stage.getIcons().add(iconImage);
         stage.setScene(rootScene);
@@ -141,12 +149,11 @@ public class Client extends Application {
 
         stage.setOnHidden(e -> {
             controller.stopActiveSearcher();
-            deleteMarkFile();
+            releaseRunningFile();
             ExtensionLoader.stopLoader();
             Cache.stopCache();
             Configs.stopConfig();
         });
-        createRunningMarkFile();
 
         stage.show();
     }

@@ -229,9 +229,8 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.getIcons().add(Client.getIconImage());
 
         Scene scene = new Scene(root);
-        if (Configs.getConfigs().isUseCustomFont()) {
-            Configs.getConfigs().applyCustomFont(scene);
-        }
+        Configs.getConfigs().applyThemeAndFont(scene);
+        
         stage.setScene(scene);
 
         HistoryListController controller = loader.getController();
@@ -251,6 +250,7 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.setTitle(bundle.getString("appName"));
         stage.getIcons().add(Client.getIconImage());
         stage.setScene(new Scene(root));
+        Configs.getConfigs().applyThemeAndFont(stage.getScene());
 
         stage.show();
     }
@@ -266,6 +266,7 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.setTitle(bundle.getString("appName"));
         stage.getIcons().add(Client.getIconImage());
         stage.setScene(new Scene(root));
+        Configs.getConfigs().applyThemeAndFont(stage.getScene());
 
         stage.show();
     }
@@ -306,6 +307,8 @@ public class MainViewController implements Initializable, CacheObservable {
         newStage.setTitle(bundle.getString("appName"));
         newStage.setScene(new Scene(root));
         newStage.getIcons().add(Client.getIconImage());
+
+        Configs.getConfigs().applyThemeAndFont(newStage.getScene());
 
         ResultInfoView resultInfoView = loader.getController();
         resultInfoView.setup(lastInfoCollector, lastSearchTimeMs);
@@ -382,9 +385,7 @@ public class MainViewController implements Initializable, CacheObservable {
         stage.setTitle(bundle.getString("settings"));
         stage.getIcons().add(Client.getIconImage());
         Scene scene = new Scene(root);
-        if (Configs.getConfigs().isUseCustomFont()) {
-            Configs.getConfigs().applyCustomFont(scene);
-        }
+        Configs.getConfigs().applyThemeAndFont(scene);
         stage.setScene(scene);
 
         SettingsPanelController controller = loader.getController();

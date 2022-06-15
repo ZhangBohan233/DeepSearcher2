@@ -20,7 +20,7 @@
         <ColumnConstraints fx:id="rightColumn"/>
     </columnConstraints>
 
-    <TableView fx:id="historyTable">
+    <TableView fx:id="historyTable" GridPane.hgrow="ALWAYS">
         <placeholder>
             <Label text="%emptyHistory"/>
         </placeholder>
